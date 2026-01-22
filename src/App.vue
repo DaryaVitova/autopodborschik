@@ -21,7 +21,7 @@
         :class="{ 'header__link--active': $route.name === 'favorites' }"
       >
         <div class="header__href">
-          <HeartIcon color="#c30303" />
+          <HeartIcon color="#c30303" size="24" />
           <span>Избранное</span>
         </div>
       </router-link>
@@ -56,12 +56,19 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useFavoritesStore } from "@/stores/favoritesStore"
 import HomeIcon from "@/components/SvgIcons/HomeIcon.vue"
 import HeartIcon from "@/components/SvgIcons/HeartIcon.vue"
 
 const route = useRoute()
 const router = useRouter()
+
+const favoritesStore = useFavoritesStore()
+
+onMounted(() => {
+  favoritesStore.loadFromLocalStorage()
+})
 
 const isMainActive = computed((): boolean => {
   return route.name === 'table' || route.name === 'cards'

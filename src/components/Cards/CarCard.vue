@@ -46,7 +46,6 @@
       <div class="car-card__price">
         {{ formatPrice(item?.price) }} ₽
       </div>
-
     </div>
 
     <!-- Информация -->
@@ -86,12 +85,25 @@
             </span>
       </div>
     </div>
+
+    <div
+      class="car-card__heart-icon"
+      :title="isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'"
+      @click.stop="toggleFavorite"
+    >
+      <HeartIcon
+        :color="!isFavorite ? 'transparent' : '#c30303'"
+        :border="isFavorite ? 'transparent' : '#6b7280'"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { Advertisement } from '@/composables/useAdvertisements'
+import HeartIcon from "@/components/SvgIcons/HeartIcon.vue"
+import { useFavoritesStore } from "@/stores/favoritesStore"
 
 const props = withDefaults(defineProps<{
   item: Advertisement,
@@ -99,7 +111,6 @@ const props = withDefaults(defineProps<{
   highlightModel: string,
   highlightCity: string
 }>(), {
-  // item: () => ({}),
   highlightBrand: '',
   highlightModel: '',
   highlightCity: ''
@@ -108,6 +119,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: 'card-click', item: Advertisement): void
 }>()
+
+const favoritesStore = useFavoritesStore()
 
 const currentPhotoIndex = ref<number>(0)
 
@@ -118,6 +131,15 @@ const photoCount = computed((): number => {
 const currentPhotoUrl = computed((): string | null => {
   return props.item?.photoUrls?.[currentPhotoIndex.value] || null
 })
+
+// Вычисляемое свойство для проверки, есть ли в избранных
+const isFavorite = computed((): boolean => {
+  return favoritesStore.isFavorite(props.item.id)
+})
+
+const toggleFavorite = (): void => {
+  favoritesStore.toggleFavorite(props.item)
+}
 
 const setCurrentPhoto = (index: number): void => {
   currentPhotoIndex.value = index
@@ -185,6 +207,7 @@ function clickCard(): void {
 
 <style lang="scss" scoped>
 .car-card {
+  position: relative;
   width: 100%;
   max-width: 800px;
   display: flex;
@@ -208,6 +231,23 @@ function clickCard(): void {
 
   &:hover .car-card__photo-nav {
     opacity: 1;
+  }
+
+  &__heart-icon {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    padding: 3px;
+    &:hover {
+      background-color: #ededed;
+      border-radius: 5px;
+      transition-duration: 0.2s;
+    }
   }
 
   &__photo {
