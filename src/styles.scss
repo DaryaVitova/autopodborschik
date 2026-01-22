@@ -1,0 +1,14 @@
+html, body {
+  background-color: #f0f0f1;
+  //display: flex;
+  //justify-content: center;
+}
+body:has(.loader) {
+  display: flex;
+  justify-content: center;
+}
+
+.icon {
+  opacity: 0.9;
+  transition: fill 0.3s ease;
+}
