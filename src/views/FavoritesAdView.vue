@@ -1,5 +1,6 @@
 <template>
   <div v-if="favoritesStore.favoritesCount > 0" class="favorite">
+    <button class="favorite__clear-btn" @click="clearFavorites">Очистить избранное</button>
     <car-card
       v-for="item in favoritesStore.getFavorites"
       class="favorite__card"
@@ -27,11 +28,20 @@ const { openCard } = useAdvertisementOpen()
 const handleCardClick = (row: Advertisement): void => {
   openCard(row)
 }
+
+const clearFavorites = (): void => {
+  favoritesStore.clearFavorites()
+}
 </script>
 
 <style lang="scss" scoped>
 .favorite {
+  display: flex;
+  flex-direction: column;
   margin-top: 60px;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 30px;
   &__card {
     margin-bottom: 25px;
   }
@@ -47,6 +57,23 @@ const handleCardClick = (row: Advertisement): void => {
     }
     &--text2 {
       text-align: center;
+    }
+  }
+
+  &__clear-btn {
+    align-self: flex-end;
+    text-decoration: none;
+    background-color: #fff;
+    border: 2px solid #4b92af;
+    font-weight: 500;
+    padding: 7px 10px;
+    border-radius: 8px;
+    margin-bottom: 50px;
+
+    &:hover {
+      opacity: 0.7;
+      transform: scale(1.02);
+      transition-duration: 0.2s;
     }
   }
 }

@@ -22,7 +22,7 @@
       >
         <div class="header__href">
           <HeartIcon color="#c30303" size="24" />
-          <span>Избранное</span>
+          <span>Избранное ({{ favoritesStore.favoritesCount }})</span>
         </div>
       </router-link>
       <router-link :to="{name: 'createAd'}" class="header__link header__link--form">Выложить объявление</router-link>
@@ -93,6 +93,11 @@ const goToCreatingAd = (): void => {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.router-link-active {
+  //background-color: #5296bc !important;
+  opacity: 0.8;
 }
 
 .header {

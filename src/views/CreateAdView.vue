@@ -665,10 +665,11 @@ const resetForm = () => {
     width: fit-content;
     align-self: center;
     margin-top: 30px;
-    border: 2px solid #45576a;
+    //border: 2px solid #45576a;
+    border: 2px solid #fff;
     color: white;
     background-color: #5296bc;
-    border-radius: 5px;
+    border-radius: 8px;
     &:hover {
       opacity: 0.8;
       transform: scale(1.03);
