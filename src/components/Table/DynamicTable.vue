@@ -253,9 +253,7 @@ watch(() => props.headers, (newHeaders) => {
 }, { immediate: true })
 
 watch(() => props.data, (val) => {
-  console.log(val, 'data.val')
   if (val && val.length > 0) {
-    console.log('pizda')
     isDataLoaded.value = true
 
     if (!isInitialized.value) {
@@ -305,17 +303,17 @@ function toggleSort (link: Headers['key']): void {
   if (link in currentQuery) {
     if (currentQuery[link] === 'asc') {
       newQuery[link] = 'desc'
-      router.push({ name: 'main', query: newQuery })
+      router.push({ name: 'table', query: newQuery })
       sorting('desc', link)
     } else {
       //  При сбросе сортировки просто не добавляем параметр сортировки
-      router.push({ name: 'main', query: newQuery })
+      router.push({ name: 'table', query: newQuery })
       sorting(null)
     }
   } else {
     // Добавляем новую сортировку (все старые уже удалены)
     newQuery[link] = 'asc'
-    router.push({ name: 'main', query: newQuery })
+    router.push({ name: 'table', query: newQuery })
     sorting('asc', link)
   }
 }
@@ -397,7 +395,7 @@ function resetFiltering (headerKey: string, input: { value: string }): void {
   const searchKey = `search_${headerKey}`
   delete newQuery[searchKey]
 
-  router.push({ name: 'main', query: newQuery })
+  router.push({ name: 'table', query: newQuery })
 
   if (Object.keys(activeFilterKeys.value).length > 0) {
     applyFilters()
@@ -448,7 +446,7 @@ function filterTable (headerKey: string, value: string): void {
     }
   })
 
-  router.push({ name: 'main', query: newQuery })
+  router.push({ name: 'table', query: newQuery })
   applyFilters()
 }
 

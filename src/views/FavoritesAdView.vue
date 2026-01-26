@@ -1,5 +1,6 @@
 <template>
   <div v-if="favoritesStore.favoritesCount > 0" class="favorite">
+    <button class="back-button-arrow" @click="goBack" />
     <button class="favorite__clear-btn" @click="clearFavorites">Очистить избранное</button>
     <car-card
       v-for="item in favoritesStore.getFavorites"
@@ -17,10 +18,13 @@
 </template>
 
 <script setup lang="ts">
-import {useFavoritesStore} from "@/stores/favoritesStore.ts"
+import { useFavoritesStore } from "@/stores/favoritesStore.ts"
 import CarCard from "@/components/Cards/CarCard.vue";
 import type { Advertisement } from "@/composables/useAdvertisements.ts"
 import { useAdvertisementOpen } from "@/composables/useAdvertisementOpen"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
 
 const favoritesStore = useFavoritesStore()
 const { openCard } = useAdvertisementOpen()
@@ -32,13 +36,18 @@ const handleCardClick = (row: Advertisement): void => {
 const clearFavorites = (): void => {
   favoritesStore.clearFavorites()
 }
+
+const goBack = (): void => {
+  router.go(-1)
+}
 </script>
 
 <style lang="scss" scoped>
 .favorite {
+  position: relative;
   display: flex;
   flex-direction: column;
-  margin-top: 60px;
+  margin-top: 70px;
   width: 100%;
   max-width: 800px;
   margin-bottom: 30px;

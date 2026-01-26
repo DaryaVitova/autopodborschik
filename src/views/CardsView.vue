@@ -10,11 +10,9 @@
 import CardsAd from '@/components/Cards/CardsAd.vue'
 import { useAdvertisements } from '@/composables/useAdvertisements.ts'
 import type { Advertisement } from "@/composables/useAdvertisements.ts";
-import { useRouter } from 'vue-router'
 import { computed } from 'vue'
 import { useAdvertisementOpen } from "@/composables/useAdvertisementOpen"
 
-const router = useRouter()
 const advertisements = useAdvertisements()
 const { openCard } = useAdvertisementOpen()
 

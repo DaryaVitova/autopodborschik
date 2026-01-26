@@ -11,7 +11,7 @@ const routes = [
     path: '/',
     name: 'main',
     component: MainPageView,
-    redirect: { name: 'table' },
+    redirect: { name: 'cards' },
     children: [
       {
         path: 'table',

@@ -2,19 +2,21 @@
   <div class="main">
     <div class="main__select-show">
       <router-link
-        to="/table"
-        class="main__select-show--link"
-        :class="{ 'active': route.name === 'table' }"
-      >
-        Таблица
-      </router-link>
-      <span class="main__select-show--span">|</span>
-      <router-link
         to="/cards"
         class="main__select-show--link"
         :class="{ 'active': route.name === 'cards' }"
       >
         Карточки
+      </router-link>
+
+      <span class="main__select-show--span">|</span>
+
+      <router-link
+        to="/table"
+        class="main__select-show--link"
+        :class="{ 'active': route.name === 'table' }"
+      >
+        Таблица
       </router-link>
     </div>
 

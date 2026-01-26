@@ -96,7 +96,6 @@ const goToCreatingAd = (): void => {
 }
 
 .router-link-active {
-  //background-color: #5296bc !important;
   opacity: 0.8;
 }
 
@@ -114,6 +113,7 @@ const goToCreatingAd = (): void => {
   }
   &__brand {
     text-decoration: none;
+    cursor: pointer;
   }
   &__nav {
     display: flex;

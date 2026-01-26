@@ -1,12 +1,20 @@
 <template>
   <div class="showAd">
     <div class="sticky-container">
-      <button class="back-button-arrow" @click="goBack"></button>
+      <button class="back-button-arrow" @click="goBack" />
     </div>
     <!-- Заголовок -->
     <div class="ad-header">
+      <FavoriteButton
+        v-if="adData"
+        class="ad-header__heart-button"
+        :item="adData"
+      />
+
       <h2>{{ adData?.brand }} {{ adData?.model }}</h2>
-      <span class="ad-header__price">{{ (adData?.price ? adData.price.toLocaleString('ru-RU') : '') + ' ₽' }}</span>
+      <span class="ad-header__price">
+        {{ (adData?.price ? adData.price.toLocaleString('ru-RU') : '') + ' ₽' }}
+      </span>
     </div>
 
     <!-- Основной контент - два столбца -->
@@ -146,9 +154,18 @@
       <button class="lightbox-next" @click.stop="nextPhoto">›</button>
     </div>
 
-    <div class="ad-desc" v-if="adData?.description">
-      <h3 class="ad-desc__title">Описание:</h3>
-      <span>{{ adData?.description }}</span>
+    <div class="showAd__bottom-container">
+      <div class="ad-desc" v-if="adData?.description">
+        <h3 class="ad-desc__title">Описание:</h3>
+        <span>{{ adData?.description }}</span>
+      </div>
+
+      <button
+        class="showAd__delete-btn"
+        @click="deleteAd(adData?.id)"
+      >
+        Удалить объявление
+      </button>
     </div>
   </div>
 </template>
@@ -157,8 +174,13 @@
 import {ref, computed, onMounted, type Ref} from 'vue'
 import { useRouter } from "vue-router";
 import type { Advertisement } from "@/composables/useAdvertisements"
+import FavoriteButton from "@/components/common/FavoriteButton.vue"
+import { useFavoritesStore } from "@/stores/favoritesStore.ts"
+import { doc, deleteDoc } from 'firebase/firestore';
+import { db } from '@/firebase.ts'
 
 const router = useRouter()
+const favoritesStore = useFavoritesStore()
 
 const adData: Ref<Advertisement | null> = ref(null)
 const lightboxActive = ref(false)
@@ -221,6 +243,25 @@ function goBack(): void {
   router.go(-1)
 }
 
+const deleteAd = async (id: string | undefined): Promise<void> => {
+  if (!confirm('Вы уверены, что хотите удалить это объявление?')) {
+    return
+  }
+
+  try {
+    const adRef = doc(db, 'advertisements', id)
+
+    await deleteDoc(adRef)
+
+    favoritesStore.removeFromFavorites(adRef.id)
+    router.go(-1)
+
+  } catch (error) {
+    console.error('Ошибка при удалении:', error)
+    alert('Не удалось удалить объявление')
+  }
+}
+
 onMounted(() => {
   try {
     const saved = localStorage.getItem('advertisements')
@@ -261,34 +302,24 @@ onMounted(() => {
   padding: 40px 20px;
   background: #f8f9fa;
   min-height: 100vh;
-}
 
-.back-button-arrow {
-  position: absolute;
-  top: 20px;
-  left: -100px;
-  width: 50px;
-  height: 50px;
-  background: #b3c9e1;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    border-left: 3px solid #333;
-    border-bottom: 3px solid #333;
-    transform: translate(-25%, -50%) rotate(45deg);
+  &__bottom-container {
+    display: flex;
+    flex-direction: column;
   }
-  &:hover {
-    background: #6a92bd;
-    transform: translateX(-3px);
-    transition-duration: 0.3s;
+
+  &__delete-btn {
+    margin-top: 40px;
+    align-self: flex-end;
+    border: none;
+    border-radius: 7px;
+    background: #bd3838;
+    color: #fff;
+    padding: 7px 15px;
+    &:hover {
+      opacity: 0.7;
+      transition-duration: 0.5s;
+    }
   }
 }
 
@@ -302,6 +333,7 @@ onMounted(() => {
 
 /* Заголовок */
 .ad-header {
+  position: relative;
   text-align: center;
   margin-bottom: 50px;
   padding: 35px;
@@ -310,6 +342,12 @@ onMounted(() => {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   &__price {
     font-size: 26px;
+  }
+
+  &__heart-button {
+    position: absolute;
+    right: 12px;
+    top: 8px;
   }
 }
 
@@ -356,7 +394,7 @@ h2 {
   padding: 35px;
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  margin-top: 50px;
+  margin-top: 15px;
   &__title {
     margin-bottom: 15px;
   }

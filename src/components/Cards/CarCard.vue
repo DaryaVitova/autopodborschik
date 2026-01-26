@@ -86,30 +86,20 @@
       </div>
     </div>
 
-    <div
-      class="car-card__heart-icon"
-      :title="isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'"
-      @click.stop="toggleFavorite"
-    >
-      <HeartIcon
-        :color="!isFavorite ? 'transparent' : '#c30303'"
-        :border="isFavorite ? 'transparent' : '#6b7280'"
-      />
-    </div>
+    <FavoriteButton class="car-card__heart-button" :item="item" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { Advertisement } from '@/composables/useAdvertisements'
-import HeartIcon from "@/components/SvgIcons/HeartIcon.vue"
-import { useFavoritesStore } from "@/stores/favoritesStore"
+import FavoriteButton from '@/components/common/FavoriteButton.vue'
 
 const props = withDefaults(defineProps<{
   item: Advertisement,
-  highlightBrand: string,
-  highlightModel: string,
-  highlightCity: string
+  highlightBrand?: string,
+  highlightModel?: string,
+  highlightCity?: string
 }>(), {
   highlightBrand: '',
   highlightModel: '',
@@ -120,8 +110,6 @@ const emit = defineEmits<{
   (e: 'card-click', item: Advertisement): void
 }>()
 
-const favoritesStore = useFavoritesStore()
-
 const currentPhotoIndex = ref<number>(0)
 
 const photoCount = computed((): number => {
@@ -131,15 +119,6 @@ const photoCount = computed((): number => {
 const currentPhotoUrl = computed((): string | null => {
   return props.item?.photoUrls?.[currentPhotoIndex.value] || null
 })
-
-// Вычисляемое свойство для проверки, есть ли в избранных
-const isFavorite = computed((): boolean => {
-  return favoritesStore.isFavorite(props.item.id)
-})
-
-const toggleFavorite = (): void => {
-  favoritesStore.toggleFavorite(props.item)
-}
 
 const setCurrentPhoto = (index: number): void => {
   currentPhotoIndex.value = index
@@ -233,21 +212,10 @@ function clickCard(): void {
     opacity: 1;
   }
 
-  &__heart-icon {
+  &__heart-button {
     position: absolute;
     right: 12px;
     top: 8px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    padding: 3px;
-    &:hover {
-      background-color: #ededed;
-      border-radius: 5px;
-      transition-duration: 0.2s;
-    }
   }
 
   &__photo {
