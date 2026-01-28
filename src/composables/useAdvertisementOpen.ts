@@ -9,7 +9,6 @@ export const useAdvertisementOpen = () => {
       console.error('Invalid advertisement data:', row)
       return
     }
-
     // Сохраняем в localStorage
     localStorage.setItem('advertisements', JSON.stringify(row))
 

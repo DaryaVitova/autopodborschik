@@ -160,31 +160,84 @@
         <span>{{ adData?.description }}</span>
       </div>
 
-      <button
-        class="showAd__delete-btn"
-        @click="deleteAd(adData?.id)"
-      >
-        Удалить объявление
-      </button>
+      <div class="showAd__buttons">
+        <button
+          v-if="!isDisabledAddSoldBtn"
+          class="showAd__btn showAd__btn--sold"
+          @click="openLightboxForSold"
+        >
+          Машину продали
+        </button>
+
+        <button
+          class="showAd__btn showAd__btn--delete"
+          @click="deleteAd(adData?.id)"
+        >
+          Удалить объявление
+        </button>
+      </div>
     </div>
+
+    <div v-if="lightboxActiveForSold" class="lightbox lightbox--for-sold">
+      <button class="lightbox-close" @click="closeLightboxForSold">✕</button>
+      <div class="lightbox__input-group">
+        <label for="priceSoldAuto" class="lightbox__label">Введите,  за сколько был куплен проданный автомобиль</label>
+
+        <span
+          v-if="errorInputPriceSoldData"
+          class="lightbox__input--error-message"
+        >
+          * Заполните это поле
+        </span>
+        <input
+          v-model="formattedPrice"
+          @keydown="keyDownEvent"
+          id="priceSoldAuto"
+          class="lightbox__input"
+          type="text"
+          inputmode="numeric"
+          autocomplete="off"
+        />
+        <button
+          class="showAd__btn showAd__btn--sold lightbox__input-group-btn"
+          @click="addInSoldAuto"
+        >
+          Добавить автомобиль в проданные
+        </button>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, type Ref} from 'vue'
-import { useRouter } from "vue-router";
+import {ref, computed, onMounted, type Ref } from 'vue'
+import { useRouter } from "vue-router"
 import type { Advertisement } from "@/composables/useAdvertisements"
 import FavoriteButton from "@/components/common/FavoriteButton.vue"
 import { useFavoritesStore } from "@/stores/favoritesStore.ts"
-import { doc, deleteDoc } from 'firebase/firestore';
+import { useFormatters } from "@/composables/useFormatters.ts"
+import { useSoldAutoStore } from "@/stores/soldAutoStore.ts"
+import { doc, deleteDoc } from 'firebase/firestore'
 import { db } from '@/firebase.ts'
 
 const router = useRouter()
 const favoritesStore = useFavoritesStore()
 
+const soldAuto = useSoldAutoStore()
+
+const { formatNumber, parseNumber, allowOnlyNumbers } = useFormatters()
+
 const adData: Ref<Advertisement | null> = ref(null)
 const lightboxActive = ref(false)
 const currentPhotoIndex = ref(0)
+
+const lightboxActiveForSold = ref<boolean>(false)
+
+const priceSoldAuto = ref<number | null>(null)
+const errorInputPriceSoldData = ref<boolean>(false)
+
+const isDisabledAddSoldBtn = ref(false)
 
 const validPhotos = computed((): string[] => {
   if (!adData.value?.photoUrls || !Array.isArray(adData.value.photoUrls)) {
@@ -206,6 +259,17 @@ const hasPhotos = computed((): boolean => {
 const cleanPhone = computed((): string => {
   if (!adData.value?.phone) return ''
   return adData.value.phone.replace(/[^\d+]/g, '')
+})
+
+const formattedPrice = computed({
+  get: () => formatNumber(priceSoldAuto.value) || '',
+
+  set: (newValue: string) => {
+    if (errorInputPriceSoldData.value) {
+      errorInputPriceSoldData.value = false
+    }
+    priceSoldAuto.value = parseNumber(newValue)
+  }
 })
 
 // Функции лайтбокса
@@ -243,6 +307,32 @@ function goBack(): void {
   router.go(-1)
 }
 
+function keyDownEvent(event: KeyboardEvent): void {
+  allowOnlyNumbers(event)
+}
+
+function openLightboxForSold(): void {
+  lightboxActiveForSold.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+function closeLightboxForSold () {
+  lightboxActiveForSold.value = false
+  priceSoldAuto.value = null
+  document.body.style.overflow = 'auto'
+}
+
+function addInSoldAuto () {
+  if (adData.value && priceSoldAuto.value) {
+    soldAuto.addToSoldCars({...adData.value, soldPrice: priceSoldAuto.value })
+    router.push({name: 'cards'})
+  } else if (!priceSoldAuto.value) {
+    errorInputPriceSoldData.value = true
+  }
+
+  console.log(soldAuto.getSoldCars, 'soldAuto.getSoldCars')
+}
+
 const deleteAd = async (id: string | undefined): Promise<void> => {
   if (!confirm('Вы уверены, что хотите удалить это объявление?')) {
     return
@@ -263,11 +353,16 @@ const deleteAd = async (id: string | undefined): Promise<void> => {
 }
 
 onMounted(() => {
+  console.log(soldAuto.getSoldCars, 'getSoldCars')
   try {
     const saved = localStorage.getItem('advertisements')
     if (saved) {
       adData.value = JSON.parse(saved)
-      console.log(adData.value, 'advertisements')
+
+      const idFromSold = soldAuto.getSoldCars.map(item => item.id)
+      if (idFromSold.includes(adData.value.id)) {
+       isDisabledAddSoldBtn.value = true
+      }
     }
   } catch (error) {
     console.error('❌ Ошибка загрузки данных:', error)
@@ -308,17 +403,27 @@ onMounted(() => {
     flex-direction: column;
   }
 
-  &__delete-btn {
-    margin-top: 40px;
+  &__buttons {
+    display: flex;
+    gap: 25px;
     align-self: flex-end;
+    margin-top: 40px;
+  }
+
+  &__btn {
     border: none;
     border-radius: 7px;
-    background: #bd3838;
     color: #fff;
     padding: 7px 15px;
     &:hover {
       opacity: 0.7;
       transition-duration: 0.5s;
+    }
+    &--delete {
+      background-color: #bd3838;
+    }
+    &--sold {
+      background-color: #6d5f8f;
     }
   }
 }
@@ -687,6 +792,35 @@ h2 {
   justify-content: center;
   z-index: 1000;
   cursor: pointer;
+  &--for-sold {
+    background: rgba(177, 177, 177, 0.97);
+  }
+
+  &__input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+
+    &-btn {
+      margin-top: 50px;
+    }
+  }
+
+  &__label {
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  &__input {
+    width: 50%;
+    padding-left: 10px;
+
+    &--error-message {
+      font-size: 14px;
+      color: #bf0606;
+    }
+  }
 }
 
 .lightbox-close {

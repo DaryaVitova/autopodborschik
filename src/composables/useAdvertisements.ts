@@ -91,7 +91,6 @@ export function useAdvertisements() {
         const sortedAds = ads.map(({ _timestamp, ...ad }) => ad)
 
         data.value = sortedAds
-        console.log(data.value, 'data')
         isLoading.value = false
       },
       (error: unknown) => {

@@ -2,96 +2,100 @@
   <div
     class="car-card"
     @click="clickCard"
+    :class="{ 'car-card car-card__sold-overlay': isSoldAuto }"
   >
+    <div v-if="isSoldAuto" class="car-card__price-sold-auto">Продано за {{ formatPrice(item?.soldPrice) }}</div>
     <!-- Фото автомобиля -->
-    <div class="car-card__photo">
-      <div v-if="currentPhotoUrl" class="car-card__photo-slider">
-        <img
-          :src="currentPhotoUrl"
-          :alt="`${item?.brand} ${item?.model}`"
-          loading="lazy"
-          class="car-card__image"
-        />
+    <div class="car-card__container">
+      <div class="car-card__photo">
+        <div v-if="currentPhotoUrl" class="car-card__photo-slider">
+          <img
+            :src="currentPhotoUrl"
+            :alt="`${item?.brand} ${item?.model}`"
+            loading="lazy"
+            class="car-card__image"
+          />
 
-        <div v-if="photoCount > 1" class="car-card__photo-pagination">
+          <div v-if="photoCount > 1" class="car-card__photo-pagination">
+              <span
+                v-for="index in photoCount"
+                :key="index"
+                class="car-card__photo-dot"
+                :class="{ 'car-card__photo-dot--active': currentPhotoIndex === index - 1 }"
+                @click.stop="setCurrentPhoto(index - 1)"
+              ></span>
+          </div>
+
+          <button
+            v-if="photoCount > 1"
+            class="car-card__photo-nav car-card__photo-nav--prev"
+            @click.stop="prevPhoto"
+          >
+            ←
+          </button>
+          <button
+            v-if="photoCount > 1"
+            class="car-card__photo-nav car-card__photo-nav--next"
+            @click.stop="nextPhoto"
+          >
+            →
+          </button>
+        </div>
+
+        <div v-else class="car-card__no-photo">
+          <span>📷</span>
+          <p>Нет фото</p>
+        </div>
+        <div class="car-card__price">
+          {{ formatPrice(item?.price) }} ₽
+        </div>
+      </div>
+
+      <!-- Информация -->
+      <div class="car-card__info">
+        <h3 class="car-card__title">
+          <span v-html="highlightText(item?.brand, highlightBrand)"></span>
+          <span>{{ `&nbsp` }}</span>
+          <span v-html="highlightText(item?.model, highlightModel)"></span>
+        </h3>
+
+
+        <div class="car-card__details">
+          <div class="car-card__detail">
+            <span class="detail-label">Год:</span>
+            <span class="detail-value">{{ item?.year }}</span>
+          </div>
+          <div class="car-card__detail">
+            <span class="detail-label">Пробег:</span>
+            <span class="detail-value">{{ formatMileage(item?.mileage) }} км</span>
+          </div>
+          <div class="car-card__detail">
+            <span class="detail-label">Город:</span>
             <span
-              v-for="index in photoCount"
-              :key="index"
-              class="car-card__photo-dot"
-              :class="{ 'car-card__photo-dot--active': currentPhotoIndex === index - 1 }"
-              @click.stop="setCurrentPhoto(index - 1)"
+              class="detail-value"
+              v-html="highlightText(item?.city, highlightCity)"
             ></span>
+          </div>
         </div>
 
-        <button
-          v-if="photoCount > 1"
-          class="car-card__photo-nav car-card__photo-nav--prev"
-          @click.stop="prevPhoto"
-        >
-          ←
-        </button>
-        <button
-          v-if="photoCount > 1"
-          class="car-card__photo-nav car-card__photo-nav--next"
-          @click.stop="nextPhoto"
-        >
-          →
-        </button>
+        <!-- Дополнительная информация -->
+        <div class="car-card__footer">
+              <span class="car-card__date">
+                {{ formatDate(item?.createdAt) }}
+              </span>
+          <span class="car-card__photos-count" v-if="item?.photoUrls?.length">
+                📸 {{ item?.photoUrls.length }}
+              </span>
+        </div>
       </div>
 
-      <div v-else class="car-card__no-photo">
-        <span>📷</span>
-        <p>Нет фото</p>
-      </div>
-      <div class="car-card__price">
-        {{ formatPrice(item?.price) }} ₽
-      </div>
+      <FavoriteButton v-if="!isSoldAuto" class="car-card__heart-button" :item="item" />
     </div>
-
-    <!-- Информация -->
-    <div class="car-card__info">
-      <h3 class="car-card__title">
-        <span v-html="highlightText(item?.brand, highlightBrand)"></span>
-        <span>{{ `&nbsp` }}</span>
-        <span v-html="highlightText(item?.model, highlightModel)"></span>
-      </h3>
-
-
-      <div class="car-card__details">
-        <div class="car-card__detail">
-          <span class="detail-label">Год:</span>
-          <span class="detail-value">{{ item?.year }}</span>
-        </div>
-        <div class="car-card__detail">
-          <span class="detail-label">Пробег:</span>
-          <span class="detail-value">{{ formatMileage(item?.mileage) }} км</span>
-        </div>
-        <div class="car-card__detail">
-          <span class="detail-label">Город:</span>
-          <span
-            class="detail-value"
-            v-html="highlightText(item?.city, highlightCity)"
-          ></span>
-        </div>
-      </div>
-
-      <!-- Дополнительная информация -->
-      <div class="car-card__footer">
-            <span class="car-card__date">
-              {{ formatDate(item?.createdAt) }}
-            </span>
-        <span class="car-card__photos-count" v-if="item?.photoUrls?.length">
-              📸 {{ item?.photoUrls.length }}
-            </span>
-      </div>
-    </div>
-
-    <FavoriteButton class="car-card__heart-button" :item="item" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import {computed, ref, inject } from 'vue'
 import type { Advertisement } from '@/composables/useAdvertisements'
 import FavoriteButton from '@/components/common/FavoriteButton.vue'
 
@@ -109,6 +113,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: 'card-click', item: Advertisement): void
 }>()
+
+const isSoldAuto = inject('toggleSoldAuto')
 
 const currentPhotoIndex = ref<number>(0)
 
@@ -188,20 +194,38 @@ function clickCard(): void {
 .car-card {
   position: relative;
   width: 100%;
-  max-width: 800px;
+  //max-width: 900px;
   display: flex;
-  justify-content: flex-start;
-  gap: 10px;
+  flex-direction: column;
   background: white;
   border-radius: 15px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   cursor: pointer;
   transition: all 0.3s ease;
 
+  &__sold-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(228, 228, 228, 0.5); /* Полупрозрачный черный */
+    z-index: 5;
+    border-radius: 15px;
+    pointer-events: none; /* Чтобы можно было кликать сквозь overlay */
+  }
+
   //@media (max-width: 920px) {
   //  flex-direction: column;    // На мобильных — вертикальная компоновка
   //  align-items: center;
   //}
+
+  &__container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+  }
 
   &:hover {
     transform: translateY(-5px);
@@ -210,6 +234,17 @@ function clickCard(): void {
 
   &:hover .car-card__photo-nav {
     opacity: 1;
+  }
+
+  &__price-sold-auto {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    font-weight: 500;
+    font-size: 20px;
+    color: #22334a;
+    z-index: 6;
   }
 
   &__heart-button {
@@ -349,19 +384,15 @@ function clickCard(): void {
   }
 
   &__info {
-    padding: 20px;
+    padding: 20px 20px 20px 25px;
     width: 35%;
   }
 
   &__title {
-    margin: 0 0 15px 0;
+    margin-bottom: 20px;
     font-size: 22px;
     font-weight: 600;
     color: #1f2937;
-
-    @media (max-width: 1023px) {
-      font-size: 18px;
-    }
   }
 
   &__details {

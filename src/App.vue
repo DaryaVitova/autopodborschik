@@ -29,27 +29,6 @@
     </nav>
   </header>
   <div class="app" id="app">
-    <div class="sidebar">
-      <div class="sidebar-content">
-        <h3 class="sidebar__title">Меню</h3>
-        <a
-          href="#"
-          class="menu-item"
-          :class="{ 'menu-item--active': isMainActive }"
-          @click.prevent="goToMain"
-        >
-          Главная
-        </a>
-        <a
-          href="#"
-          class="menu-item"
-          :class="{ 'menu-item--active': route.name === 'createAd' }"
-          @click.prevent="goToCreatingAd"
-        >
-          Выложить объявление
-        </a>
-      </div>
-    </div>
     <router-view />
   </div>
 </template>
@@ -61,7 +40,6 @@ import { useFavoritesStore } from "@/stores/favoritesStore"
 import HomeIcon from "@/components/SvgIcons/HomeIcon.vue"
 import HeartIcon from "@/components/SvgIcons/HeartIcon.vue"
 
-const route = useRoute()
 const router = useRouter()
 
 const favoritesStore = useFavoritesStore()
@@ -69,23 +47,6 @@ const favoritesStore = useFavoritesStore()
 onMounted(() => {
   favoritesStore.loadFromLocalStorage()
 })
-
-const isMainActive = computed((): boolean => {
-  return route.name === 'table' || route.name === 'cards'
-})
-
-const goToMain = (): void => {
-  if (route.name !== 'table') {
-    router.push({ name: 'table' })
-  }
-}
-
-
-const goToCreatingAd = (): void => {
-  if (route.name !== 'createAd') {
-    router.push({ name: 'createAd' })
-  }
-}
 </script>
 
 <style lang="scss" scoped>
@@ -150,53 +111,6 @@ const goToCreatingAd = (): void => {
   }
 }
 
-.sidebar {
-  position: fixed;
-  z-index: 100;
-  left: -250px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 300px;
-  height: 400px;
-  background: #2c3e50;
-  color: white;
-  transition: all 0.3s ease;
-  border-radius: 0 10px 10px 0;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.3);
-  &__title {
-    margin-bottom: 20px;
-  }
-  &:hover {
-    left: 0;
-  }
-  &::before {
-    content: '›';
-    position: absolute;
-    right: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 60px;
-    background: #2c3e50;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0 10px 10px 0;
-    font-size: 18px;
-    font-weight: bold;
-    transition: all 0.3s ease;
-  }
-  &:hover::before {
-    content: '‹';
-    right: -20px;
-  }
-  &-content {
-    padding: 20px;
-    height: 100%;
-    overflow-y: auto;
-  }
-}
 .menu-item {
   text-align: left;
   border: none;

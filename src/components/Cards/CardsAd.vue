@@ -106,6 +106,16 @@
 
     <!-- Карточки -->
     <div v-if="!loader" class="cards__grid">
+      <div class="cards__checkbox">
+        <input
+          type="checkbox"
+          v-model="toggleSoldAuto"
+          id="checkbox"
+          class="cards__checkbox--mark"
+        />
+        <label for="checkbox">Показать проданные</label>
+      </div>
+
       <car-card
         v-for="item in currentPageItems"
         :key="item.id"
@@ -164,7 +174,8 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   (e: 'card-click', item: Advertisement): void,
-  (e: 'search', query: string | null): void
+  (e: 'search', query: string | null): void,
+  (e: 'showSoldAuto', item: boolean): void
 }>()
 
 interface FilterPrice {
@@ -196,6 +207,8 @@ const searchError = ref<boolean>(false)
 const searchModel = ref<string>('')
 const searchBrand = ref<string>('')
 const searchCity = ref<string>('')
+
+const toggleSoldAuto = ref<boolean>(false)
 
 const dataFilterPrice = reactive<FilterPrice>({
   localMinPrice: null,
@@ -283,6 +296,10 @@ const filteredData = computed((): Advertisement[] => {
 
     return textPassed && pricePasses && yearPasses && mileagePasses
   })
+})
+
+watch(() => toggleSoldAuto.value, (newVal) => {
+  emit('showSoldAuto', newVal)
 })
 
 
@@ -470,8 +487,13 @@ const handleCardClick = (item: Advertisement) => {
 @use '@/assets/scss/mixins' as *;
 
 .cards {
-  width: 100vw;
-  max-width: 80%;
+  //width: 100vw;
+  //max-width: 80%;
+  //width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin: 60px auto 80px auto;
   padding: 0 20px;
   &__filters {
@@ -518,6 +540,20 @@ const handleCardClick = (item: Advertisement) => {
     flex-direction: column;
     align-items: center;
     gap: 25px;
+    width: 820px;
+  }
+
+  &__checkbox {
+    align-self: end;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    &--mark {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
   }
 
   &__search {

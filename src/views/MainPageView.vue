@@ -44,7 +44,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   margin-top: 100px;
-  max-width: 70%;
+  //max-width: 70%;
 
   &__select-show {
     display: flex;
