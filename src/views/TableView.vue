@@ -4,6 +4,7 @@
     :data="data"
     :loader="isLoading"
     @row-click="handleRowClick"
+    @show-sold-auto="isOpenSoldAuto"
   />
 </template>
 
@@ -11,8 +12,10 @@
 import DynamicTable from '@/components/Table/DynamicTable.vue'
 import { useAdvertisements } from '@/composables/useAdvertisements.ts'
 import { useRouter } from 'vue-router'
-import { computed } from 'vue'
+import {computed, ref} from 'vue'
 import type { Advertisement, UseAdvertisementsReturn } from "@/composables/useAdvertisements.ts";
+import { useSoldAutoStore } from "@/stores/soldAutoStore.ts"
+import { useAdvertisementFilter } from "@/composables/useAdvertisementFilter.ts";
 
 export interface Headers {
   key: string,
@@ -31,18 +34,24 @@ const headersForTable: Headers[] = [
 
 const router = useRouter()
 const advertisements: UseAdvertisementsReturn = useAdvertisements()
+const soldAuto = useSoldAutoStore()
 
-const data = computed((): Advertisement[] => {
-  console.log(advertisements.data.value, 'advertisements.data.value')
-  return advertisements.data.value
-})
+const toggleSoldAutoInTable = ref(false)
+
+const { data } = useAdvertisementFilter(advertisements, soldAuto, toggleSoldAutoInTable)
+
 const isLoading = computed((): boolean => advertisements.isLoading.value)
 
 const handleRowClick = (row: Advertisement): void => {
   localStorage.setItem('advertisements', JSON.stringify(row))
   router.push({
     name: 'showAd',
-    params: { id: row.id }
+    params: { id: row.id },
+    query: toggleSoldAutoInTable.value ? { showSold: 'true' } : {}
   })
+}
+
+function isOpenSoldAuto (item: boolean) {
+  toggleSoldAutoInTable.value = item
 }
 </script>

@@ -6,15 +6,24 @@
     <!-- Заголовок -->
     <div class="ad-header">
       <FavoriteButton
-        v-if="adData"
+        v-if="adData && !isAdInSoldAuto"
         class="ad-header__heart-button"
         :item="adData"
       />
 
       <h2>{{ adData?.brand }} {{ adData?.model }}</h2>
-      <span class="ad-header__price">
+      <span v-if="!isAdInSoldAuto" class="ad-header__price">
         {{ (adData?.price ? adData.price.toLocaleString('ru-RU') : '') + ' ₽' }}
       </span>
+
+      <div v-else class="ad-header__sold-price">
+        <span class="ad-header__price ad-header__price--cross-out">
+          {{ (adData?.price ? adData.price.toLocaleString('ru-RU') : '') + ' ₽' }}
+        </span>
+        <span class="ad-header__price--sold-auto">
+          Продано за {{ (adData?.soldPrice ? adData.soldPrice.toLocaleString('ru-RU') : '') + ' ₽' }}
+        </span>
+      </div>
     </div>
 
     <!-- Основной контент - два столбца -->
@@ -162,7 +171,7 @@
 
       <div class="showAd__buttons">
         <button
-          v-if="!isDisabledAddSoldBtn"
+          v-if="!isAdInSoldAuto"
           class="showAd__btn showAd__btn--sold"
           @click="openLightboxForSold"
         >
@@ -237,7 +246,7 @@ const lightboxActiveForSold = ref<boolean>(false)
 const priceSoldAuto = ref<number | null>(null)
 const errorInputPriceSoldData = ref<boolean>(false)
 
-const isDisabledAddSoldBtn = ref(false)
+const isAdInSoldAuto = ref(false)
 
 const validPhotos = computed((): string[] => {
   if (!adData.value?.photoUrls || !Array.isArray(adData.value.photoUrls)) {
@@ -325,7 +334,7 @@ function closeLightboxForSold () {
 function addInSoldAuto () {
   if (adData.value && priceSoldAuto.value) {
     soldAuto.addToSoldCars({...adData.value, soldPrice: priceSoldAuto.value })
-    router.push({name: 'cards'})
+    router.push({ name: 'cards' })
   } else if (!priceSoldAuto.value) {
     errorInputPriceSoldData.value = true
   }
@@ -344,6 +353,7 @@ const deleteAd = async (id: string | undefined): Promise<void> => {
     await deleteDoc(adRef)
 
     favoritesStore.removeFromFavorites(adRef.id)
+    soldAuto.removeFromSoldAuto(adRef.id)
     router.go(-1)
 
   } catch (error) {
@@ -353,15 +363,14 @@ const deleteAd = async (id: string | undefined): Promise<void> => {
 }
 
 onMounted(() => {
-  console.log(soldAuto.getSoldCars, 'getSoldCars')
   try {
     const saved = localStorage.getItem('advertisements')
     if (saved) {
       adData.value = JSON.parse(saved)
 
       const idFromSold = soldAuto.getSoldCars.map(item => item.id)
-      if (idFromSold.includes(adData.value.id)) {
-       isDisabledAddSoldBtn.value = true
+      if (adData.value && idFromSold.includes(adData.value.id)) {
+       isAdInSoldAuto.value = true
       }
     }
   } catch (error) {
@@ -445,8 +454,21 @@ onMounted(() => {
   background: white;
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+  &__sold-price {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
   &__price {
     font-size: 26px;
+    &--cross-out {
+      text-decoration: line-through;
+    }
+    &--sold-auto {
+      font-size: 20px;
+    }
   }
 
   &__heart-button {

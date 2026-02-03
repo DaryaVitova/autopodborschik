@@ -160,7 +160,7 @@ import CarCard from '@/components/Cards/CarCard.vue'
 import SearchInput from '@/components/Cards/SearchInput.vue'
 import SearchInputByNumber from '@/components/Cards/SearchInputByNumber.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch, onMounted } from 'vue'
 import type { Advertisement } from "@/composables/useAdvertisements"
 
 const props = withDefaults(defineProps<{
@@ -173,7 +173,7 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  (e: 'card-click', item: Advertisement): void,
+  (e: 'card-click', item: Advertisement, showSold: boolean): void,
   (e: 'search', query: string | null): void,
   (e: 'showSoldAuto', item: boolean): void
 }>()
@@ -299,6 +299,16 @@ const filteredData = computed((): Advertisement[] => {
 })
 
 watch(() => toggleSoldAuto.value, (newVal) => {
+  const query = { ...route.query }
+
+  if (newVal) {
+    query.showSold = 'true'
+  } else {
+    delete query.showSold
+  }
+
+  router.push({ query })
+
   emit('showSoldAuto', newVal)
 })
 
@@ -479,8 +489,12 @@ const handleSearch = () => {
 }
 
 const handleCardClick = (item: Advertisement) => {
-  emit('card-click', item)
+  emit('card-click', item, toggleSoldAuto.value)
 }
+
+onMounted(() => {
+  toggleSoldAuto.value = route.query.showSold === 'true'
+})
 </script>
 
 <style lang="scss" scoped>
@@ -544,17 +558,21 @@ const handleCardClick = (item: Advertisement) => {
   }
 
   &__checkbox {
-    align-self: end;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    &--mark {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-    }
+    @include checkbox;
   }
+
+  //&__checkbox {
+  //  align-self: end;
+  //  display: flex;
+  //  justify-content: center;
+  //  align-items: center;
+  //  gap: 5px;
+  //  &--mark {
+  //    width: 18px;
+  //    height: 18px;
+  //    cursor: pointer;
+  //  }
+  //}
 
   &__search {
     @include cards-search-styles;

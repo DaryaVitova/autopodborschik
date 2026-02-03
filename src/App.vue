@@ -16,7 +16,7 @@
       </router-link>
 
       <router-link
-        :to="{name: 'favorites'}"
+        :to="{ name: 'favorites' }"
         class="header__link"
         :class="{ 'header__link--active': $route.name === 'favorites' }"
       >
@@ -25,6 +25,18 @@
           <span>Избранное ({{ favoritesStore.favoritesCount }})</span>
         </div>
       </router-link>
+
+      <router-link
+        :to="{ name: 'credit' }"
+        class="header__link"
+        :class="{ 'header__link--active': $route.name === 'credit' }"
+      >
+        <div class="header__href">
+          <CreditIcon />
+          <span>Автокредит</span>
+        </div>
+      </router-link>
+
       <router-link :to="{name: 'createAd'}" class="header__link header__link--form">Выложить объявление</router-link>
     </nav>
   </header>
@@ -34,13 +46,11 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
-import { computed, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useFavoritesStore } from "@/stores/favoritesStore"
 import HomeIcon from "@/components/SvgIcons/HomeIcon.vue"
 import HeartIcon from "@/components/SvgIcons/HeartIcon.vue"
-
-const router = useRouter()
+import CreditIcon from "@/components/SvgIcons/CreditIcon.vue"
 
 const favoritesStore = useFavoritesStore()
 
@@ -107,6 +117,7 @@ onMounted(() => {
       //background-color: #3ab151;
       background-color: #5d9a68;
       color: white;
+      border: 1px solid #e1e0e0;
     }
   }
 }

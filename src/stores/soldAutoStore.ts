@@ -4,7 +4,6 @@ import type { Advertisement } from '@/composables/useAdvertisements'
 export const useSoldAutoStore = defineStore('soldAutoStore', {
   state: () => {
     const soldCars: Advertisement[] = []
-
     // localStorage.removeItem('soldAutoStore')
 
     if (typeof window !== 'undefined') {
@@ -35,6 +34,17 @@ export const useSoldAutoStore = defineStore('soldAutoStore', {
       return true
     },
 
+    removeFromSoldAuto(itemId: string) {
+      const index = this.soldCars.findIndex(item => item.id === itemId)
+      if (index !== -1) {
+        this.soldCars.splice(index, 1)
+        this.saveToLocalStorage()
+        return true
+      }
+      return false
+    },
+
+
     saveToLocalStorage() {
       try {
         localStorage.setItem('soldAutoStore', JSON.stringify(this.soldCars))
@@ -58,3 +68,5 @@ export const useSoldAutoStore = defineStore('soldAutoStore', {
     }
   },
 })
+
+export type SoldAutoStore = ReturnType<typeof useSoldAutoStore>

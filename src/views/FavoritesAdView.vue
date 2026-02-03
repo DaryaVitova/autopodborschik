@@ -50,7 +50,7 @@ const goBack = (): void => {
   margin-top: 70px;
   width: 100%;
   max-width: 800px;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
   &__card {
     margin-bottom: 25px;
   }

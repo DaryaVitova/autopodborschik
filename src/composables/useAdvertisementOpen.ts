@@ -4,7 +4,7 @@ import type { Advertisement } from '@/composables/useAdvertisements'
 export const useAdvertisementOpen = () => {
   const router = useRouter()
 
-  const openCard = (row: Advertisement): void => {
+  const openCard = (row: Advertisement, showSold?: boolean): void => {
     if (!row?.id) {
       console.error('Invalid advertisement data:', row)
       return
@@ -15,7 +15,8 @@ export const useAdvertisementOpen = () => {
     // Используем router из composable
     router.push({
       name: 'showAd',
-      params: { id: row.id }
+      params: { id: row.id },
+      query: showSold ? { showSold: 'true' } : {}
     })
   }
 

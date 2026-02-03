@@ -19,6 +19,16 @@
     </label>
   </div>
 
+  <div class="table__checkbox">
+    <input
+      type="checkbox"
+      v-model="toggleSoldAutoInTable"
+      id="checkbox"
+      class="table__checkbox--mark"
+    />
+    <label for="checkbox">Показать проданные</label>
+  </div>
+
   <div class="table-container">
     <table class="table">
       <thead class="table__head">
@@ -117,16 +127,12 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'row-click', value: Advertisement): void
+  (e: 'row-click', value: Advertisement): void,
+  (e: 'show-sold-auto', value: boolean): void
 }
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
-
-const handleRowClick = (row: Advertisement): void => {
-  emit('row-click', row)
-}
-
 
 type StringObj = Record<string, string | string[]>
 type PayloadVisibleFilter = { headerKey: string }
@@ -150,7 +156,11 @@ const isInitialized: Ref<boolean> = ref(false)
 
 const isDataLoaded: Ref<boolean> = ref(false)
 
+const toggleSoldAutoInTable = ref<boolean>(false)
+
 onMounted(() => {
+  toggleSoldAutoInTable.value = route.query.showSold === 'true'
+
   if (route.query.count) {
     columnPerPage.value = Number(route.query.count)
   }
@@ -243,6 +253,20 @@ watch(
   { immediate: true }
 )
 
+watch(() => toggleSoldAutoInTable.value, (newVal) => {
+  const query = { ...route.query }
+
+  if (newVal) {
+    query.showSold = 'true'
+  } else {
+    delete query.showSold
+  }
+
+  router.push({ query })
+
+  emit('show-sold-auto', newVal)
+})
+
 watch(() => props.headers, (newHeaders) => {
   if (!newHeaders) return
   newHeaders.forEach(h => {
@@ -280,6 +304,10 @@ watch(() => props.data, (val) => {
 }, { immediate: true })
 
 // Методы
+
+const handleRowClick = (row: Advertisement): void => {
+  emit('row-click', row)
+}
 
 const handleColumnPerPage = (items: number): void => {
   columnPerPage.value = items
@@ -491,8 +519,11 @@ const {
 </script>
 
 <style lang="scss">
+@use '@/assets/scss/mixins' as *;
+
 .table {
   margin-top: 60px;
+  margin-inline: 20px;
   border-radius: 3px;
   &__body {
     position: relative;
@@ -521,6 +552,13 @@ const {
       margin-left: 5px;
     }
   }
+
+  &__checkbox {
+    @include checkbox;
+    align-self: center;
+    margin-top: 30px;
+  }
+
   &__row-column {
     height: 30px;
     &:hover {

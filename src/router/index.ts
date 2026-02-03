@@ -4,7 +4,8 @@ import CreateAdView from '@/views/CreateAdView.vue'
 import ShowAdView from '@/views/ShowAdView.vue'
 import CardsView from '@/views/CardsView.vue'
 import TableView from '@/views/TableView.vue'
-import FavoritesAdView from "@/views/FavoritesAdView.vue";
+import FavoritesAdView from "@/views/FavoritesAdView.vue"
+import AutoCreditView from "@/views/AutoCreditView.vue";
 
 const routes = [
   {
@@ -40,6 +41,11 @@ const routes = [
     path: '/favorites',
     name: 'favorites',
     component: FavoritesAdView
+  },
+  {
+    path: '/credit',
+    name: 'credit',
+    component: AutoCreditView
   }
 ]
 

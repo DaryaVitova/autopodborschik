@@ -4,7 +4,7 @@
     @click="clickCard"
     :class="{ 'car-card car-card__sold-overlay': isSoldAuto }"
   >
-    <div v-if="isSoldAuto" class="car-card__price-sold-auto">Продано за {{ formatPrice(item?.soldPrice) }}</div>
+    <div v-if="isSoldAuto" class="car-card__price-sold-auto">Продано за {{ formatPrice(item?.soldPrice as number) }}</div>
     <!-- Фото автомобиля -->
     <div class="car-card__container">
       <div class="car-card__photo">

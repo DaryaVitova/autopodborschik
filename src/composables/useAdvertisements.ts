@@ -15,6 +15,7 @@ export interface Advertisement {
   photoUrls: string[];
   createdAt: string;
   hasPhotos: boolean;
+  soldPrice?: number;
 
   [key: string]: any
 }

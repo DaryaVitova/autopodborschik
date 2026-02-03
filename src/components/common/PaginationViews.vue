@@ -282,17 +282,18 @@ onMounted(async () => {
   width: 100%;
   display: flex;
   align-items: center;
-  margin: 6px 0 70px 0;
+  margin: 6px 0 100px 0;
+  margin-inline: 20px;
   &__count-showElem {
-    margin-top: 20px;
     color: #686868;
+    margin: 20px 0 0 20px;
   }
 }
 .pagination {
   display: flex;
   gap: 8px;
   align-items: center;
-  margin-top: 20px;
+  margin: 20px 20px 0 0;
   &__btn {
     padding: 8px 12px;
     border: 1px solid #ddd;

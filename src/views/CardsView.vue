@@ -14,6 +14,7 @@ import type { Advertisement } from "@/composables/useAdvertisements.ts";
 import { computed, ref, provide } from 'vue'
 import { useAdvertisementOpen } from "@/composables/useAdvertisementOpen"
 import { useSoldAutoStore } from "@/stores/soldAutoStore.ts"
+import { useAdvertisementFilter } from "@/composables/useAdvertisementFilter.ts";
 
 const soldAuto = useSoldAutoStore()
 
@@ -23,17 +24,7 @@ provide('toggleSoldAuto', toggleSoldAuto)
 const advertisements = useAdvertisements()
 const { openCard } = useAdvertisementOpen()
 
-const data = computed((): Advertisement[] => {
-  if (!toggleSoldAuto.value) {
-    if (soldAuto.getSoldCars.length > 0) {
-      const idFromSold = soldAuto.getSoldCars.map(item => item.id)
-      return advertisements.data.value.filter(item => !idFromSold.includes(item.id))
-    }
-    return advertisements.data.value
-  } else {
-    return soldAuto.getSoldCars
-  }
-})
+const { data } = useAdvertisementFilter(advertisements, soldAuto, toggleSoldAuto)
 
 const isLoading = computed((): boolean => advertisements.isLoading.value)
 
@@ -41,7 +32,7 @@ function isOpenSoldAuto (item: boolean) {
   toggleSoldAuto.value = item
 }
 
-const handleCardClick = (row: Advertisement): void => {
-  openCard(row)
+const handleCardClick = (row: Advertisement, showSold: boolean): void => {
+  openCard(row, showSold)
 }
 </script>

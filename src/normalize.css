@@ -165,7 +165,7 @@ label {
 /**
   Приводим к единому цвету svg-элементы
  */
-[fill] { fill: currentColor }
+/*[fill] { fill: currentColor }*/
 [stroke] { stroke: currentColor }
 
 /**
