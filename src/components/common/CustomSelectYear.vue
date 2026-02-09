@@ -124,7 +124,7 @@ onUnmounted(() => {
     margin-left: 7px;
     color: #090909;
     &--color {
-      color: #656c7a;
+      color: #676666;
     }
   }
 

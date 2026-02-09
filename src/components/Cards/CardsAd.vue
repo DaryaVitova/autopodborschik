@@ -3,6 +3,7 @@
     <div class="cards__filters" v-if="showFilters">
       <div class="cards__filters--box1">
         <search-input
+          class="cards__filters-input"
           v-model="searchBrand"
           :placeholder="'Марка'"
           @input="handleSearch"
@@ -473,7 +474,6 @@ function resetFilter(arg: ResetKey): void {
 
 function handlePageChange (items: Advertisement[]): void {
   currentPageItems.value = items
-  console.log(currentPageItems.value, 'currentPageItems.value')
 }
 
 const handleSearch = () => {
@@ -499,7 +499,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @use '@/assets/scss/mixins' as *;
-
 .cards {
   //width: 100vw;
   //max-width: 80%;
@@ -523,12 +522,14 @@ onMounted(() => {
     &--box2 {
       position: relative;
     }
+
     &-inputs {
       display: flex;
       gap: 20px;
       align-items: center;
     }
   }
+
   &__filter-btn {
     text-decoration: none;
     padding: 6px 10px;
