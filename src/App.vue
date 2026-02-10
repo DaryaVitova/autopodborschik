@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <router-link :to="{name: 'main'}" class="header__brand">
-      <span class="header__title">Автоподборщик.ru</span>
+      <span class="header__logo">Автоподборщик.ru</span>
     </router-link>
     <nav class="header__nav">
       <router-link
@@ -10,8 +10,8 @@
         :class="{ 'header__link--active': $route.name === 'main' }"
       >
         <div class="header__href">
-          <HomeIcon color="#024760" />
-          <span>Главная</span>
+          <HomeIcon color="#024760" :size="homeIconSize" />
+          <span class="header__href--text">Главная</span>
         </div>
       </router-link>
 
@@ -21,8 +21,8 @@
         :class="{ 'header__link--active': $route.name === 'favorites' }"
       >
         <div class="header__href">
-          <HeartIcon color="#c30303" size="24" />
-          <span>Избранное ({{ favoritesStore.favoritesCount }})</span>
+          <HeartIcon color="#c30303" :size="heartIconSize" />
+          <span class="header__href--text">Избранное ({{ favoritesStore.favoritesCount }})</span>
         </div>
       </router-link>
 
@@ -33,11 +33,13 @@
       >
         <div class="header__href">
           <CreditIcon />
-          <span>Автокредит</span>
+          <span class="header__href--text">Автокредит</span>
         </div>
       </router-link>
 
-      <router-link :to="{name: 'createAd'}" class="header__link header__link--form">Выложить объявление</router-link>
+      <div class="header__create-ad-container">
+        <router-link :to="{name: 'createAd'}" class="header__link header__link--form">Выложить объявление</router-link>
+      </div>
     </nav>
   </header>
   <div class="app" id="app">
@@ -46,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref, onUnmounted } from 'vue'
 import { useFavoritesStore } from "@/stores/favoritesStore"
 import HomeIcon from "@/components/SvgIcons/HomeIcon.vue"
 import HeartIcon from "@/components/SvgIcons/HeartIcon.vue"
@@ -56,6 +58,40 @@ const favoritesStore = useFavoritesStore()
 
 onMounted(() => {
   favoritesStore.loadFromLocalStorage()
+  updateHomeIconSize()
+  updateHeartIconSize() // начальный расчёт
+  window.addEventListener('resize', updateHomeIconSize)
+  window.addEventListener('resize', updateHeartIconSize)
+})
+
+const homeIconSize = ref(30)
+const heartIconSize = ref(24)
+
+const updateHomeIconSize = () => {
+  const width = window.innerWidth
+  if (width <= 767) {
+    homeIconSize.value = 20
+  } else if (width <= 1023) {
+    homeIconSize.value = 22
+  } else {
+    homeIconSize.value = 30
+  }
+}
+
+const updateHeartIconSize = () => {
+  const width = window.innerWidth
+  if (width <= 767) {
+    heartIconSize.value = 16
+  } else if (width <= 1023) {
+    heartIconSize.value = 18
+  } else {
+    heartIconSize.value = 24
+  }
+}
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateHomeIconSize)
+  window.removeEventListener('resize', updateHeartIconSize)
 })
 </script>
 
@@ -76,7 +112,7 @@ onMounted(() => {
   align-items: center;
   //background-color: #a1b5d6;
   background-color: #a5bfd5;
-  &__title {
+  &__logo {
     color: #024760;
     font-weight: bold;
     font-size: 22px;
@@ -141,6 +177,82 @@ onMounted(() => {
     background: #5296bc !important;
     cursor: default;
     outline: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .header {
+    &__nav {
+      gap: 20px;
+      margin-right: 15px;
+    }
+    &__logo {
+      font-size: 18px;
+      margin-left: 20px;
+    }
+    &__link {
+      padding: 3px 8px;
+      font-size: 14px;
+      &--form {
+        padding: 7px 9px !important;
+      }
+    }
+
+    &__href--text {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .header {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 25px;
+
+    &__nav {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-right: 0;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    &__create-ad-container {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    &__logo {
+      font-size: 20px;
+    }
+
+    &__link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 6px !important;
+      font-size: 10px;
+
+      &--form {
+        max-width: 250px;
+        text-align: center;
+        padding: 8px 15px !important;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    &__href--text {
+      font-size: 10px;
+    }
   }
 }
 </style>

@@ -16,11 +16,10 @@
 <script setup lang="ts">
 withDefaults(defineProps<{
   color?: string,
-  size?: string | number,
+  size: string | number,
   border?: string
 }>(), {
   color: 'currentColor',
-  size: 30,
   border: ''
 })
 </script>

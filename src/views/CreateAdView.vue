@@ -625,7 +625,6 @@ const resetForm = () => {
   justify-content: center;
   align-items: center;
   width: 100vw;
-  height: 100vh;
 }
 .form {
   display: flex;
@@ -634,6 +633,8 @@ const resetForm = () => {
   border-radius: 5px;
   backdrop-filter: blur(200px);
   padding: 60px 60px 40px 60px;
+  margin-top: 150px;
+  margin-bottom: 70px;
   &__main {
     display: flex;
     justify-content: space-around;
@@ -750,8 +751,58 @@ const resetForm = () => {
 }
 
 .file-upload__input {
-  /* Убираем стандартное сообщение */
   color: transparent;
+}
+
+@media (max-width: 1023px) {
+  .form {
+    margin-top: 100px;
+    margin-inline: 10px;
+    &__main {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 100px;
+    }
+  }
+}
+
+@media (max-width: 570px) {
+  .container {
+    width: 90%;
+  }
+  .form {
+    padding: 40px 20px 30px 20px;
+    &__textarea {
+      width: 90%;
+    }
+    &__global-second-group {
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  .photo-preview {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+
+    &__item {
+      width: 200px;
+      height: 150px;
+      margin-bottom: 15px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
 }
 
 </style>
