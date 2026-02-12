@@ -7,6 +7,7 @@
     <HeartIcon
       :color="!isFavorite ? 'transparent' : '#c30303'"
       :border="isFavorite ? 'transparent' : '#6b7280'"
+      :size="computedSize"
     />
   </div>
 </template>
@@ -27,6 +28,13 @@ const isFavorite = computed((): boolean => {
   return favoritesStore.isFavorite(props.item.id)
 })
 
+const computedSize = computed(() => {
+  if (window.innerWidth < 768) {
+    return 20
+  }
+  return 30
+})
+
 const toggleFavorite = (): void => {
   favoritesStore.toggleFavorite(props.item)
 }
@@ -44,6 +52,13 @@ const toggleFavorite = (): void => {
     background-color: #ededed;
     border-radius: 5px;
     transition-duration: 0.2s;
+  }
+}
+
+@media (max-width: 660px) {
+  .heart-icon {
+    margin-bottom: 5px;
+    margin-left: 5px;
   }
 }
 </style>

@@ -480,7 +480,7 @@ onMounted(() => {
 
 h2 {
   color: #333;
-  margin: 0 0 20px 0;
+  margin: 20px 0 20px 0;
   font-size: 2.4rem;
   font-weight: 700;
 }
@@ -940,9 +940,20 @@ h2 {
 }
 
 @media (max-width: 1080px) {
+  .sticky-container {
+    position: static;
+  }
+
   .back-button-arrow {
     left: 0;
     top: -25px;
+    position: relative;
+    width: 40px;
+    height: 40px;
+    &::before {
+      width: 14px;
+      height: 14px;
+    }
   }
   .ad-header {
     margin-top: 40px;
@@ -1094,6 +1105,13 @@ h2 {
     width: 50px;
     height: 50px;
     font-size: 24px;
+  }
+
+  .showAd {
+    &__btn {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
   }
 
   .back-button-arrow {

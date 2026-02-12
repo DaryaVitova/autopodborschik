@@ -44,7 +44,6 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   margin-top: 100px;
-  //max-width: 70%;
 
   &__select-show {
     display: flex;
@@ -76,6 +75,18 @@ onMounted(() => {
     &--span {
       font-size: 18px;
       color: #4e4e4e;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .main {
+    margin-top: 70px;
+    &__select-show {
+      &--link {
+        padding: 7px 14px;
+        font-size: 15px;
+      }
     }
   }
 }

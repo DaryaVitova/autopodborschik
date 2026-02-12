@@ -772,7 +772,8 @@ const resetForm = () => {
     width: 90%;
   }
   .form {
-    padding: 40px 20px 30px 20px;
+    //padding: 40px 20px 30px 20px;
+    padding: 30px 15px 20px 15px;
     &__textarea {
       width: 90%;
     }

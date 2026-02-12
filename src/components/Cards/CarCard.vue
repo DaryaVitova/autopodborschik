@@ -62,17 +62,17 @@
 
         <div class="car-card__details">
           <div class="car-card__detail">
-            <span class="detail-label">Год:</span>
-            <span class="detail-value">{{ item?.year }}</span>
+            <span class="car-card__detail-label">Год:</span>
+            <span class="car-card__detail-value">{{ item?.year }}</span>
           </div>
           <div class="car-card__detail">
-            <span class="detail-label">Пробег:</span>
-            <span class="detail-value">{{ formatMileage(item?.mileage) }} км</span>
+            <span class="car-card__detail-label">Пробег:</span>
+            <span class="car-card__detail-value">{{ formatMileage(item?.mileage) }} км</span>
           </div>
           <div class="car-card__detail">
-            <span class="detail-label">Город:</span>
+            <span class="car-card__detail-label">Город:</span>
             <span
-              class="detail-value"
+              class="car-card__detail-value"
               v-html="highlightText(item?.city, highlightCity)"
             ></span>
           </div>
@@ -89,7 +89,11 @@
         </div>
       </div>
 
-      <FavoriteButton v-if="!isSoldAuto" class="car-card__heart-button" :item="item" />
+      <FavoriteButton
+        v-if="!isSoldAuto"
+        class="car-card__heart-button"
+        :item="item"
+      />
     </div>
   </div>
 </template>
@@ -261,10 +265,10 @@ function clickCard(): void {
     overflow: hidden;
     border-radius: 15px 0 0 15px;
 
-    @media (max-width: 768px) {
-      width: 100%;
-      height: 200px;
-    }
+    //@media (max-width: 768px) {
+    //  width: 100%;
+    //  height: 200px;
+    //}
 
     @media (max-width: 480px) {
       height: 160px;
@@ -406,15 +410,15 @@ function clickCard(): void {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
 
-    .detail-label {
-      color: #6b7280;
-    }
+  &__detail-label {
+    color: #6b7280;
+  }
 
-    .detail-value {
-      color: #374151;
-      font-weight: 500;
-    }
+  &__detail-value {
+    color: #374151;
+    font-weight: 500;
   }
 
   &__footer {
@@ -451,6 +455,81 @@ function clickCard(): void {
     height: 2px;
     background: #ff9800;
     border-radius: 2px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .car-card {
+    &__photo {
+      width: 350px;
+      min-height: 100%;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .car-card {
+    &__title {
+      font-size: 18px;
+    }
+    &__detail-label {
+      font-size: 14px;
+    }
+    &__detail-value {
+      font-size: 14px;
+    }
+    &__date {
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 660px) {
+  .car-card {
+    &__info {
+      padding: 20px 15px 15px 20px;
+      width: 45%;
+    }
+    &__title {
+      margin-right: 10px;
+      font-size: 15px;
+    }
+    &__photo {
+      max-height: 250px;
+      max-width: 250px;
+    }
+
+    &__container {
+      height: 250px;
+    }
+
+    &__price {
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .car-card {
+    &__container {
+      flex-direction: column;
+      height: fit-content;
+    }
+
+    &__photo {
+      max-width: 100%;
+      height: 300px;
+      border-radius: 15px 15px 0 0 ;
+    }
+
+    &__info {
+      width: 100%;
+    }
+
+    &__heart-button {
+      top: 265px;
+    }
   }
 }
 </style>

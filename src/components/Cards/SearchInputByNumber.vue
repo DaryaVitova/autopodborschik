@@ -95,4 +95,21 @@ function closeClick(): void {
   position: relative;
 }
 
+@media (max-width: 767px) {
+  .cards__search {
+    &--change-width {
+      width: calc(250px / 2);
+    }
+  }
+}
+
+@media (max-width: 660px) {
+  .cards__search {
+    font-size: 12px;
+    &--change-width {
+      width: calc(200px / 2);
+    }
+  }
+}
+
 </style>

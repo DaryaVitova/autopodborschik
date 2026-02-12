@@ -532,7 +532,8 @@ onMounted(() => {
 
   &__filter-btn {
     text-decoration: none;
-    padding: 6px 10px;
+    padding: 5px 8px;
+    font-size: 14px;
     border: none;
     border-radius: 6px;
     background-color: #438eb8;
@@ -546,7 +547,7 @@ onMounted(() => {
       position: absolute;
       z-index: 1;
       top: 50%;
-      right: -95px;
+      right: -90px;
       transform: translateY(-50%);
     }
   }
@@ -561,19 +562,6 @@ onMounted(() => {
   &__checkbox {
     @include checkbox;
   }
-
-  //&__checkbox {
-  //  align-self: end;
-  //  display: flex;
-  //  justify-content: center;
-  //  align-items: center;
-  //  gap: 5px;
-  //  &--mark {
-  //    width: 18px;
-  //    height: 18px;
-  //    cursor: pointer;
-  //  }
-  //}
 
   &__search {
     @include cards-search-styles;
@@ -604,16 +592,6 @@ onMounted(() => {
     &--two {
       border-radius: 0 10px 10px 0;
     }
-
-    //&--color {
-    //  background-color: #cee3ed;
-    //}
-
-    //&:focus {
-    //  outline: none;
-    //  border-color: #5296bc;
-    //  box-shadow: 0 0 0 3px rgba(82, 150, 188, 0.1);
-    //}
   }
 
   &__pagination {
@@ -669,23 +647,93 @@ onMounted(() => {
   }
 }
 
-// Адаптивность
-@media (max-width: 768px) {
-  .cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
+@media (max-width: 1023px) {
+  .cards {
+    padding: 0;
 
+    &__grid {
+      width: 700px;
+    }
+
+    &__filter-btn {
+      padding: 4px 5px;
+      font-size: 10px;
+      &--price, &--mileage {
+        right: -60px;
+      }
+    }
+  }
+}
+@media (max-width: 768px) {
+  .cards {
+    &__search {
+      &--change-width {
+        width: calc(250px / 2);
+      }
+    }
+
+    &__grid {
+      width: 600px;
+    }
+  }
   .car-card__photo {
     height: 180px;
   }
 }
 
-@media (max-width: 480px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 660px) {
+  .cards {
+    &__search {
+      font-size: 12px;
+      &--change-width {
+        width: calc(200px / 2);
+      }
+    }
+    &__grid {
+      width: 500px;
+    }
 
+    &__checkbox label {
+      font-size: 14px;
+    }
+
+    &__checkbox--mark {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .cards {
+    &__grid {
+      justify-content: center;
+      width: 300px;
+    }
+    &__filters {
+      &--box1, &-inputs, &--box3 {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    &__filter-btn {
+      padding: 3px 4px;
+      font-size: 8px;
+      border-radius: 4px;
+      right: -50px;
+      &--price {
+        top: 90px;
+      }
+    }
+
+    &__checkbox {
+      align-self: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
   .car-card__photo {
     height: 160px;
   }

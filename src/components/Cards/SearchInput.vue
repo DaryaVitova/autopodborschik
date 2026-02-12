@@ -50,7 +50,7 @@ function closeClick(): void {
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @use '@/assets/scss/mixins' as *;
 
 .cards__search {
@@ -59,10 +59,27 @@ function closeClick(): void {
 
 .cards__search--close-filter {
   @include close-filter-styles;
+
+  @media (max-width: 600px) {
+    font-size: 12px !important;
+  }
 }
 
 .cards__search--input-group {
   position: relative;
+}
+
+@media (max-width: 767px) {
+  .cards__search {
+    width: 250px;
+  }
+}
+
+@media (max-width: 660px) {
+  .cards__search {
+    width: 200px;
+    font-size: 12px;
+  }
 }
 
 </style>
