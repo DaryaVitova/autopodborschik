@@ -40,7 +40,7 @@ const props = withDefaults(defineProps<{
   label: string,
   minLock?: boolean,
   downPayment?: boolean,
-  priceAuto: number,
+  priceAuto: number
 }>(), {
   minValue: 10000,
   stepValue: 5000,
@@ -119,6 +119,7 @@ watch(() => props.priceAuto, () => {
     }
   }
 })
+
 
 watch(() => displayValue.value, (newVal) => {
   if (!newVal || newVal === '') {

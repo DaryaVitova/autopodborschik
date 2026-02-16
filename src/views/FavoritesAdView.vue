@@ -47,7 +47,8 @@ const goBack = (): void => {
   position: relative;
   display: flex;
   flex-direction: column;
-  margin-top: 70px;
+  margin-top: 100px;
+  padding-inline: 20px;
   width: 100%;
   max-width: 800px;
   margin-bottom: 50px;
@@ -84,6 +85,35 @@ const goBack = (): void => {
       transform: scale(1.02);
       transition-duration: 0.2s;
     }
+  }
+}
+
+@media (max-width: 1080px) {
+  .back-button-arrow {
+    top: 30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .favorite {
+    margin-top: 70px;
+    &__clear-btn {
+      padding: 5px 7px;
+      font-size: 12px;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .favorite {
+    justify-content: center;
+    width: 380px;
+  }
+}
+
+@media (max-width: 400px) {
+  .favorite {
+    width: 300px;
   }
 }
 </style>

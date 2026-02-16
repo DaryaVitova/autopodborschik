@@ -51,6 +51,20 @@
             :priceAuto="priceAuto"
             downPayment
           />
+          <div class="calculate-credit__checkbox">
+            <input
+              v-model="notResetValue"
+              type="checkbox"
+              id="checkbox"
+              class="checkbox--mark calculate-credit__checkbox--mark"
+            />
+            <label
+              for="checkbox"
+              class="calculate-credit__checkbox--label"
+            >
+              Не сбрасывать к минимуму при изменении стоимости
+            </label>
+          </div>
         </div>
 
         <price-slider
@@ -69,7 +83,12 @@
             id="checkbox"
             class="checkbox--mark calculate-credit__checkbox--mark"
           />
-          <label for="checkbox">Срок в месяцах</label>
+          <label
+            for="checkbox"
+            class="calculate-credit__checkbox--label"
+          >
+            Срок в месяцах
+          </label>
         </div>
       </div>
     </div>
@@ -127,6 +146,7 @@ interface CreditCalculatorData {
   downPayment: number,
   loanTerm: number,
   toggleCalcInMonths: boolean,
+  notResetValue: boolean,
   activeRate: 'base' | 'family' | 'military'
 }
 
@@ -134,7 +154,7 @@ const { formatNumber } = useFormatters()
 
 const loadFromStorage = (): CreditCalculatorData | null => {
   try {
-    const saved = localStorage.getItem('auto_credit')
+    const saved = sessionStorage.getItem('auto_credit')
     if (saved) {
       return JSON.parse(saved)
     }
@@ -152,10 +172,11 @@ const saveToStorage = (): void => {
     downPayment: downPayment.value,
     loanTerm: loanTerm.value,
     toggleCalcInMonths: toggleCalcInMonths.value,
+    notResetValue: notResetValue.value,
     activeRate: activeRate.value,
   }
 
-  localStorage.setItem('auto_credit', JSON.stringify(data))
+  sessionStorage.setItem('auto_credit', JSON.stringify(data))
 }
 
 
@@ -191,6 +212,7 @@ const loanTerm = ref<number>(savedData?.loanTerm ?? 2)
 const localLoanTerm = ref<number>(2)
 
 const toggleCalcInMonths = ref<boolean>(savedData?.toggleCalcInMonths ?? false)
+const notResetValue = ref<boolean>(savedData?.notResetValue ?? false)
 
 const activeRate = ref<'base' | 'family' | 'military'>(savedData?.activeRate ?? 'base')
 
@@ -221,7 +243,6 @@ watch(() => toggleCalcInMonths.value, (newVal) => {
 })
 
 watch(() => loanTerm.value, (newVal) => {
-  console.log(newVal, 'loanTerm.value')
   if (!toggleCalcInMonths.value) {
     localLoanTerm.value = newVal
   } else {
@@ -236,7 +257,9 @@ watch(() => priceAuto.value, (newValue) => {
   if (newValue < 50000) {
     priceAuto.value = 50000
   }
-  downPayment.value = minDownPayment.value
+  if (!notResetValue.value) {
+    downPayment.value = minDownPayment.value
+  }
 
   saveToStorage()
 })
@@ -269,7 +292,7 @@ const calcDownPaymentPercent = computed((): number => {
   const percent = (downPayment.value / priceAuto.value) * 100
   return parseFloat(percent.toFixed(1))
 })
-
+// здесь
 watch(() => downPayment.value, (newValue) => {
   if (newValue > priceAuto.value) {
     downPayment.value = priceAuto.value
@@ -369,6 +392,10 @@ const {
       }
     }
     @include checkbox;
+
+    &--label {
+      font-size: 15px;
+    }
   }
 }
 </style>

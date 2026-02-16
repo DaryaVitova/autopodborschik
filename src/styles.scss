@@ -1,7 +1,5 @@
 html, body {
   background-color: #f0f0f1;
-  //display: flex;
-  //justify-content: center;
 }
 body:has(.loader) {
   display: flex;
@@ -39,5 +37,27 @@ body:has(.loader) {
     background: #6a92bd;
     transform: translateX(-3px);
     transition-duration: 0.3s;
+  }
+
+  @media (max-width: 1080px) {
+    left: 0;
+    top: -25px;
+    position: relative;
+    width: 40px;
+    height: 40px;
+    &::before {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    top: -7px;
+    width: 35px;
+    height: 35px;
+    &::before {
+      width: 12px;
+      height: 12px;
+    }
   }
 }

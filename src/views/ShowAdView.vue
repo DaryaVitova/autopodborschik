@@ -822,6 +822,7 @@ h2 {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 15px;
 
     &-btn {
@@ -832,6 +833,7 @@ h2 {
   &__label {
     font-weight: bold;
     font-size: 20px;
+    margin-bottom: 10px;
   }
 
   &__input {
@@ -1032,7 +1034,7 @@ h2 {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .showAd {
     padding: 20px 15px;
   }
@@ -1122,6 +1124,12 @@ h2 {
       width: 12px;
       height: 12px;
     }
+  }
+
+  .lightbox__label {
+    font-size: 14px;
+    margin-inline: 15px;
+    text-align: center;
   }
 }
 

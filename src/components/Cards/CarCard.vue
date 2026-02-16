@@ -214,16 +214,11 @@ function clickCard(): void {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(228, 228, 228, 0.5); /* Полупрозрачный черный */
+    background: rgba(228, 228, 228, 0.5);
     z-index: 5;
     border-radius: 15px;
     pointer-events: none; /* Чтобы можно было кликать сквозь overlay */
   }
-
-  //@media (max-width: 920px) {
-  //  flex-direction: column;    // На мобильных — вертикальная компоновка
-  //  align-items: center;
-  //}
 
   &__container {
     display: flex;
@@ -265,10 +260,6 @@ function clickCard(): void {
     overflow: hidden;
     border-radius: 15px 0 0 15px;
 
-    //@media (max-width: 768px) {
-    //  width: 100%;
-    //  height: 200px;
-    //}
 
     @media (max-width: 480px) {
       height: 160px;
@@ -529,6 +520,10 @@ function clickCard(): void {
 
     &__heart-button {
       top: 265px;
+    }
+
+    &__title {
+      width: 80%;
     }
   }
 }

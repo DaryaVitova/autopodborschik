@@ -709,6 +709,7 @@ onMounted(() => {
     &__grid {
       justify-content: center;
       width: 300px;
+      padding-inline: 20px;
     }
     &__filters {
       &--box1, &-inputs, &--box3 {

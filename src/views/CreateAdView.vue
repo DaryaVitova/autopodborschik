@@ -2,137 +2,141 @@
   <div class="container">
     <div class="form-container">
       <form class="form" @submit.prevent>
+
         <div class="form__main">
-          <div class="form__global-first-group">
-            <InputCreateAd
-              v-model="formData.brand"
-              :errorData="isErrorData.brand"
-              type="text"
-              id="brand"
-              errorText="*Заполните это поле"
-              labelText="Марка *"
-              @input="clearError('brand')"
-            />
+          <fieldset class="form__fieldset">
+            <div class="form__global-first-group">
+              <InputCreateAd
+                v-model="formData.brand"
+                :errorData="isErrorData.brand"
+                type="text"
+                id="brand"
+                errorText="*Заполните это поле"
+                labelText="Марка *"
+                @input="clearError('brand')"
+              />
 
-            <InputCreateAd
-              v-model="formData.model"
-              :errorData="isErrorData.model"
-              type="text"
-              id="model"
-              errorText="*Заполните это поле"
-              labelText="Модель *"
-              @input="clearError('model')"
-            />
+              <InputCreateAd
+                v-model="formData.model"
+                :errorData="isErrorData.model"
+                type="text"
+                id="model"
+                errorText="*Заполните это поле"
+                labelText="Модель *"
+                @input="clearError('model')"
+              />
 
-            <InputCreateAd
-              v-model="formData.mileage"
-              :errorData="isErrorData.mileage"
-              type="number"
-              :maxlength="maxLength"
-              moreClass="form__input--number"
-              id="mileage"
-              errorText="*Введите пробег"
-              labelText="Пробег *"
-              @input="clearError('mileage')"
-            />
+              <InputCreateAd
+                v-model="formData.mileage"
+                :errorData="isErrorData.mileage"
+                type="number"
+                :maxlength="maxLength"
+                moreClass="form__input--number"
+                id="mileage"
+                errorText="*Введите пробег"
+                labelText="Пробег *"
+                @input="clearError('mileage')"
+              />
 
-            <div class="form__group">
-              <span v-if="isErrorData.year" class="form__error-message">*Выберите год выпуска</span>
-              <label for="year" class="form__label">Год выпуска *</label>
-              <custom-select-year
-                v-model="formData.year"
-                placeholderText="Выберите год"
-                @clear-error="clearError('year')"
+              <div class="form__group">
+                <span v-if="isErrorData.year" class="form__error-message">*Выберите год выпуска</span>
+                <label for="year" class="form__label">Год выпуска *</label>
+                <custom-select-year
+                  v-model="formData.year"
+                  placeholderText="Выберите год"
+                  @clear-error="clearError('year')"
+                />
+              </div>
+
+              <InputCreateAd
+                v-model="formData.city"
+                :errorData="isErrorData.city"
+                type="text"
+                id="city"
+                errorText="*Заполните это поле"
+                labelText="Город *"
+                @input="clearError('city')"
+              />
+
+              <div class="form__group">
+                <span v-if="isErrorData.phone" class="form__error-message">*Введите номер телефона</span>
+                <label for="phone" class="form__label">Номер телефона *</label>
+                <div class="form__phone-input">
+                  <select
+                    v-model="selectedCountry"
+                    class="form__phone-input-country"
+                    @change="updatePhoneCode"
+                  >
+                    <option
+                      v-for="country in countries"
+                      :key="country.code"
+                      :value="country.code"
+                    >
+                      {{ country.flag }} (+{{ country.phoneCode }})
+                    </option>
+                  </select>
+
+                  <input
+                    id="phone"
+                    type="tel"
+                    class="form__phone-input-number"
+                    :placeholder="phonePlaceholder()"
+                    v-model="phone"
+                    @input="inputPhone($event)"
+                    maxlength="15"
+                  >
+                </div>
+              </div>
+
+              <InputCreateAd
+                v-model="formData.price"
+                :errorData="isErrorData.price"
+                type="number"
+                :maxlength="maxLength"
+                moreClass="form__input--number"
+                id="mileage"
+                errorText="*Укажите цену"
+                labelText="Цена *"
+                @input="clearError('price')"
               />
             </div>
+          </fieldset>
 
-            <InputCreateAd
-              v-model="formData.city"
-              :errorData="isErrorData.city"
-              type="text"
-              id="city"
-              errorText="*Заполните это поле"
-              labelText="Город *"
-              @input="clearError('city')"
-            />
-
-            <div class="form__group">
-              <span v-if="isErrorData.phone" class="form__error-message">*Введите номер телефона</span>
-              <label for="phone" class="form__label">Номер телефона *</label>
-              <div class="form__phone-input">
-                <select
-                  v-model="selectedCountry"
-                  class="form__phone-input-country"
-                  @change="updatePhoneCode"
-                >
-                  <option
-                    v-for="country in countries"
-                    :key="country.code"
-                    :value="country.code"
-                  >
-                    {{ country.flag }} (+{{ country.phoneCode }})
-                  </option>
-                </select>
-
+          <fieldset class="form__fieldset">
+            <div class="form__global-second-group">
+              <div class="form__group">
+                <label for="photos" class="form__label">Загрузите фото (до 5)</label>
                 <input
-                  id="phone"
-                  type="tel"
-                  class="form__phone-input-number"
-                  :placeholder="phonePlaceholder()"
-                  v-model="phone"
-                  @input="inputPhone($event)"
-                  maxlength="15"
+                  type="file"
+                  id="photos"
+                  class="file-upload__input"
+                  accept="image/*"
+                  multiple
+                  @change="handleFileUpload"
                 >
               </div>
-            </div>
 
-            <InputCreateAd
-              v-model="formData.price"
-              :errorData="isErrorData.price"
-              type="number"
-              :maxlength="maxLength"
-              moreClass="form__input--number"
-              id="mileage"
-              errorText="*Укажите цену"
-              labelText="Цена *"
-              @input="clearError('price')"
-            />
+              <div class="photo-preview">
+                <div
+                  v-for="(photo, index) in uploadedPhotos"
+                  :key="index"
+                  class="photo-preview__item"
+                >
+                  <img :src="photo" alt="Preview">
+                  <button @click="removePhoto(index)">Удалить</button>
+                </div>
+              </div>
 
-          </div>
-
-          <div class="form__global-second-group">
-            <div class="form__group">
-              <label for="photos" class="form__label">Загрузите фото (до 5)</label>
-              <input
-                type="file"
-                id="photos"
-                class="file-upload__input"
-                accept="image/*"
-                multiple
-                @change="handleFileUpload"
-              >
-            </div>
-
-            <div class="photo-preview">
-              <div
-                v-for="(photo, index) in uploadedPhotos"
-                :key="index"
-                class="photo-preview__item"
-              >
-                <img :src="photo" alt="Preview">
-                <button @click="removePhoto(index)">Удалить</button>
+              <div class="form__group form__group--textarea">
+                <label for="description" class="form__label">Описание</label>
+                <textarea
+                  v-model="formData.description"
+                  id="description"
+                  class="form__textarea"
+                ></textarea>
               </div>
             </div>
-
-            <div class="form__group form__group--textarea">
-              <label for="description" class="form__label">Описание</label>
-              <textarea
-                v-model="formData.description"
-                id="description"
-                class="form__textarea"
-              ></textarea>
-            </div>
-          </div>
+          </fieldset>
         </div>
         <button type="button" class="form__submit" @click="submitForm">Выложить объявление</button>
       </form>
@@ -356,8 +360,6 @@ const uploadAllPhotosToImgBB = async (photosBase64: string[]): Promise<ImgBBUplo
 
   for (let i = 0; i < photosBase64.length; i++) {
     try {
-      console.log(`🔄 Загружаем фото ${i+1}/${photosBase64.length}...`)
-
       const imgbbResult = await uploadToImgBB(photosBase64[i] || '')
       uploadedPhotos.push(imgbbResult)
 
@@ -464,11 +466,8 @@ const validateForm = (): boolean => {
   return isValid
 }
 
-// Обновите saveToFirebase
 const saveToFirebase = async (advertisementData: FormData): Promise<SaveToFirebaseResult> => {
   try {
-    console.log("📤 Начинаем сохранение с фото через ImgBB...")
-
     let imgbbPhotoData: ImgBBUploadResult[] = []
 
     // 1. Загружаем фото на ImgBB если они есть
@@ -555,8 +554,6 @@ const submitForm = async (): Promise<void> => {
     return
   }
 
-  console.log("✅ Валидация пройдена")
-
   // Создаем объект с данными
   const advertisementData: FormData = {
     ...formData.value,
@@ -640,6 +637,10 @@ const resetForm = () => {
     justify-content: space-around;
     align-items: flex-start;
     gap: 150px;
+  }
+  &__fieldset {
+    border: none;
+    padding: 0;
   }
   &__global-first-group {
     display: flex;
