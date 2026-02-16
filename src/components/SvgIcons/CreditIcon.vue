@@ -1,5 +1,5 @@
 <template>
-  <svg width="30" height="30" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg width="28" height="28" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
     <!-- Градиентный круг-фон -->
     <circle cx="28" cy="28" r="24" fill="url(#bgCircle)" stroke="url(#borderGradient)" stroke-width="1.5"/>
 

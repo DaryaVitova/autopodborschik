@@ -64,8 +64,8 @@ onMounted(() => {
   window.addEventListener('resize', updateHeartIconSize)
 })
 
-const homeIconSize = ref(30)
-const heartIconSize = ref(24)
+const homeIconSize = ref(28)
+const heartIconSize = ref(22)
 
 const updateHomeIconSize = () => {
   const width = window.innerWidth
@@ -74,7 +74,7 @@ const updateHomeIconSize = () => {
   } else if (width <= 1023) {
     homeIconSize.value = 22
   } else {
-    homeIconSize.value = 30
+    homeIconSize.value = 28
   }
 }
 
@@ -85,7 +85,7 @@ const updateHeartIconSize = () => {
   } else if (width <= 1023) {
     heartIconSize.value = 18
   } else {
-    heartIconSize.value = 24
+    heartIconSize.value = 22
   }
 }
 
@@ -133,16 +133,21 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     gap: 5px;
+    &--text {
+      font-size: 15px;
+      color: #272727;
+    }
   }
   &__link {
+   position: relative;
    text-decoration: none;
    color: black;
    background-color: #f0f0f1;
    font-weight: 500;
-   padding: 7px 10px;
+   padding: 5px 10px;
+   border: 1px solid #87a2bd;
    border-radius: 8px;
    transition: all 0.3s ease;
-   position: relative;
     &:hover {
       opacity: 0.7;
       transition-duration: 0.2s;
@@ -191,7 +196,7 @@ onUnmounted(() => {
       margin-left: 20px;
     }
     &__link {
-      padding: 3px 8px;
+      padding: 5px 8px;
       font-size: 14px;
       &--form {
         padding: 7px 9px !important;
@@ -235,7 +240,7 @@ onUnmounted(() => {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 6px 6px !important;
+      padding: 8px 6px !important;
       font-size: 10px;
 
       &--form {
@@ -252,6 +257,9 @@ onUnmounted(() => {
   .header {
     &__href--text {
       font-size: 10px;
+    }
+    &__link {
+      padding: 5px 5px !important;
     }
   }
 }
