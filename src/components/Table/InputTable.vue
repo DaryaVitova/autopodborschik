@@ -57,7 +57,6 @@ watch(() => route.query, (newQuery) => {
 
   if (queryValue) {
     if (Array.isArray(queryValue)) {
-      // Если это массив, берем первый элемент
       localInputValue.value = queryValue[0] || ''
     } else {
       // Если это строка

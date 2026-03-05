@@ -199,7 +199,7 @@ const initializeFromQuery = (): void => {
   localData.value = JSON.parse(JSON.stringify(props.data))
 
   if (Object.keys(searchParams).length > 0) {
-    applyFilters() // true
+    applyFilters()
   }
 
   if (sortKey && sortDirection) {
@@ -451,9 +451,11 @@ function filterTable (headerKey: string, value: string): void {
     activeFilterKeys.value[headerKey] = value
   }
 
-  const currentQuery = { ...route.query } as LocationQuery
-  const newQuery: LocationQuery = { ...currentQuery }
+  console.log(activeFilterKeys.value, 'activeFilterKeys.value')
 
+  const currentQuery = { ...route.query } as LocationQuery
+
+  const newQuery: LocationQuery = { ...currentQuery }
   // Обновляем параметры фильтрации
   Object.keys(activeFilterKeys.value).forEach(key => {
     const searchKey = `search_${key}`
@@ -473,9 +475,7 @@ function filterTable (headerKey: string, value: string): void {
       }
     }
   })
-
   router.push({ name: 'table', query: newQuery })
-  applyFilters()
 }
 
 function applyFilters (): void {

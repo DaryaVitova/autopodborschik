@@ -6,15 +6,13 @@
           class="cards__filters-input"
           v-model="searchBrand"
           :placeholder="'Марка'"
-          @input="handleSearch"
-          @close-click="resetFilter('searchBrand')"
+          @input="handleSearch()"
         />
 
         <search-input
           v-model="searchModel"
           :placeholder="'Модель'"
-          @input="handleSearch"
-          @close-click="resetFilter('searchModel')"
+          @input="handleSearch()"
         />
       </div>
 
@@ -23,8 +21,7 @@
           <search-input
             v-model="searchCity"
             :placeholder="'Город'"
-            @input="handleSearch"
-            @close-click="resetFilter('searchCity')"
+            @input="handleSearch()"
           />
 
           <div class="cards__search-filter">
@@ -147,6 +144,9 @@
       class="cards__pagination"
       v-show="!loader"
       :data="filteredData"
+      :is-filtering="isFiltering"
+      :isNavigating="isNavigating"
+      :isRestoringFromBack="isRestoringFromBack"
       :column-per-page="9"
       @changePage="handlePageChange"
     />
@@ -154,14 +154,13 @@
 </template>
 
 <script setup lang="ts">
-//  pattern="[0-9\s]*"
 import PaginationViews from '@/components/common/PaginationViews.vue'
 import CustomSelectYear from '@/components/common/CustomSelectYear.vue'
 import CarCard from '@/components/Cards/CarCard.vue'
 import SearchInput from '@/components/Cards/SearchInput.vue'
 import SearchInputByNumber from '@/components/Cards/SearchInputByNumber.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, reactive, ref, watch, onMounted } from 'vue'
+import { computed, reactive, ref, watch, onMounted, nextTick } from 'vue'
 import type { Advertisement } from "@/composables/useAdvertisements"
 
 const props = withDefaults(defineProps<{
@@ -175,7 +174,6 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   (e: 'card-click', item: Advertisement, showSold: boolean): void,
-  (e: 'search', query: string | null): void,
   (e: 'showSoldAuto', item: boolean): void
 }>()
 
@@ -210,6 +208,12 @@ const searchBrand = ref<string>('')
 const searchCity = ref<string>('')
 
 const toggleSoldAuto = ref<boolean>(false)
+
+const isFiltering = ref<boolean>(false)
+const isNavigating = ref<boolean>(false)
+const isRestoringFromBack = ref<boolean>(false)
+
+const savedPageBeforeFilterData = ref<string | null | string[]>(null)
 
 const dataFilterPrice = reactive<FilterPrice>({
   localMinPrice: null,
@@ -303,16 +307,29 @@ watch(() => toggleSoldAuto.value, (newVal) => {
   const query = { ...route.query }
 
   if (newVal) {
+    console.log(newVal, 'toggleSoldAuto watch')
     query.showSold = 'true'
+    savePage(query)
   } else {
+    checkSavedPage()
     delete query.showSold
+  }
+
+  function checkSavedPage () {
+    if (savedPageBeforeFilterData.value) {
+      query.page = savedPageBeforeFilterData.value
+    }
+
+    if (hasOnlyPageAndCount(query)) {
+      savedPageBeforeFilterData.value = null
+      sessionStorage.removeItem('savedPageBeforeFilter')
+    }
   }
 
   router.push({ query })
 
   emit('showSoldAuto', newVal)
 })
-
 
 watch(() => route.query, (newQuery) => {
   searchModel.value = newQuery.model as string || ''
@@ -350,6 +367,26 @@ watch(
   }
 )
 
+watch(() => searchBrand.value, (newValue, oldValue) => {
+  if (newValue === '' && oldValue !== '') {
+    resetFilter('searchBrand')
+  }
+})
+
+watch(() => searchModel.value, (newValue, oldValue) => {
+  if (newValue === '' && oldValue !== '') {
+    console.log('watch searchModel')
+    resetFilter('searchModel')
+  }
+})
+
+watch(() => searchCity.value, (newValue, oldValue) => {
+  if (newValue === '' && oldValue !== '') {
+    resetFilter('searchCity')
+  }
+})
+
+
 watch(() => [dataFilterPrice.localMinPrice, dataFilterPrice.localMaxPrice],
   ([min, max]) => {
     if (min === null) dataFilterPrice.activeMinPrice = null
@@ -371,28 +408,51 @@ watch(() => filteredData.value, () => {
 watch([startYear, endYear], ([min, max]) => {
   const query = { ...route.query } as Record<string, string | string[]>
 
+  function checkSavedPage () {
+    if (savedPageBeforeFilterData.value) {
+      query.page = savedPageBeforeFilterData.value
+    }
+
+    if (hasOnlyPageAndCount(query)) {
+      savedPageBeforeFilterData.value = null
+      sessionStorage.removeItem('savedPageBeforeFilter')
+    }
+  }
+
   // Преобразуем числа в строки для query параметров
   if (min !== null && min !== undefined) {
+    savePage(query)
     query.year_from = min.toString()
   } else {
+    checkSavedPage()
+
     delete query.year_from
   }
 
   if (max !== null && max !== undefined) {
+    savePage(query)
     query.year_to = max.toString()
   } else {
+    checkSavedPage()
+
     delete query.year_to
   }
 
   pushQuery(query)
 })
 
+async function pushQuery(query: Record<string, string | string[]>): Promise<void> {
+  isNavigating.value = true
 
-function pushQuery(query: Record<string, string | string[]>): void {
-  router.push({
+  await router.push({
     name: 'cards',
     query: query
   })
+
+  // Ждем обновления маршрута
+  await nextTick()
+
+  isNavigating.value = false
 }
 
 function applyPriceFilter(): void {
@@ -406,6 +466,8 @@ function applyPriceFilter(): void {
     dataFilterPrice.activeMaxPrice = dataFilterPrice.localMaxPrice
     query.price_to = (dataFilterPrice.activeMaxPrice).toString()
   }
+
+  savePage(query)
 
   pushQuery(query)
 }
@@ -422,7 +484,19 @@ function applyMileageFilter(): void {
     query.mileage_to = (dataFilterMileage.activeMaxMileage).toString()
   }
 
+  savePage(query)
+
   pushQuery(query)
+}
+
+function hasOnlyPageAndCount(query: Record<string, any>): boolean {
+  const keys = Object.keys(query)
+
+  // Если нет ключей - пустой query
+  if (keys.length === 0) return false
+
+  // Проверяем, что все ключи - это только page и/или count
+  return keys.every(key => key === 'page' || key === 'count')
 }
 
 function resetFilter(arg: ResetKey): void {
@@ -469,31 +543,79 @@ function resetFilter(arg: ResetKey): void {
       break
   }
 
+  if (savedPageBeforeFilterData.value) {
+    query.page = savedPageBeforeFilterData.value
+  }
+
   pushQuery(query)
+
+  if (hasOnlyPageAndCount(query)) {
+    savedPageBeforeFilterData.value = null
+    sessionStorage.removeItem('savedPageBeforeFilter')
+  }
 }
 
 function handlePageChange (items: Advertisement[]): void {
   currentPageItems.value = items
 }
 
+function savePage (query: Record<string, string | string[]>) {
+  if (savedPageBeforeFilterData.value === null && query.page) {
+    savedPageBeforeFilterData.value = query.page
+    console.log(savedPageBeforeFilterData.value, 'savedPageBeforeFilterData.value')
+    sessionStorage.setItem('savedPageBeforeFilter', savedPageBeforeFilterData.value as string)
+  }
+}
+
 const handleSearch = () => {
+  isFiltering.value = true
+
   const query = { ...route.query } as Record<string, string | string[]>
 
   searchBrand.value.trim() ? query.brand = searchBrand.value : delete query.brand
   searchModel.value.trim() ? query.model = searchModel.value : delete query.model
   searchCity.value.trim() ? query.city = searchCity.value : delete query.city
 
+  savePage(query)
+
+  query.page = '1'
+
   pushQuery(query)
 
-  emit('search', currentQuery.value)
+  setTimeout(() => {
+    isFiltering.value = false
+  }, 300)
 }
 
 const handleCardClick = (item: Advertisement) => {
   emit('card-click', item, toggleSoldAuto.value)
+
+  setTimeout(() => {
+    isRestoringFromBack.value = false
+  }, 2000)
 }
 
 onMounted(() => {
   toggleSoldAuto.value = route.query.showSold === 'true'
+
+  const savedQuery = sessionStorage.getItem('cards-query')
+  if (savedQuery) {
+    isRestoringFromBack.value = true
+    const query = JSON.parse(savedQuery)
+
+    // Применяем сохраненные query параметры
+    router.replace({ query })
+
+    setTimeout(() => {
+      isRestoringFromBack.value = false
+      sessionStorage.removeItem('cards-query')
+    }, 500)
+  }
+
+  const saved = sessionStorage.getItem('savedPageBeforeFilter')
+  if (saved) {
+    savedPageBeforeFilterData.value = saved
+  }
 })
 </script>
 

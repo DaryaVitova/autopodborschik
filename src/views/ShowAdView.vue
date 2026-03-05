@@ -231,6 +231,7 @@ import { doc, deleteDoc } from 'firebase/firestore'
 import { db } from '@/firebase.ts'
 
 const router = useRouter()
+
 const favoritesStore = useFavoritesStore()
 
 const soldAuto = useSoldAutoStore()
@@ -312,15 +313,29 @@ const copyPhone = async (): Promise<void> => {
   }
 }
 
-function goBack(): void {
+function goBack (): void {
   router.go(-1)
+  // const savedQuery = sessionStorage.getItem('cards-query')
+  //
+  // console.log(savedQuery, 'savedQuery')
+  //
+  // if (savedQuery) {
+  //   const query = JSON.parse(savedQuery)
+  //   router.push({
+  //     name: 'cards',
+  //     query: query
+  //   })
+  //   sessionStorage.removeItem('previousQuery')
+  // } else {
+  //   router.go(-1)
+  // }
 }
 
 function keyDownEvent(event: KeyboardEvent): void {
   allowOnlyNumbers(event)
 }
 
-function openLightboxForSold(): void {
+function openLightboxForSold (): void {
   lightboxActiveForSold.value = true
   document.body.style.overflow = 'hidden'
 }
@@ -399,6 +414,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/scss/mixins' as *;
 .showAd {
   position: relative;
   max-width: 1000px;
@@ -803,17 +819,7 @@ h2 {
 
 /* Лайтбокс */
 .lightbox {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.97);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  cursor: pointer;
+  @include lightbox;
   &--for-sold {
     background: rgba(177, 177, 177, 0.97);
   }

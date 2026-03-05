@@ -49,8 +49,7 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: number | null): void,
-  (e: 'clearError', value: number): void
+  (e: 'update:modelValue', value: number | null): void
 }>()
 
 const isDropdownOpen = ref<boolean>(false)
@@ -82,7 +81,6 @@ function toggleDropdown(): void {
 function selectYear(year: number): void {
   if (!isYearDisabled(year)) {
     emit('update:modelValue', year)
-    emit('clearError', year)
     isDropdownOpen.value = false
   }
 }

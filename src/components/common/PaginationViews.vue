@@ -40,16 +40,23 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, watch, nextTick } from 'vue'
+import { onMounted, ref, computed, watch, nextTick, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { Advertisement } from "@/composables/useAdvertisements";
 
 const props = withDefaults(defineProps<{
   columnPerPage: number,
   data: Advertisement[],
-  showCountRecords?: boolean
+  showCountRecords?: boolean,
+  isFiltering?: boolean,
+  isNavigating?: boolean,
+  isRestoringFromBack?: boolean,
 }>(), {
-  showCountRecords: false
+  showCountRecords: false,
+  isFiltering: false,
+  isQueryReady: false,
+  isNavigating: false,
+  isRestoringFromBack: false,
 })
 
 const emit = defineEmits(['changePage', 'newColumnPerPage'])
@@ -58,7 +65,6 @@ const router = useRouter()
 const route = useRoute()
 
 const isInitialized = ref<boolean>(false)
-const isRestoringState = ref<boolean>(false)
 
 const currentPage = ref<number>(1)
 const columnPerPageLocal = ref<number>(props.columnPerPage)
@@ -66,10 +72,10 @@ const columnPerPageLocal = ref<number>(props.columnPerPage)
 const disabledNext = ref<boolean>(false)
 const disabledPrev = ref<boolean>(true)
 
-const isRestoringPages = ref<boolean>(false)
-
 const startData = ref<number | null>(null)
 const endData = ref<number | null>(null)
+
+const isRestoringPages = ref(false)
 
 const totalPages = computed((): number => { // сколько нужно страниц отобразить
   if (!props.data.length) {
@@ -104,9 +110,6 @@ const pages = ref<number[]>(getPages(totalPages.value))
 watch(
   () => router.currentRoute.value.query,
   (newQuery) => {
-    if (isRestoringState.value) {
-      return
-    }
 
     const getQueryNumber = (key: string): number | null => {
       const value = newQuery[key]
@@ -137,20 +140,29 @@ watch(totalPages, (newTotal) => {
   if (!isRestoringPages.value) {
     pages.value = getPages(newTotal)
   }
-  if (newTotal < currentPage.value) {
+
+  // Если это фильтрация - не сбрасываем страницу!
+  if (props.isFiltering) {
+    return
+  }
+
+  // Только если страница действительно выходит за пределы
+  if (currentPage.value > newTotal) {
     currentPage.value = newTotal
   }
+
   if (currentPage.value === 0) {
     currentPage.value = 1
   }
 })
+
 
 watch(() => props.columnPerPage, (newVal) => {
   columnPerPageLocal.value = newVal
 })
 
 watch(currentPage, (newPage, oldPage) => {
-  if (newPage !== oldPage && isInitialized.value && !isRestoringState.value) {
+  if (newPage !== oldPage && isInitialized.value) {
     updateQuery()
     getPageRange()
   }
@@ -158,22 +170,46 @@ watch(currentPage, (newPage, oldPage) => {
 
 watch(columnPerPageLocal, (newVal, oldVal) => {
   emit('newColumnPerPage', newVal)
-  if (newVal !== oldVal && isInitialized.value && !isRestoringState.value) {
+  if (newVal !== oldVal && isInitialized.value) {
     currentPage.value = 1
     updateQuery()
   }
   getPageRange()
 })
 
-watch(() => props.data, () => {
-  if (currentPage.value > totalPages.value && isInitialized.value) {
-    currentPage.value = Math.max(1, totalPages.value)
-    if (!isRestoringState.value) {
+// watchEffect( () => {
+//   if (!isMounted.value) return
+//
+//   if (props.isFiltering || props.isNavigating || props.isRestoringFromBack) return
+//
+//   if (currentPage.value > totalPages.value && isInitialized.value) {
+//     currentPage.value = Math.max(1, totalPages.value)
+//     console.log('watchEffect')
+//     updateQuery()
+//   }
+//   getPageRange()
+// })
+
+watch(
+  [
+    () => currentPage.value,
+    () => totalPages.value,
+    () => isInitialized.value,
+    () => props.isFiltering,
+    () => props.isNavigating,
+    () => props.isRestoringFromBack
+  ],
+  () => {
+    if (props.isFiltering || props.isNavigating || props.isRestoringFromBack) return
+
+    if (currentPage.value > totalPages.value && isInitialized.value) {
+      currentPage.value = Math.max(1, totalPages.value)
       updateQuery()
     }
+    getPageRange()
   }
-  getPageRange()
-}, { immediate: true })
+)
+
 
 watch(paginatedItems, (newVal) => {
   emit('changePage', newVal)
@@ -245,8 +281,16 @@ function goToPage (page: number): void {
 }
 
 function updateQuery(): void {
+  if (props.isNavigating || props.isRestoringFromBack) return
+
+  const currentQuery = { ...route.query }
+
+  console.log('currentQuery', currentQuery)
+
+  console.log(currentPage.value, 'currentPage')
+
   const query = {
-    ...router.currentRoute.value.query,
+    ...currentQuery,
     page: currentPage.value,
     count: columnPerPageLocal.value
   } as Record<string, string | string[] | number>
@@ -255,6 +299,7 @@ function updateQuery(): void {
     if (query[key] == null) delete query[key]
   })
 
+  console.log('📝 Updating query with all params:', query)
   router.push({ query })
 }
 

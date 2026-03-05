@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<{
   inputClass: string,
   active: boolean,
   placeholder: string,
-  autocomplete?: string
+  autocomplete?: string,
 }>(), {
   type: 'text',
   autocomplete: 'off'

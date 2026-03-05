@@ -94,40 +94,60 @@
     </div>
 
     <div class="calculate-credit__right-side">
-      <div class="calculate-credit__right-side-container">
-        <calculate-credit
-          label="Процентная ставка"
-          :value="activePercent"
-          percent
-        />
+      <div class="calculate-credit__calculate-container">
+        <div class="calculate-credit__calculate">
+          <calculate-credit
+            label="Процентная ставка"
+            :value="activePercent"
+            percent
+          />
 
-        <calculate-credit
-          label="Ежемесячный платёж"
-          :value="formatNumber(monthlyPayment)"
-        />
+          <calculate-credit
+            label="Ежемесячный платёж"
+            :value="formatNumber(monthlyPayment)"
+          />
+        </div>
+
+        <div class="calculate-credit__calculate">
+          <calculate-credit
+            label="Сумма кредита"
+            :value="formatNumber(loanAmountCalculate)"
+          />
+
+          <calculate-credit
+            label="Необходимый доход"
+            :value="formatNumber(requiredIncome)"
+          />
+        </div>
+
+        <div class="calculate-credit__calculate">
+          <calculate-credit
+            label="Общая сумма"
+            :value="formatNumber(Math.round(totalPayment))"
+          />
+
+          <calculate-credit
+            label="Переплата"
+            :value="formatNumber(Math.round(overpayment))"
+          />
+        </div>
       </div>
 
-      <div class="calculate-credit__right-side-container">
-        <calculate-credit
-          label="Сумма кредита"
-          :value="formatNumber(loanAmountCalculate)"
-        />
+      <button class="calculate-credit__schedule-btn" @click="openLightbox">
+        <ScheduleIcon />
+        График платежей
+      </button>
+    </div>
 
-        <calculate-credit
-          label="Необходимый доход"
-          :value="formatNumber(requiredIncome)"
-        />
-      </div>
-
-      <div class="calculate-credit__right-side-container">
-        <calculate-credit
-          label="Общая сумма"
-          :value="formatNumber(totalPayment)"
-        />
-
-        <calculate-credit
-          label="Переплата"
-          :value="formatNumber(overpayment)"
+    <div v-if="lightboxActive" class="lightbox" @click="closeLightbox">
+      <div class="lightbox__content">
+        <payment-schedule
+          :percent="activePercent"
+          :sumCredit="loanAmountCalculate"
+          :termCredit="loanTerm"
+          :calcInMonths="toggleCalcInMonths"
+          :overpayment="overpayment"
+          :monthlyPayment="monthlyPayment"
         />
       </div>
     </div>
@@ -140,6 +160,8 @@ import {computed, onMounted, ref, watch} from "vue"
 import { useFormatters } from "@/composables/useFormatters.ts"
 import { useCreditCalculation } from "@/composables/useCreditCalculation"
 import CalculateCredit from "@/components/AutoCredit/CalculateCredit.vue"
+import ScheduleIcon from "@/components/SvgIcons/ScheduleIcon.vue"
+import PaymentSchedule from "@/components/AutoCredit/PaymentSchedule.vue"
 
 interface CreditCalculatorData {
   priceAuto: number,
@@ -214,6 +236,8 @@ const localLoanTerm = ref<number>(2)
 const toggleCalcInMonths = ref<boolean>(savedData?.toggleCalcInMonths ?? false)
 const notResetValue = ref<boolean>(savedData?.notResetValue ?? false)
 
+const lightboxActive = ref<boolean>(false)
+
 const activeRate = ref<'base' | 'family' | 'military'>(savedData?.activeRate ?? 'base')
 
 const setActiveRate = (rate: 'base' | 'family' | 'military') => {
@@ -231,6 +255,15 @@ const setActiveRate = (rate: 'base' | 'family' | 'military') => {
       break
   }
 }
+
+const calcTermCredit = computed((): number => {
+  if (!toggleCalcInMonths.value) {
+    return loanTerm.value
+  } else {
+    const num = loanTerm.value / 12
+    return Math.round(num * 10) / 10
+  }
+})
 
 watch(() => toggleCalcInMonths.value, (newVal) => {
   if (newVal) {
@@ -268,6 +301,10 @@ watch(() => activeRate.value, () => {
   saveToStorage()
 })
 
+watch(() => localLoanTerm.value, (newVal) => {
+  console.log(newVal, 'localLoanTerm')
+})
+
 const minOldValue = computed(() => {
   return !toggleCalcInMonths.value ? 1 : 12
 })
@@ -292,7 +329,7 @@ const calcDownPaymentPercent = computed((): number => {
   const percent = (downPayment.value / priceAuto.value) * 100
   return parseFloat(percent.toFixed(1))
 })
-// здесь
+
 watch(() => downPayment.value, (newValue) => {
   if (newValue > priceAuto.value) {
     downPayment.value = priceAuto.value
@@ -303,6 +340,16 @@ watch(() => downPayment.value, (newValue) => {
   saveToStorage()
 })
 
+function openLightbox() {
+  lightboxActive.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+function closeLightbox() {
+  lightboxActive.value = false
+  document.body.style.overflow = 'auto'
+}
+
 const {
   monthlyPayment,
   requiredIncome,
@@ -311,7 +358,7 @@ const {
 } = useCreditCalculation(
   loanAmountCalculate,
   activePercent,
-  localLoanTerm
+  calcTermCredit
 )
 </script>
 
@@ -368,16 +415,38 @@ const {
   &__right-side {
     display: flex;
     flex-direction: column;
+    align-items: center;
+  }
+
+  &__calculate-container {
+    display: flex;
+    flex-direction: column;
     gap: 25px;
     margin-top: 35px;
     background-color: #ffffff;
     border-radius: 8px;
     padding: 20px;
     width: 450px;
+  }
 
-    &-container {
-      display: flex;
-      gap: 10px;
+  &__calculate {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__schedule-btn {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 10px;
+    padding: 5px 6px 8px 6px;
+    border: 2px solid #1f6a1f;
+    border-radius: 8px;
+    margin-top: 50px;
+    background-color: #fff;
+    &:hover {
+      opacity: 0.7;
+      transition-duration: 0.5s;
     }
   }
 
@@ -396,6 +465,18 @@ const {
     &--label {
       font-size: 15px;
     }
+  }
+}
+
+.lightbox {
+  @include lightbox;
+  background: rgba(126, 126, 126, 0.7);
+  align-items: flex-end;
+  &__content {
+    width: 700px;
+    height: 90%;
+    border-radius: 12px;
+    background-color: white;
   }
 }
 </style>

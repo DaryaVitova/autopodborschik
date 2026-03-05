@@ -34,8 +34,7 @@ withDefaults(defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void,
-  (e: 'input'): void,
-  (e: 'close-click'): void
+  (e: 'input'): void
 }>()
 
 function handleInput(e: InputEvent): void {
@@ -45,7 +44,6 @@ function handleInput(e: InputEvent): void {
 
 function closeClick(): void {
   emit('update:modelValue', '')
-  emit('close-click')
 }
 
 </script>

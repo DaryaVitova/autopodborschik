@@ -145,7 +145,7 @@ onUnmounted(() => {
    background-color: #f0f0f1;
    font-weight: 500;
    padding: 5px 10px;
-   border: 1px solid #87a2bd;
+   border: 2px solid rgba(17, 69, 124, 0.5);
    border-radius: 8px;
    transition: all 0.3s ease;
     &:hover {
@@ -196,7 +196,7 @@ onUnmounted(() => {
       margin-left: 20px;
     }
     &__link {
-      padding: 5px 8px;
+      padding: 7px 8px;
       font-size: 14px;
       &--form {
         padding: 7px 9px !important;

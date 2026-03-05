@@ -13,7 +13,12 @@
 
   <div v-else class="favorite__no-cards">
     <h2 class="favorite__no-cards--text1">Нет избранных объявлений</h2>
-    <p class="favorite__no-cards--text2">Посмотрите другие на Автоподборщик.ру — может быть,<br>машина вашей мечты сейчас в продаже</p>
+    <p class="favorite__no-cards--text2">
+      <span class="favorite__no-cards--text2-no-wrap">
+        Посмотрите другие на Автоподборщик.ру — может быть,
+      </span>
+      <br>машина вашей мечты сейчас в продаже
+    </p>
   </div>
 </template>
 
@@ -64,9 +69,13 @@ const goBack = (): void => {
     margin-top: 200px;
     &--text1 {
       color: #024760;
+      white-space: nowrap;
     }
     &--text2 {
       text-align: center;
+      &-no-wrap {
+        white-space: nowrap;
+      }
     }
   }
 
@@ -108,12 +117,27 @@ const goBack = (): void => {
   .favorite {
     justify-content: center;
     width: 380px;
+
+    &__no-cards {
+      max-width: 70%;
+      &--text1 {
+        font-size: 18px;
+      }
+      &--text2 {
+        font-size: 14px;
+      }
+    }
   }
 }
 
 @media (max-width: 400px) {
   .favorite {
     width: 300px;
+    &__no-cards {
+      &--text2 {
+        font-size: 11px;
+      }
+    }
   }
 }
 </style>

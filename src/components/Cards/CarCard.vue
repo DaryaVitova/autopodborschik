@@ -102,6 +102,7 @@
 import {computed, ref, inject } from 'vue'
 import type { Advertisement } from '@/composables/useAdvertisements'
 import FavoriteButton from '@/components/common/FavoriteButton.vue'
+import {useRoute} from "vue-router";
 
 const props = withDefaults(defineProps<{
   item: Advertisement,
@@ -117,6 +118,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: 'card-click', item: Advertisement): void
 }>()
+
+const route = useRoute()
 
 const isSoldAuto = inject('toggleSoldAuto')
 
@@ -190,6 +193,7 @@ const formatDate = (dateString: string): string => {
 }
 
 function clickCard(): void {
+  sessionStorage.setItem('cards-query', JSON.stringify(route.query))
   emit('card-click', props.item)
 }
 </script>
