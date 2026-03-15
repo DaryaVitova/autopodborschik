@@ -34,12 +34,14 @@
       <div class="calculate-credit__price-sliders">
         <price-slider
           v-model="priceAuto"
-          class="calculate-credit__price-slider"
+          class="calculate-credit__price-slider calculate-credit__price-slider--first"
           label="Стоимость авто"
           :maxValue="10000000"
           :minValue="50000"
           :priceAuto="priceAuto"
-        />
+        >
+          <span class="calculate-credit__note">* значения в слайдерах можно менять вручную</span>
+        </price-slider>
 
         <div class="calculate-credit__price-slider--down-payment">
           <span class="calculate-credit__price-slider--percent">{{ calcDownPaymentPercent }} %</span>
@@ -410,6 +412,13 @@ const {
       font-size: 18px;
       color: #3f7e3f;
     }
+  }
+
+  &__note {
+    font-size: 14px;
+    color: #9e9e9e;
+    display: block;
+    margin-bottom: 10px;
   }
 
   &__right-side {

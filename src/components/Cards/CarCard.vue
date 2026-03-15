@@ -193,6 +193,7 @@ const formatDate = (dateString: string): string => {
 }
 
 function clickCard(): void {
+  // console.log(route.query, 'route.query clickCard')
   sessionStorage.setItem('cards-query', JSON.stringify(route.query))
   emit('card-click', props.item)
 }

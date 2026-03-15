@@ -1,5 +1,6 @@
 <template>
   <div class="price-slider">
+    <slot />
     <div class="price-slider__container">
       <div class="price-slider__label">
         <span class="price-slider__label--text">{{ label }}</span>

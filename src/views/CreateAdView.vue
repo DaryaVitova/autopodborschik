@@ -9,7 +9,6 @@
               <InputCreateAd
                 v-model="formData.brand"
                 :errorData="isErrorData.brand"
-                type="text"
                 id="brand"
                 errorText="*Заполните это поле"
                 labelText="Марка *"
@@ -19,7 +18,6 @@
               <InputCreateAd
                 v-model="formData.model"
                 :errorData="isErrorData.model"
-                type="text"
                 id="model"
                 errorText="*Заполните это поле"
                 labelText="Модель *"
@@ -27,14 +25,14 @@
               />
 
               <InputCreateAd
-                v-model="formData.mileage"
+                v-model="mileageDisplay"
                 :errorData="isErrorData.mileage"
-                type="number"
                 :maxlength="maxLength"
                 moreClass="form__input--number"
                 id="mileage"
                 errorText="*Введите пробег"
                 labelText="Пробег *"
+                checkNumber
                 @input="clearError('mileage')"
               />
 
@@ -42,6 +40,7 @@
                 <span v-if="isErrorData.year" class="form__error-message">*Выберите год выпуска</span>
                 <label for="year" class="form__label">Год выпуска *</label>
                 <custom-select-year
+                  class="form__select-year"
                   v-model="formData.year"
                   placeholderText="Выберите год"
                   @clear-error="clearError('year')"
@@ -51,7 +50,6 @@
               <InputCreateAd
                 v-model="formData.city"
                 :errorData="isErrorData.city"
-                type="text"
                 id="city"
                 errorText="*Заполните это поле"
                 labelText="Город *"
@@ -89,14 +87,14 @@
               </div>
 
               <InputCreateAd
-                v-model="formData.price"
+                v-model="priceDisplay"
                 :errorData="isErrorData.price"
-                type="number"
                 :maxlength="maxLength"
                 moreClass="form__input--number"
                 id="mileage"
                 errorText="*Укажите цену"
                 labelText="Цена *"
+                checkNumber
                 @input="clearError('price')"
               />
             </div>
@@ -145,12 +143,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import InputCreateAd from "@/components/CreateAd/InputCreateAd.vue";
 import { db } from '@/firebase.ts'
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import CustomSelectYear from '@/components/common/CustomSelectYear.vue'
 import { useRouter } from 'vue-router'
+import {useFormatters} from "@/composables/useFormatters.ts";
+
+const { formatNumber, parseNumber } = useFormatters()
 
 // Конфигурация ImgBB
 const IMGBB_API_KEY = '88b06633d3d37ab1abf4c2c01303e6b9'
@@ -180,43 +181,43 @@ interface Country {
 }
 
 interface ImgBBUploadResult {
-  url: string;
-  thumb: string;          // URL миниатюры
-  medium: string;         // URL среднего размера
-  deleteUrl: string;      // URL для удаления
+  url: string
+  thumb: string       // URL миниатюры
+  medium: string     // URL среднего размера
+  deleteUrl: string  // URL для удаления
 }
 
 interface FirebasePhotoData {
-  url: string;
-  thumb: string;
-  medium: string;
+  url: string
+  thumb: string
+  medium: string
 }
 
 interface FirebaseAdvertisementData {
-  brand: string;
-  model: string;
-  mileage: number;
-  year: string;
-  city: string;
-  phone: string | null;
-  price: number;
-  description: string;
-  photos: FirebasePhotoData[];
-  photoCount: number;
-  hasPhotos: boolean;
-  createdAt: null;
-  updatedAt: null;
-  countryCode: string;
-  status: 'active' | 'inactive' | 'pending';
-  storageProvider: 'imgbb' | 'none';
+  brand: string
+  model: string
+  mileage: number
+  year: string
+  city: string
+  phone: string | null
+  price: number
+  description: string
+  photos: FirebasePhotoData[]
+  photoCount: number
+  hasPhotos: boolean
+  createdAt: null
+  updatedAt: null
+  countryCode: string
+  status: 'active' | 'inactive' | 'pending'
+  storageProvider: 'imgbb' | 'none'
 }
 
 interface SaveToFirebaseResult {
-  success: boolean;
-  id?: string;
-  data?: FirebaseAdvertisementData;
-  imgbbData?: ImgBBUploadResult[];
-  error?: string;
+  success: boolean
+  id?: string
+  data?: FirebaseAdvertisementData
+  imgbbData?: ImgBBUploadResult[]
+  error?: string
 }
 
 const router = useRouter()
@@ -265,6 +266,28 @@ const countries = ref<readonly Country[]>([
   { code: 'GB', name: 'Великобритания', phoneCode: '44', flag: '🇬🇧' },
   { code: 'CN', name: 'Китай', phoneCode: '86', flag: '🇨🇳' }
 ])
+
+const mileageDisplay = computed({
+  get: () => {
+    if (formData.value.mileage === null) return ''
+    return formatNumber(formData.value.mileage) || ''
+  },
+  set: (value: string) => {
+    const parsed = parseNumber(value)
+    formData.value.mileage = parsed
+  }
+})
+
+const priceDisplay = computed({
+  get: () => {
+    if (formData.value.price === null) return ''
+    return formatNumber(formData.value.price) || ''
+  },
+  set: (value: string) => {
+    const parsed = parseNumber(value)
+    formData.value.price = parsed
+  }
+})
 
 const phonePlaceholder = () => {
   if (selectedCountry.value === 'RU') {
@@ -624,6 +647,8 @@ const resetForm = () => {
   width: 100vw;
 }
 .form {
+  --height-input: 33px;
+
   display: flex;
   flex-direction: column;
   background-color: #ededed;
@@ -682,15 +707,22 @@ const resetForm = () => {
     color: #616161;
   }
   &__input {
-    height: 33px;
+    height: var(--height-input);
     padding-left: 10px;
     border: none;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  &__select-year {
+    padding-left: 10px;
+    height: var(--height-input);
+    display: flex;
+    align-items: center;
   }
   &__textarea {
     height: 150px;
     width: 400px;
     margin-bottom: 10px;
+    padding-inline: 10px;
     border: none;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
@@ -699,20 +731,17 @@ const resetForm = () => {
     color: #bf0606;
   }
   &__phone-input {
-    height: 33px;
+    height: var(--height-input);
     display: flex;
     width: 100%;
     &-country {
       width: 30%;
-      //border-right: none;
       border: none;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     &-number {
       padding-left: 15px;
       width: 70%;
-      //border: 1px solid #6e6d6d;
-      //border-left: none;
       border: none;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       &:focus {
@@ -773,7 +802,6 @@ const resetForm = () => {
     width: 90%;
   }
   .form {
-    //padding: 40px 20px 30px 20px;
     padding: 30px 15px 20px 15px;
     &__textarea {
       width: 90%;

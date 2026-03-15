@@ -130,6 +130,7 @@ defineExpose<PaymentTableExpose>({
   scrollToYear
 })
 
+
 // Определение года по скроллу
 let visibleYear = ref<string | null>('')
 

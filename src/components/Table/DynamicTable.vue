@@ -6,7 +6,6 @@
       class="table__pagination-select--select"
       v-model="columnPerPage"
     >
-      <option :value="3">3</option>
       <option :value="6">6</option>
       <option :value="9">9</option>
       <option :value="12">12</option>
@@ -142,7 +141,7 @@ const route = useRoute()
 const router = useRouter()
 
 const currentPageItems: Ref<Advertisement[]> = ref([])
-const columnPerPage: Ref<number> = ref(3)
+const columnPerPage: Ref<number> = ref(6)
 
 const openFilterInputs = reactive<Record<string, boolean>>({})
 const loader: Ref<boolean> = ref(true)

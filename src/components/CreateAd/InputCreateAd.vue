@@ -9,22 +9,28 @@
       :value="modelValue ?? ''"
       :class="`form__input ${moreClass || ''}`"
       @input="handleInput"
+      @keydown="handleKeyDown"
     >
   </div>
 </template>
 
 <script setup lang="ts">
+import { useFormatters } from "@/composables/useFormatters.ts"
+
+const { allowOnlyNumbers } = useFormatters()
+
 type InputType = 'text' | 'number' | 'tel' | 'email' | 'password' | 'date'
 
 interface Props {
   modelValue: string | number | null,
   errorData: boolean,
   id: string,
-  type: InputType,
+  type?: InputType,
   errorText: string,
   labelText: string,
   moreClass?: string,
-  maxLength?: number
+  maxLength?: number,
+  checkNumber?: boolean,
 }
 
 interface Emits {
@@ -32,17 +38,30 @@ interface Emits {
   (e: 'input'): void
 }
 
-withDefaults(defineProps<Props>(), {
-  type: 'text'
+const props = withDefaults(defineProps<Props>(), {
+  type: 'text',
+  checkNumber: false,
 })
 
 const emit = defineEmits<Emits>()
 
-function handleInput(e: Event): void {
-  if (e.target instanceof HTMLInputElement) {
-    emit('update:modelValue', e.target.value)
+const handleKeyDown = (event: KeyboardEvent): void => {
+  if (props.checkNumber) {
+    allowOnlyNumbers(event)
   }
+}
 
+function handleInput(e: Event): void {
+  if (props.checkNumber) {
+    const target = e.target as HTMLInputElement
+    const filteredValue = target.value.replace(/\D/g, '')
+    if (filteredValue !== target.value) {
+      target.value = filteredValue
+    }
+    emit('update:modelValue', filteredValue)
+  } else {
+    emit('update:modelValue', (e.target as HTMLInputElement).value)
+  }
   emit('input')
 }
 </script>

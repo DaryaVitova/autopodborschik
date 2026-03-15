@@ -6,13 +6,13 @@
           class="cards__filters-input"
           v-model="searchBrand"
           :placeholder="'Марка'"
-          @input="handleSearch()"
+          @input="handleSearch"
         />
 
         <search-input
           v-model="searchModel"
           :placeholder="'Модель'"
-          @input="handleSearch()"
+          @input="handleSearch"
         />
       </div>
 
@@ -21,7 +21,7 @@
           <search-input
             v-model="searchCity"
             :placeholder="'Город'"
-            @input="handleSearch()"
+            @input="handleSearch"
           />
 
           <div class="cards__search-filter">
@@ -160,8 +160,11 @@ import CarCard from '@/components/Cards/CarCard.vue'
 import SearchInput from '@/components/Cards/SearchInput.vue'
 import SearchInputByNumber from '@/components/Cards/SearchInputByNumber.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, reactive, ref, watch, onMounted, nextTick } from 'vue'
+import { computed, watch, onMounted, nextTick } from 'vue'
 import type { Advertisement } from "@/composables/useAdvertisements"
+import { useFilterState } from "@/composables/FiltersCards/useFilterCardsState.ts"
+import { useFilterDataCards } from "@/composables/FiltersCards/useFilterDataCards.ts";
+import { useFilterOperationsCards } from "@/composables/FiltersCards/useFilterOperationsCards.ts";
 
 const props = withDefaults(defineProps<{
   data: Advertisement[],
@@ -177,159 +180,66 @@ const emit = defineEmits<{
   (e: 'showSoldAuto', item: boolean): void
 }>()
 
-interface FilterPrice {
-  localMinPrice: number | null,
-  localMaxPrice: number | null,
-  activeMinPrice: number | null,
-  activeMaxPrice: number | null
-}
-
-interface FilterMileage {
-  localMinMileage: number | null,
-  localMaxMileage: number | null,
-  activeMinMileage: number | null,
-  activeMaxMileage: number | null
-}
-
 const router = useRouter()
 const route = useRoute()
 
-const startYear = ref<number | null>(null)
-const endYear = ref<number | null>(null)
+const filterState = useFilterState()
+const {
+  searchBrand, searchModel, searchCity,
+  startYear, endYear,
+  dataFilterPrice, dataFilterMileage,
+  currentQuery, searchError,
+  toggleSoldAuto, currentPageItems,
+  isFiltering, isNavigating, isRestoringFromBack,
+  savedPageBeforeFilterData
+} = filterState
 
-const currentPageItems = ref<Advertisement[]>([])
+const filteredData = useFilterDataCards(
+  computed(() => props.data),
+  searchBrand, searchModel, searchCity,
+  dataFilterPrice, dataFilterMileage,
+  startYear, endYear
+)
 
-const currentQuery = ref<string | null>(null)
-
-const searchError = ref<boolean>(false)
-
-const searchModel = ref<string>('')
-const searchBrand = ref<string>('')
-const searchCity = ref<string>('')
-
-const toggleSoldAuto = ref<boolean>(false)
-
-const isFiltering = ref<boolean>(false)
-const isNavigating = ref<boolean>(false)
-const isRestoringFromBack = ref<boolean>(false)
-
-const savedPageBeforeFilterData = ref<string | null | string[]>(null)
-
-const dataFilterPrice = reactive<FilterPrice>({
-  localMinPrice: null,
-  localMaxPrice: null,
-  activeMinPrice: null,
-  activeMaxPrice: null
-})
-
-const dataFilterMileage = reactive<FilterMileage>({
-  localMinMileage: null,
-  localMaxMileage: null,
-  activeMinMileage: null,
-  activeMaxMileage: null
-})
-
-type ResetKey = 'minPrice' | 'maxPrice'
-  | 'minMileage' | 'maxMileage' |
-  'searchBrand' | 'searchModel' | 'searchCity'
-
-const filteredData = computed((): Advertisement[] => {
-  if (
-    !searchBrand.value.trim()
-    && !searchModel.value.trim()
-    && !searchCity.value.trim()
-    && dataFilterPrice.activeMinPrice === null
-    && dataFilterPrice.activeMaxPrice === null
-    && !startYear.value && !endYear.value
-    && dataFilterMileage.activeMinMileage === null
-    && dataFilterMileage.activeMaxMileage === null) {
-    return props.data
-  }
-
-  const brandQuery = searchBrand.value.toLowerCase().trim()
-  const modelQuery = searchModel.value.toLowerCase().trim()
-  const cityQuery = searchCity.value.toLowerCase().trim()
-
-  return props.data.filter(item => {
-    const textConditions = []
-
-    if (brandQuery) {
-      textConditions.push(item.brand?.toLowerCase().includes(brandQuery))
-    }
-    if (modelQuery) {
-      textConditions.push(item.model?.toLowerCase().includes(modelQuery))
-    }
-    if (cityQuery) {
-      textConditions.push(item.city?.toLowerCase().includes(cityQuery))
-    }
-
-    let pricePasses = true
-    const price = item.price || 0
-
-    if (dataFilterPrice.activeMinPrice !== null) {
-      pricePasses = pricePasses && (price >= dataFilterPrice.activeMinPrice)
-    }
-
-    if (dataFilterPrice.activeMaxPrice !== null) {
-      pricePasses = pricePasses && (price <= dataFilterPrice.activeMaxPrice)
-    }
-
-    let yearPasses = true
-
-    if (startYear.value !== null) {
-      yearPasses = yearPasses && (item.year >= startYear.value)
-    }
-
-    if (endYear.value !== null) {
-      yearPasses = yearPasses && (item.year <= endYear.value)
-    }
-
-    let mileagePasses = true
-    const mileage = item.mileage || 0
-
-    if (dataFilterMileage.activeMinMileage !== null) {
-      mileagePasses = mileagePasses && (mileage >= dataFilterMileage.activeMinMileage)
-    }
-
-    if (dataFilterMileage.activeMaxMileage!== null) {
-      mileagePasses = mileagePasses && (mileage <= dataFilterMileage.activeMaxMileage)
-    }
-
-    const textPassed = textConditions.length > 0
-      ? textConditions.every(cond => cond)
-      : true
-
-    return textPassed && pricePasses && yearPasses && mileagePasses
-  })
-})
+const { resetFilter, applyPriceFilter, applyMileageFilter, handleSearch, savePage } = useFilterOperationsCards(
+  searchBrand, searchModel, searchCity,
+  dataFilterPrice, dataFilterMileage,
+  savedPageBeforeFilterData,
+  isFiltering,
+  pushQuery,
+  hasOnlyPageAndCount
+)
 
 watch(() => toggleSoldAuto.value, (newVal) => {
-  const query = { ...route.query }
+  const query = { ...route.query } as Record<string, string | string[]>
 
   if (newVal) {
-    console.log(newVal, 'toggleSoldAuto watch')
     query.showSold = 'true'
+    console.log(query, 'query toggleSoldAuto')
     savePage(query)
   } else {
-    checkSavedPage()
     delete query.showSold
+    checkSavedPage()
   }
 
   function checkSavedPage () {
     if (savedPageBeforeFilterData.value) {
       query.page = savedPageBeforeFilterData.value
+      console.log(query.page, 'query.page checkSavedPage')
     }
 
     if (hasOnlyPageAndCount(query)) {
+      console.log('hasOnlyPageAndCount')
       savedPageBeforeFilterData.value = null
       sessionStorage.removeItem('savedPageBeforeFilter')
     }
   }
 
-  router.push({ query })
+  pushQuery(query)
 
   emit('showSoldAuto', newVal)
 })
+
 
 watch(() => route.query, (newQuery) => {
   searchModel.value = newQuery.model as string || ''
@@ -449,142 +359,21 @@ async function pushQuery(query: Record<string, string | string[]>): Promise<void
     query: query
   })
 
-  // Ждем обновления маршрута
   await nextTick()
 
   isNavigating.value = false
 }
 
-function applyPriceFilter(): void {
-  const query = { ...route.query } as Record<string, string | string[]>
-
-  if (dataFilterPrice.localMinPrice) {
-    dataFilterPrice.activeMinPrice = dataFilterPrice.localMinPrice
-    query.price_from = (dataFilterPrice.activeMinPrice).toString()
-  }
-  if (dataFilterPrice.localMaxPrice) {
-    dataFilterPrice.activeMaxPrice = dataFilterPrice.localMaxPrice
-    query.price_to = (dataFilterPrice.activeMaxPrice).toString()
-  }
-
-  savePage(query)
-
-  pushQuery(query)
-}
-
-function applyMileageFilter(): void {
-  const query = { ...route.query } as Record<string, string | string[]>
-
-  if (dataFilterMileage.localMinMileage) {
-    dataFilterMileage.activeMinMileage = dataFilterMileage.localMinMileage
-    query.mileage_from = (dataFilterMileage.activeMinMileage).toString()
-  }
-  if (dataFilterMileage.localMaxMileage) {
-    dataFilterMileage.activeMaxMileage = dataFilterMileage.localMaxMileage
-    query.mileage_to = (dataFilterMileage.activeMaxMileage).toString()
-  }
-
-  savePage(query)
-
-  pushQuery(query)
-}
-
 function hasOnlyPageAndCount(query: Record<string, any>): boolean {
   const keys = Object.keys(query)
 
-  // Если нет ключей - пустой query
   if (keys.length === 0) return false
 
-  // Проверяем, что все ключи - это только page и/или count
   return keys.every(key => key === 'page' || key === 'count')
-}
-
-function resetFilter(arg: ResetKey): void {
-  const query = { ...route.query } as Record<string, string | string[]>
-
-  switch(arg) {
-    case 'minPrice':
-      dataFilterPrice.localMinPrice = null
-      dataFilterPrice.activeMinPrice = null
-      delete query.price_from
-      break
-
-    case 'maxPrice':
-      dataFilterPrice.localMaxPrice = null
-      dataFilterPrice.activeMaxPrice = null
-      delete query.price_to
-      break
-
-    case 'minMileage':
-      dataFilterMileage.localMinMileage = null
-      dataFilterMileage.activeMinMileage = null
-      delete query.mileage_from
-      break
-
-    case 'maxMileage':
-      dataFilterMileage.localMaxMileage = null
-      dataFilterMileage.activeMaxMileage = null
-      delete query.mileage_to
-      break
-
-    case 'searchBrand':
-      searchBrand.value = ''
-      delete query.brand
-      break
-
-    case 'searchModel':
-      searchModel.value = ''
-      delete query.model
-      break
-
-    case 'searchCity':
-      searchCity.value = ''
-      delete query.city
-      break
-  }
-
-  if (savedPageBeforeFilterData.value) {
-    query.page = savedPageBeforeFilterData.value
-  }
-
-  pushQuery(query)
-
-  if (hasOnlyPageAndCount(query)) {
-    savedPageBeforeFilterData.value = null
-    sessionStorage.removeItem('savedPageBeforeFilter')
-  }
 }
 
 function handlePageChange (items: Advertisement[]): void {
   currentPageItems.value = items
-}
-
-function savePage (query: Record<string, string | string[]>) {
-  if (savedPageBeforeFilterData.value === null && query.page) {
-    savedPageBeforeFilterData.value = query.page
-    console.log(savedPageBeforeFilterData.value, 'savedPageBeforeFilterData.value')
-    sessionStorage.setItem('savedPageBeforeFilter', savedPageBeforeFilterData.value as string)
-  }
-}
-
-const handleSearch = () => {
-  isFiltering.value = true
-
-  const query = { ...route.query } as Record<string, string | string[]>
-
-  searchBrand.value.trim() ? query.brand = searchBrand.value : delete query.brand
-  searchModel.value.trim() ? query.model = searchModel.value : delete query.model
-  searchCity.value.trim() ? query.city = searchCity.value : delete query.city
-
-  savePage(query)
-
-  query.page = '1'
-
-  pushQuery(query)
-
-  setTimeout(() => {
-    isFiltering.value = false
-  }, 300)
 }
 
 const handleCardClick = (item: Advertisement) => {
@@ -622,9 +411,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 @use '@/assets/scss/mixins' as *;
 .cards {
-  //width: 100vw;
-  //max-width: 80%;
-  //width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;

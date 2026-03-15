@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, watch, nextTick, watchEffect } from 'vue'
+import { onMounted, ref, computed, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import type { Advertisement } from "@/composables/useAdvertisements";
 
