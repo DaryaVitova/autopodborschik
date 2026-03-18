@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, nextTick, computed } from "vue"
-import { useFormatters } from "@/composables/useFormatters.ts"
+import { useFormatters } from "@/composables/formatters.ts"
 
 const props = withDefaults(defineProps<{
   minValue?: number,
@@ -308,6 +308,24 @@ onMounted(() => {
       cursor: pointer;
       border: 2px solid white;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+@media (max-width: 1023px) {
+  .price-slider {
+    &__container {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .price-slider {
+    &__label {
+      &--text {
+        font-size: 14px;
+      }
     }
   }
 }

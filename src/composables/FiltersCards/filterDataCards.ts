@@ -1,6 +1,6 @@
 import {computed, type Ref} from "vue";
-import type { Advertisement } from "@/composables/useAdvertisements"
-import { type FilterPrice, type FilterMileage } from "@/composables/FiltersCards/useFilterCardsState.ts";
+import type { Advertisement } from "@/composables/advertisements.ts"
+import { type FilterPrice, type FilterMileage } from "@/composables/FiltersCards/filterCardsState.ts";
 
 export function useFilterDataCards(
   data: Ref<Advertisement[]>,

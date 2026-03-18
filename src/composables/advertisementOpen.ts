@@ -1,5 +1,5 @@
 import { useRouter } from 'vue-router'
-import type { Advertisement } from '@/composables/useAdvertisements'
+import type { Advertisement } from '@/composables/advertisements.ts'
 
 export const useAdvertisementOpen = () => {
   const router = useRouter()

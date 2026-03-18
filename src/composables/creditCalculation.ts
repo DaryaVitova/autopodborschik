@@ -1,4 +1,5 @@
 import { computed, type Ref } from 'vue'
+import { MONTHS_IN_YEAR, PERCENT_CONVERSION, INCOME_COEFFICIENT } from '@/helpers/consts.ts'
 
 interface PaymentSchedule {
   month: number
@@ -20,8 +21,8 @@ export function useCreditCalculation(
       return 0
     }
 
-    const monthlyRate = interestRate.value / 100 / 12
-    const months = loanTermYears.value * 12
+    const monthlyRate = interestRate.value / PERCENT_CONVERSION / MONTHS_IN_YEAR
+    const months = loanTermYears.value * MONTHS_IN_YEAR
 
     if (monthlyRate === 0) {
       return Math.round(loanAmount.value / months)
@@ -41,12 +42,12 @@ export function useCreditCalculation(
 
   // Необходимый доход
   const requiredIncome = computed((): number=> {
-    return Math.round(monthlyPayment.value * 1.8)
+    return Math.round(monthlyPayment.value * INCOME_COEFFICIENT)
   })
 
   // Общая сумма выплат
   const totalPayment = computed((): number => {
-    return monthlyPayment.value * loanTermYears.value * 12
+    return monthlyPayment.value * loanTermYears.value * MONTHS_IN_YEAR
   })
 
   // Переплата
@@ -57,14 +58,14 @@ export function useCreditCalculation(
   // Процент переплаты
   const overpaymentPercentage = computed((): number => {
     if (!loanAmount.value) return 0
-    return (overpayment.value / loanAmount.value) * 100
+    return (overpayment.value / loanAmount.value) * PERCENT_CONVERSION
   })
 
   // График платежей
   const paymentSchedule = computed((): PaymentSchedule[] => {
     const schedule = []
-    const monthlyRate = interestRate.value / 100 / 12
-    const months = loanTermYears.value * 12
+    const monthlyRate = interestRate.value / PERCENT_CONVERSION / MONTHS_IN_YEAR
+    const months = loanTermYears.value * MONTHS_IN_YEAR
     let remaining = loanAmount.value
     const fixedMonthlyPayment = monthlyPayment.value
 
@@ -80,6 +81,7 @@ export function useCreditCalculation(
 
       // Фактический платеж может отличаться в последнем месяце
       const actualPayment = principal + interest
+
 
       schedule.push({
         month,

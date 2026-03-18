@@ -39,11 +39,14 @@
               <div class="form__group">
                 <span v-if="isErrorData.year" class="form__error-message">*Выберите год выпуска</span>
                 <label for="year" class="form__label">Год выпуска *</label>
-                <custom-select-year
+                <CustomSelectYear
                   class="form__select-year"
                   v-model="formData.year"
                   placeholderText="Выберите год"
+                  :isOpen="isSelectOpen"
                   @clear-error="clearError('year')"
+                  @toggle="isSelectOpen = !isSelectOpen"
+                  @close="isSelectOpen = false"
                 />
               </div>
 
@@ -147,9 +150,8 @@ import { ref, reactive, computed } from 'vue'
 import InputCreateAd from "@/components/CreateAd/InputCreateAd.vue";
 import { db } from '@/firebase.ts'
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
-import CustomSelectYear from '@/components/common/CustomSelectYear.vue'
 import { useRouter } from 'vue-router'
-import {useFormatters} from "@/composables/useFormatters.ts";
+import {useFormatters} from "@/composables/formatters.ts";
 
 const { formatNumber, parseNumber } = useFormatters()
 
@@ -254,6 +256,8 @@ const uploadedPhotos = ref<string[]>([])
 const maxPhotos: number = 5
 
 const maxLength = 15
+
+const isSelectOpen = ref(false)
 
 const countries = ref<readonly Country[]>([
   { code: 'RU', name: 'Россия', phoneCode: '7', flag: '🇷🇺' },
@@ -495,7 +499,6 @@ const saveToFirebase = async (advertisementData: FormData): Promise<SaveToFireba
 
     // 1. Загружаем фото на ImgBB если они есть
     if (uploadedPhotos.value.length > 0) {
-      console.log(`🖼️  Загружаем ${uploadedPhotos.value.length} фото на ImgBB...`)
 
       try {
         imgbbPhotoData = await uploadAllPhotosToImgBB(uploadedPhotos.value)
@@ -564,7 +567,6 @@ const submitForm = async (): Promise<void> => {
   // Проверяем API ключ
   if (!IMGBB_API_KEY || IMGBB_API_KEY.includes('b1234567890')) {
     console.warn("⚠️  API ключ ImgBB не настроен!")
-    // Можно продолжить без фото или показать предупреждение
   }
 
   const country = countries.value.find(c => c.code === selectedCountry.value)
@@ -655,8 +657,8 @@ const resetForm = () => {
   border-radius: 5px;
   backdrop-filter: blur(200px);
   padding: 60px 60px 40px 60px;
-  margin-top: 150px;
-  margin-bottom: 70px;
+  margin: 150px 0 70px;
+
   &__main {
     display: flex;
     justify-content: space-around;

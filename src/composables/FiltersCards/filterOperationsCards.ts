@@ -1,7 +1,7 @@
-import type {ResetKey} from "@/composables/FiltersCards/useFilterCardsState.ts";
+import type {ResetKey} from "@/composables/FiltersCards/filterCardsState.ts";
 import { useRoute } from "vue-router";
 import { type Ref } from "vue";
-import { type FilterPrice, type FilterMileage } from "@/composables/FiltersCards/useFilterCardsState.ts";
+import { type FilterPrice, type FilterMileage } from "@/composables/FiltersCards/filterCardsState.ts";
 
 export function useFilterOperationsCards(
   searchBrand: Ref<string>,

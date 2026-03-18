@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFormatters } from '@/composables/useFormatters.ts'
+import { useFormatters } from '@/composables/formatters.ts'
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{

@@ -25,8 +25,8 @@
 <script setup lang="ts">
 import { useFavoritesStore } from "@/stores/favoritesStore.ts"
 import CarCard from "@/components/Cards/CarCard.vue";
-import type { Advertisement } from "@/composables/useAdvertisements.ts"
-import { useAdvertisementOpen } from "@/composables/useAdvertisementOpen"
+import type { Advertisement } from "@/composables/advertisements.ts"
+import { useAdvertisementOpen } from "@/composables/advertisementOpen.ts"
 import { useRouter } from "vue-router"
 
 const router = useRouter()

@@ -28,7 +28,7 @@
     <label for="checkbox">Показать проданные</label>
   </div>
 
-  <div class="table-container">
+  <div class="table-container" :class="{ 'table-container--loading': loader }">
     <table class="table">
       <thead class="table__head">
       <tr class="table__headers">
@@ -94,7 +94,7 @@
       @action="handleMenuAction"
     />
 
-    <loader-table v-if="loader"></loader-table>
+    <loader-table v-if="loader" />
   </div>
 
   <PaginationViews
@@ -112,10 +112,10 @@ import IconsTable from '@/components/Table/IconsTable.vue'
 import LoaderTable from '@/components/Table/LoaderTable.vue'
 import InputTable from '@/components/Table/InputTable.vue'
 import ContextMenuTable from '@/components/Table/ContextMenuTable.vue'
-import PaginationViews from '@/components/common/PaginationViews.vue'
+// import PaginationViews from '@/common/PaginationViews.vue'
 import { useContextMenu } from '@/components/Table/composables/useContextMenu.ts'
 import type { Headers } from "@/views/TableView.vue";
-import type { Advertisement } from "@/composables/useAdvertisements.ts";
+import type { Advertisement } from "@/composables/advertisements.ts";
 import { useRoute, useRouter, type LocationQuery } from 'vue-router'
 import { onMounted, reactive, ref, type Ref } from 'vue'
 
@@ -533,11 +533,11 @@ const {
   }
   &__header, &__body {
     width: 200px;
-    //background-color: #b6c2e3;
   }
   &__header {
     position: relative;
     padding-block: 5px;
+    white-space: nowrap;
   }
   &__pagination-select {
     margin-top: 60px;
@@ -571,6 +571,7 @@ const {
   &__element {
     padding-left: 12px;
     padding-block: 7px;
+    white-space: nowrap;
     &--no-data {
       align-self: center;
       margin-top: 10px;
@@ -586,5 +587,38 @@ const {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+@media(max-width: 1024px) {
+  .table {
+    &__element {
+      & div {
+        font-size: 14px;
+      }
+    }
+
+    &__header {
+      font-size: 14px;
+    }
+  }
+}
+
+@media(max-width: 747px) {
+  .table-container {
+    overflow-x: auto;
+    width: 100vw;
+    max-width: 100vw;
+    &--loading {
+      overflow-x: hidden;
+    }
+  }
+
+  .table {
+    min-width: 100%;
+    &__header, &__element {
+      min-width: 150px;
+      white-space: nowrap;
+    }
+  }
 }
 </style>

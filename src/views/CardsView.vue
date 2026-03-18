@@ -9,12 +9,12 @@
 
 <script setup lang="ts">
 import CardsAd from '@/components/Cards/CardsAd.vue'
-import { useAdvertisements } from '@/composables/useAdvertisements.ts'
-import type { Advertisement } from "@/composables/useAdvertisements.ts";
+import { useAdvertisements } from '@/composables/advertisements.ts'
+import type { Advertisement } from "@/composables/advertisements.ts";
 import { computed, ref, provide } from 'vue'
-import { useAdvertisementOpen } from "@/composables/useAdvertisementOpen"
+import { useAdvertisementOpen } from "@/composables/advertisementOpen.ts"
 import { useSoldAutoStore } from "@/stores/soldAutoStore.ts"
-import { useAdvertisementFilter } from "@/composables/useAdvertisementFilter.ts";
+import { useAdvertisementFilter } from "@/composables/advertisementFilter.ts";
 
 const soldAuto = useSoldAutoStore()
 

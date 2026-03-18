@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFormatters } from "@/composables/useFormatters.ts"
+import { useFormatters } from "@/composables/formatters.ts"
 
 const props = defineProps<{
   sumCredit: number,
@@ -111,6 +111,32 @@ const dynamicPercent = computed(() => {
     &-label {
       font-size: 14px;
       color: #737272;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .pie-chart {
+    gap: 10px;
+    &__drawing {
+      width: 100px;
+      height: 100px;
+    }
+    &__info-label {
+      font-size: 12px;
+    }
+    &__info-sum {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 400px) {
+  .pie-chart {
+    padding: 10px;
+    &__drawing {
+      width: 60px;
+      height: 60px;
     }
   }
 }

@@ -100,8 +100,8 @@
 
 <script setup lang="ts">
 import {computed, ref, inject } from 'vue'
-import type { Advertisement } from '@/composables/useAdvertisements'
-import FavoriteButton from '@/components/common/FavoriteButton.vue'
+import type { Advertisement } from '@/composables/advertisements.ts'
+// import FavoriteButton from '@/common/FavoriteButton.vue'
 import {useRoute} from "vue-router";
 
 const props = withDefaults(defineProps<{

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { Advertisement } from '@/composables/useAdvertisements'
+import type { Advertisement } from '@/composables/advertisements.ts'
 
 export const useSoldAutoStore = defineStore('soldAutoStore', {
   state: () => {

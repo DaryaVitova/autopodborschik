@@ -48,7 +48,7 @@
           <price-slider
             v-model="downPayment"
             class="calculate-credit__price-slider"
-            label="Первоначальный взнос (минимум 10% от стоимости)"
+            :label="isMobile ? 'Первоначальный взнос' : 'Первоначальный взнос (минимум 10% от стоимости)'"
             :maxValue="maxDownPayment"
             :priceAuto="priceAuto"
             downPayment
@@ -155,12 +155,12 @@
     </div>
   </div>
 </template>
-
+<!--label="Первоначальный взнос (минимум 10% от стоимости)"-->
 <script setup lang="ts">
 import PriceSlider from "@/components/AutoCredit/PriceSlider.vue"
-import {computed, onMounted, ref, watch} from "vue"
-import { useFormatters } from "@/composables/useFormatters.ts"
-import { useCreditCalculation } from "@/composables/useCreditCalculation"
+import {computed, onMounted, onUnmounted, ref, watch} from "vue"
+import { useFormatters } from "@/composables/formatters.ts"
+import { useCreditCalculation } from "@/composables/creditCalculation.ts"
 import CalculateCredit from "@/components/AutoCredit/CalculateCredit.vue"
 import ScheduleIcon from "@/components/SvgIcons/ScheduleIcon.vue"
 import PaymentSchedule from "@/components/AutoCredit/PaymentSchedule.vue"
@@ -222,6 +222,13 @@ onMounted(() => {
         break
     }
   }
+
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
 })
 
 const basePercent: number = 17
@@ -241,6 +248,12 @@ const notResetValue = ref<boolean>(savedData?.notResetValue ?? false)
 const lightboxActive = ref<boolean>(false)
 
 const activeRate = ref<'base' | 'family' | 'military'>(savedData?.activeRate ?? 'base')
+
+const isMobile = ref(false)
+
+const checkMobile = () => {
+  window.innerWidth < 768 ? isMobile.value = true : isMobile.value = false
+}
 
 const setActiveRate = (rate: 'base' | 'family' | 'military') => {
   activeRate.value = rate
@@ -483,9 +496,75 @@ const {
   align-items: flex-end;
   &__content {
     width: 700px;
+    //width: 70%;
     height: 90%;
     border-radius: 12px;
     background-color: white;
+  }
+}
+
+@media (max-width: 1100px) {
+  .calculate-credit {
+    gap: 60px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .calculate-credit {
+    flex-direction: column;
+    &__left-side, &__right-side {
+      width: 100%;
+    }
+
+    &__right-side {
+      margin-bottom: 120px;
+    }
+
+    &__calculate-container {
+      width: 80%;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .calculate-credit {
+    &__price-slider {
+      &--percent {
+        font-size: 14px;
+      }
+    }
+
+    &__calculate-container {
+      width: 100%;
+    }
+
+    &__percent-btn {
+      font-size: 14px;
+      &--color-text {
+        white-space: nowrap;
+      }
+    }
+
+    &__note {
+      font-size: 12px;
+    }
+
+    &__checkbox {
+      &--label {
+        font-size: 10px;
+      }
+
+      &--mark {
+        width: 12px;
+        height: 12px;
+      }
+    }
+  }
+
+  .lightbox {
+    &__content {
+      width: 80%;
+    }
   }
 }
 </style>

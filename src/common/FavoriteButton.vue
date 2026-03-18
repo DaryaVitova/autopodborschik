@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import HeartIcon from '@/components/SvgIcons/HeartIcon.vue'
-import { useFavoritesStore } from "@/stores/favoritesStore"
-import type { Advertisement } from '@/composables/useAdvertisements'
+import { useFavoritesStore } from "@/stores/favoritesStore.ts"
+import type { Advertisement } from '@/composables/advertisements.ts'
 import { computed } from "vue"
 
 const props = defineProps<{

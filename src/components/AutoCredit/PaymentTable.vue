@@ -364,4 +364,30 @@ watch([() => props.sumCredit, () => props.monthlyPayment], () => {
     }
   }
 }
+
+@media (max-width: 767px) {
+  .table {
+    &__head-title {
+      font-size: 14px;
+    }
+  }
+}
+@media (max-width: 500px) {
+  .table {
+    &__head-title {
+      font-size: 12px;
+    }
+    &__body-cell {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 390px) {
+  .table {
+    &__head-title {
+      font-size: 10px;
+    }
+  }
+}
 </style>

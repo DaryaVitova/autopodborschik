@@ -1,5 +1,5 @@
 import { reactive, ref } from 'vue'
-import type { Advertisement } from "@/composables/useAdvertisements"
+import type { Advertisement } from "@/composables/advertisements.ts"
 
 export interface FilterPrice {
   localMinPrice: number | null

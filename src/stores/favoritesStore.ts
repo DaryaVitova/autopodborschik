@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { Advertisement } from '@/composables/useAdvertisements'
+import type { Advertisement } from '@/composables/advertisements.ts'
 
 export const useFavoritesStore = defineStore('favorites', {
   state: () => ({
@@ -24,11 +24,11 @@ export const useFavoritesStore = defineStore('favorites', {
     addToFavorites(item: Advertisement) {
       // Проверяем, нет ли уже в избранных
       if (this.favoritesIds.has(item.id)) {
-        console.warn('Товар уже в избранных')
+        console.warn('Авто уже в избранных')
         return false
       }
 
-      this.favorites.push(item)
+      this.favorites.unshift(item)
       this.favoritesIds.add(item.id)
       this.saveToLocalStorage()
       return true

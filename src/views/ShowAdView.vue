@@ -1,6 +1,6 @@
 <template>
   <div class="showAd">
-    <div class="sticky-container">
+    <div class="showAd__sticky-container-btn">
       <button class="back-button-arrow" @click="goBack" />
     </div>
     <!-- Заголовок -->
@@ -30,49 +30,49 @@
     <div class="ad-content">
       <!-- Левая колонка - информация -->
       <div class="ad-info">
-        <h3 class="info-title">Информация об автомобиле</h3>
+        <h3 class="ad-info__title">Информация об автомобиле</h3>
 
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="label">Марка:</span>
-            <span class="value">{{ adData?.brand }}</span>
+        <div class="ad-info__grid">
+          <div class="ad-info__item">
+            <span class="ad-info__item-label">Марка:</span>
+            <span class="ad-info__item-value">{{ adData?.brand }}</span>
           </div>
-          <div class="info-item">
-            <span class="label">Модель:</span>
-            <span class="value">{{ adData?.model }}</span>
+          <div class="ad-info__item">
+            <span class="ad-info__item-label">Модель:</span>
+            <span class="ad-info__item-value">{{ adData?.model }}</span>
           </div>
-          <div class="info-item">
-            <span class="label">Год выпуска:</span>
-            <span class="value">{{ adData?.year }}</span>
+          <div class="ad-info__item">
+            <span class="ad-info__item-label">Год выпуска:</span>
+            <span class="ad-info__item-value">{{ adData?.year }}</span>
           </div>
-          <div class="info-item">
-            <span class="label">Пробег:</span>
-            <span class="value">{{ adData?.mileage?.toLocaleString('ru-RU') }} км</span>
+          <div class="ad-info__item">
+            <span class="ad-info__item-label">Пробег:</span>
+            <span class="ad-info__item-value">{{ adData?.mileage?.toLocaleString('ru-RU') }} км</span>
           </div>
-          <div class="info-item">
-            <span class="label">Город:</span>
-            <span class="value">{{ adData?.city }}</span>
+          <div class="ad-info__item">
+            <span class="ad-info__item-label">Город:</span>
+            <span class="ad-info__item-value">{{ adData?.city }}</span>
           </div>
-          <div class="info-item" v-if="adData?.phone">
-            <span class="label">Телефон:</span>
-            <span class="value phone">{{ adData?.phone }}</span>
+          <div class="ad-info__item" v-if="adData?.phone">
+            <span class="ad-info__item-label">Телефон:</span>
+            <span class="ad-info__item-value ad-info__item-value--phone">{{ adData?.phone }}</span>
           </div>
-          <div class="info-item" v-if="adData?.createdAt">
-            <span class="label">Дата добавления:</span>
-            <span class="value">{{ adData?.createdAt }}</span>
+          <div class="ad-info__item" v-if="adData?.createdAt">
+            <span class="ad-info__item-label">Дата добавления:</span>
+            <span class="ad-info__item-value">{{ adData?.createdAt }}</span>
           </div>
         </div>
 
         <!-- Контакты -->
-        <div class="contacts" v-if="adData?.phone">
-          <h3 class="contacts-title">Контакты</h3>
-          <div class="contact-item">
-            <span class="contact-label">Телефон:</span>
-            <a :href="`tel:${cleanPhone}`" class="contact-phone">
+        <div class="ad-contacts" v-if="adData?.phone">
+          <h3 class="ad-contacts__title">Контакты</h3>
+          <div class="ad-contacts__item">
+            <span class="ad-contacts__label">Телефон:</span>
+            <a :href="`tel:${cleanPhone}`" class="ad-contacts__phone">
               {{ adData?.phone }}
             </a>
           </div>
-          <button @click="copyPhone" class="copy-btn">
+          <button @click="copyPhone" class="ad-contacts__copy-btn">
             📋 Скопировать номер
           </button>
         </div>
@@ -80,87 +80,93 @@
 
       <!-- Правая колонка - фото (только на десктопе) -->
       <div class="ad-photos" v-if="hasPhotos">
-        <h3 class="photos-title">
+        <h3 class="ad-photos__title">
           Фотографии
-          <span class="photos-count">({{ validPhotos.length }})</span>
+          <span class="ad-photos__count">({{ validPhotos.length }})</span>
         </h3>
 
-        <div class="photos-gallery">
+        <div class="ad-photos__gallery">
           <div
             v-for="(photo, index) in validPhotos"
             :key="index"
-            class="photo-item"
+            class="ad-photos__gallery-item"
             @click="openLightbox(index)"
           >
-            <div class="photo-frame">
+            <div class="ad-photos__gallery-frame">
               <img
                 :src="photo"
                 :alt="`${adData?.brand} ${adData?.model} - фото ${index + 1}`"
-                class="photo-img"
+                class="ad-photos__gallery-img"
                 loading="lazy"
               />
-              <div class="photo-overlay">
-                <span class="photo-number">Фото {{ index + 1 }}</span>
-                <span class="photo-zoom">🔍</span>
+              <div class="ad-photos__gallery-overlay">
+                <span class="ad-photos__gallery-number">Фото {{ index + 1 }}</span>
+                <span class="ad-photos__gallery-zoom">🔍</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="photos-hint">
-          <span class="hint-icon">💡</span>
+        <div class="ad-photos__hint">
+          <span class="ad-photos__hint-icon">💡</span>
           Нажмите на фото для увеличения
         </div>
       </div>
 
-      <div v-if="!hasPhotos" class="no-photos">
-        <div class="no-photos-icon">📷</div>
-        <p class="no-photos-text">Фотографии отсутствуют</p>
+      <div v-if="!hasPhotos" class="ad-photos__no-photos">
+        <div class="ad-photos__no-photos-icon">📷</div>
+        <p class="ad-photos__no-photos-text">Фотографии отсутствуют</p>
       </div>
     </div>
 
     <!-- Фото для мобильных (под информацией) -->
-    <div class="mobile-photos" v-if="hasPhotos">
-      <h3 class="mobile-photos-title">
+    <div class="ad-mobile-photos" v-if="hasPhotos">
+      <h3 class="ad-mobile-photos__title">
         Фотографии
-        <span class="mobile-photos-count">({{ validPhotos.length }})</span>
+        <span class="ad-mobile-photos__count">({{ validPhotos.length }})</span>
       </h3>
 
-      <div class="mobile-photos-gallery">
+      <div class="ad-mobile-photos__gallery">
         <div
           v-for="(photo, index) in validPhotos"
           :key="index"
-          class="mobile-photo-item"
+          class="ad-mobile-photos__gallery-item"
           @click="openLightbox(index)"
         >
           <img
             :src="photo"
             :alt="`${adData?.brand} ${adData?.model} - фото ${index + 1}`"
-            class="mobile-photo-img"
+            class="ad-mobile-photos__gallery-img"
             loading="lazy"
           />
-          <div class="mobile-photo-number">Фото {{ index + 1 }}</div>
+          <div class="ad-mobile-photos__gallery-number">Фото {{ index + 1 }}</div>
         </div>
       </div>
     </div>
 
     <!-- Лайтбокс -->
     <div v-if="lightboxActive" class="lightbox" @click="closeLightbox">
-      <button class="lightbox-close" @click="closeLightbox">✕</button>
-      <button class="lightbox-prev" @click.stop="prevPhoto">‹</button>
+      <button class="lightbox__close" @click="closeLightbox">✕</button>
+      <button
+        class="lightbox__prev"
+        @click.stop="prevPhoto"
+      />
 
-      <div class="lightbox-content">
+      <div class="lightbox__content">
         <img
           :src="validPhotos[currentPhotoIndex]"
           :alt="`Фото ${currentPhotoIndex + 1}`"
-          class="lightbox-image"
+          class="lightbox__image"
         />
-        <div class="lightbox-counter">
+        <div class="lightbox__counter">
           {{ currentPhotoIndex + 1 }} / {{ validPhotos.length }}
         </div>
       </div>
 
-      <button class="lightbox-next" @click.stop="nextPhoto">›</button>
+      <button
+        class="lightbox__next"
+        @click.stop="nextPhoto"
+      />
     </div>
 
     <div class="showAd__bottom-container">
@@ -188,7 +194,7 @@
     </div>
 
     <div v-if="lightboxActiveForSold" class="lightbox lightbox--for-sold">
-      <button class="lightbox-close" @click="closeLightboxForSold">✕</button>
+      <button class="lightbox__close" @click="closeLightboxForSold">✕</button>
       <div class="lightbox__input-group">
         <label for="priceSoldAuto" class="lightbox__label">Введите,  за сколько был куплен проданный автомобиль</label>
 
@@ -222,10 +228,9 @@
 <script setup lang="ts">
 import {ref, computed, onMounted, type Ref } from 'vue'
 import { useRouter } from "vue-router"
-import type { Advertisement } from "@/composables/useAdvertisements"
-import FavoriteButton from "@/components/common/FavoriteButton.vue"
+import type { Advertisement } from "@/composables/advertisements.ts"
 import { useFavoritesStore } from "@/stores/favoritesStore.ts"
-import { useFormatters } from "@/composables/useFormatters.ts"
+import { useFormatters } from "@/composables/formatters.ts"
 import { useSoldAutoStore } from "@/stores/soldAutoStore.ts"
 import { doc, deleteDoc } from 'firebase/firestore'
 import { db } from '@/firebase.ts'
@@ -315,20 +320,6 @@ const copyPhone = async (): Promise<void> => {
 
 function goBack (): void {
   router.go(-1)
-  // const savedQuery = sessionStorage.getItem('cards-query')
-  //
-  // console.log(savedQuery, 'savedQuery')
-  //
-  // if (savedQuery) {
-  //   const query = JSON.parse(savedQuery)
-  //   router.push({
-  //     name: 'cards',
-  //     query: query
-  //   })
-  //   sessionStorage.removeItem('previousQuery')
-  // } else {
-  //   router.go(-1)
-  // }
 }
 
 function keyDownEvent(event: KeyboardEvent): void {
@@ -353,8 +344,6 @@ function addInSoldAuto () {
   } else if (!priceSoldAuto.value) {
     errorInputPriceSoldData.value = true
   }
-
-  console.log(soldAuto.getSoldCars, 'soldAuto.getSoldCars')
 }
 
 const deleteAd = async (id: string | undefined): Promise<void> => {
@@ -393,7 +382,6 @@ onMounted(() => {
   }
 
   const handleKeydown = (e: KeyboardEvent): void => {
-    console.log(e, 'e')
     if (e.key === 'Escape' && lightboxActive.value) {
       closeLightbox()
     }
@@ -423,6 +411,14 @@ onMounted(() => {
   background: #f8f9fa;
   min-height: 100vh;
 
+  &__sticky-container-btn {
+    position: sticky;
+    top: 0;
+    left: 0;
+    height: 0;
+    z-index: 1000;
+  }
+
   &__bottom-container {
     display: flex;
     flex-direction: column;
@@ -451,14 +447,6 @@ onMounted(() => {
       background-color: #6d5f8f;
     }
   }
-}
-
-.sticky-container {
-  position: sticky;
-  top: 0;
-  left: 0;
-  height: 0;
-  z-index: 1000;
 }
 
 /* Заголовок */
@@ -530,6 +518,56 @@ h2 {
   padding: 35px;
   border-radius: 16px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+  &__title {
+    color: #333;
+    margin: 0 0 25px 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #5296bc;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-bottom: 40px;
+  }
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid #f0f0f0;
+    align-items: flex-start;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &-label {
+      color: #666;
+      font-weight: 500;
+      font-size: 16px;
+      flex-shrink: 0;
+      min-width: 160px;
+    }
+
+    &-value {
+      color: #333;
+      font-weight: 600;
+      font-size: 16px;
+      text-align: right;
+      word-break: break-word;
+      max-width: 400px;
+
+      &--phone {
+        color: #5296bc;
+        font-size: 1.1rem;
+      }
+    }
+  }
 }
 
 .ad-desc {
@@ -543,56 +581,6 @@ h2 {
   }
 }
 
-.info-title {
-  color: #333;
-  margin: 0 0 25px 0;
-  font-size: 1.6rem;
-  font-weight: 600;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #5296bc;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 15px;
-  margin-bottom: 40px;
-}
-
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 16px 0;
-  border-bottom: 1px solid #f0f0f0;
-  align-items: flex-start;
-}
-
-.info-item:last-child {
-  border-bottom: none;
-}
-
-.label {
-  color: #666;
-  font-weight: 500;
-  font-size: 16px;
-  flex-shrink: 0;
-  min-width: 160px;
-}
-
-.value {
-  color: #333;
-  font-weight: 600;
-  font-size: 16px;
-  text-align: right;
-  word-break: break-word;
-  max-width: 400px;
-}
-
-.value.phone {
-  color: #5296bc;
-  font-size: 1.1rem;
-}
-
 .value.description {
   font-style: italic;
   color: #555;
@@ -602,63 +590,62 @@ h2 {
 }
 
 /* Контакты */
-.contacts {
+.ad-contacts {
   padding-top: 30px;
   border-top: 2px solid #f0f0f0;
-}
 
-.contacts-title {
-  color: #333;
-  margin: 0 0 20px 0;
-  font-size: 1.6rem;
-  font-weight: 600;
-}
+  &__title {
+    color: #333;
+    margin: 0 0 20px 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+  }
 
-.contact-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 25px;
-}
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+  }
 
-.contact-label {
-  color: #666;
-  font-weight: 500;
-  font-size: 16px;
-}
+  &__label {
+    color: #666;
+    font-weight: 500;
+    font-size: 16px;
+  }
 
-.contact-phone {
-  color: #5296bc;
-  font-size: 1.3rem;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
+  &__phone {
+    color: #5296bc;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    &:hover {
+      color: #45576a;
+      text-decoration: underline;
+    }
+  }
 
-.contact-phone:hover {
-  color: #45576a;
-  text-decoration: underline;
-}
+  &__copy-btn {
+    background: linear-gradient(135deg, #5296bc, #45576a);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(82, 150, 188, 0.3);
 
-.copy-btn {
-  background: linear-gradient(135deg, #5296bc, #45576a);
-  color: white;
-  border: none;
-  padding: 14px 28px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 4px 15px rgba(82, 150, 188, 0.3);
-}
-
-.copy-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(82, 150, 188, 0.4);
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(82, 150, 188, 0.4);
+    }
+  }
 }
 
 /* Правая колонка - фото (десктоп) */
@@ -673,148 +660,138 @@ h2 {
   align-self: flex-start;
   max-height: calc(100vh - 160px);
   overflow-y: auto;
-}
 
-.photos-title {
-  color: #333;
-  margin: 0 0 25px 0;
-  font-size: 1.6rem;
-  font-weight: 600;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #5296bc;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+  &__title {
+    color: #333;
+    margin: 0 0 25px 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #5296bc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 
-.no-photos{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: fit-content;
-  text-align: center;
-  padding: 40px 20px;
-  background: #f9f9f9;
-  border-radius: 12px;
-  border: 2px dashed #ddd;
-}
+  &__count {
+    color: #5296bc;
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
 
-.photos-count {
-  color: #5296bc;
-  font-size: 1.2rem;
-  font-weight: 500;
-}
+  &__gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
 
-.photos-gallery {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
+    &-item:hover &-img {
+      transform: scale(1.05);
+    }
 
-.photo-item {
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: #f8f8f8;
-}
+    &-item {
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #f8f8f8;
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      }
+    }
 
-.photo-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-}
+    &-frame {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+    }
 
-.photo-frame {
-  position: relative;
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
-}
+    &-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform 0.3s ease;
+    }
 
-.photo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  transition: transform 0.3s ease;
-}
+    &-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
-.photo-item:hover .photo-img {
-  transform: scale(1.05);
-}
+    &-item:hover &-overlay {
+      opacity: 1;
+    }
 
-.photo-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-  padding: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
+    &-number {
+      color: white;
+      font-size: 13px;
+      font-weight: 500;
+    }
 
-.photo-item:hover .photo-overlay {
-  opacity: 1;
-}
+    &-zoom {
+      color: white;
+      font-size: 16px;
+      opacity: 0.8;
+    }
+  }
 
-.photo-number {
-  color: white;
-  font-size: 13px;
-  font-weight: 500;
-}
+  &__hint {
+    margin-top: 25px;
+    padding: 15px;
+    background: #f0f8ff;
+    border-radius: 10px;
+    color: #5296bc;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #d1e9ff;
 
-.photo-zoom {
-  color: white;
-  font-size: 16px;
-  opacity: 0.8;
-}
+    &-icon {
+      font-size: 16px;
+    }
+  }
 
-.photos-hint {
-  margin-top: 25px;
-  padding: 15px;
-  background: #f0f8ff;
-  border-radius: 10px;
-  color: #5296bc;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid #d1e9ff;
-}
+  &__no-photos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: fit-content;
+    text-align: center;
+    padding: 40px 20px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    border: 2px dashed #ddd;
 
-.hint-icon {
-  font-size: 16px;
+    &-icon {
+      font-size: 70px;
+      margin-bottom: 25px;
+      opacity: 0.3;
+    }
+
+    &-text {
+      color: #888;
+      font-size: 20px;
+      margin: 0;
+    }
+  }
 }
 
 /* Фото для мобильных (скрыты на десктопе) */
-.mobile-photos {
+.ad-mobile-photos {
   display: none;
-}
-
-///* Нет фото */
-//.no-photos {
-//  text-align: center;
-//  padding: 60px;
-//  background: white;
-//  border-radius: 16px;
-//  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-//}
-
-.no-photos-icon {
-  font-size: 70px;
-  margin-bottom: 25px;
-  opacity: 0.3;
-}
-
-.no-photos-text {
-  color: #888;
-  font-size: 20px;
-  margin: 0;
 }
 
 /* Лайтбокс */
@@ -851,83 +828,95 @@ h2 {
       color: #bf0606;
     }
   }
-}
 
-.lightbox-close {
-  position: absolute;
-  top: 40px;
-  right: 40px;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: white;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  font-size: 28px;
-  cursor: pointer;
-  transition: background 0.3s;
-  z-index: 1001;
-}
+  &__close {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    font-size: 28px;
+    cursor: pointer;
+    transition: background 0.3s;
 
-.lightbox-close:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
 
-.lightbox-prev,
-.lightbox-next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: white;
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  font-size: 35px;
-  cursor: pointer;
-  transition: background 0.3s;
-  z-index: 1001;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  &__prev,
+  &__next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s;
 
-.lightbox-prev:hover,
-.lightbox-next:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
+    display: grid;
+    place-content: center;
 
-.lightbox-prev {
-  left: 40px;
-}
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
 
-.lightbox-next {
-  right: 40px;
-}
+    &::before {
+      display: grid;
+      place-content: center;
+      width: 70px;
+      height: 70px;
+      padding-bottom: 7px;
+      font-size: 34px;
+    }
+  }
 
-.lightbox-content {
-  max-width: 90%;
-  max-height: 90%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  &__prev {
+    left: 40px;
+    &::before {
+      content: "‹";
+    }
+  }
 
-.lightbox-image {
-  max-width: 100%;
-  max-height: calc(90vh - 60px);
-  object-fit: contain;
-  border-radius: 10px;
-}
+  &__next {
+    right: 40px;
+    &::before {
+      content: "›";
+      padding-left: 5px;
+    }
+  }
 
-.lightbox-counter {
-  color: white;
-  margin-top: 25px;
-  font-size: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 10px 25px;
-  border-radius: 25px;
+  &__content {
+    max-width: 90%;
+    max-height: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__image {
+    max-width: 100%;
+    max-height: calc(90vh - 60px);
+    object-fit: contain;
+    border-radius: 10px;
+  }
+
+  &__counter {
+    color: white;
+    margin-top: 25px;
+    font-size: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 25px;
+    border-radius: 25px;
+  }
 }
 
 @media (max-width: 1200px) {
@@ -940,15 +929,14 @@ h2 {
 
   .ad-photos {
     width: 420px;
-  }
-
-  .photo-frame {
-    height: 160px;
+    &__gallery-frame {
+      height: 160px;
+    }
   }
 }
 
 @media (max-width: 1080px) {
-  .sticky-container {
+  .showAd__sticky-container-btn {
     position: static;
   }
 
@@ -975,68 +963,67 @@ h2 {
 
   .ad-photos {
     display: none; /* Скрываем фото справа на планшетах */
+
+    &__no-photos {
+      padding: 30px;
+    }
   }
 
-  .no-photos {
-    padding: 30px;
-  }
-
-  .mobile-photos {
+  .ad-mobile-photos {
     display: block; /* Показываем фото под информацией */
     background: white;
     padding: 30px;
     border-radius: 16px;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     margin-top: 30px;
-  }
 
-  .mobile-photos-title {
-    color: #333;
-    margin: 0 0 20px 0;
-    font-size: 1.6rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+    &__title {
+      color: #333;
+      margin: 0 0 20px 0;
+      font-size: 1.6rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  .mobile-photos-count {
-    color: #5296bc;
-    font-size: 1.2rem;
-    font-weight: 500;
-  }
+    &__count {
+      color: #5296bc;
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
 
-  .mobile-photos-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
-  }
+    &__gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
 
-  .mobile-photo-item {
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-    background: #f8f8f8;
-  }
+      &-item {
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        background: #f8f8f8;
+        &:hover {
+          transform: translateY(-3px);
+        }
+      }
 
-  .mobile-photo-item:hover {
-    transform: translateY(-3px);
-  }
+      &-img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        object-position: center;
+      }
 
-  .mobile-photo-img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    object-position: center;
-  }
-
-  .mobile-photo-number {
-    padding: 8px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    font-size: 12px;
-    text-align: center;
+      &-number {
+        padding: 8px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 12px;
+        text-align: center;
+      }
+    }
   }
 }
 
@@ -1067,52 +1054,59 @@ h2 {
 
   .ad-info {
     padding: 25px;
+    &__item {
+      flex-direction: column;
+      gap: 5px;
+      align-items: flex-start;
+
+      &-label {
+        min-width: auto;
+      }
+
+      &-value {
+        text-align: left;
+        max-width: 100%;
+      }
+    }
   }
 
-  .info-item {
-    flex-direction: column;
-    gap: 5px;
-    align-items: flex-start;
-  }
-
-  .label {
-    min-width: auto;
-  }
-
-  .value {
-    text-align: left;
-    max-width: 100%;
-  }
-
-  .mobile-photos-gallery {
+  .ad-mobile-photos__gallery {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+
+    &-img {
+      height: 130px;
+    }
   }
 
-  .mobile-photo-img {
-    height: 130px;
-  }
+  .lightbox {
+    &__prev,
+    &__next {
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+    }
 
-  .lightbox-prev,
-  .lightbox-next {
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-  }
+    &__prev {
+      left: 20px;
+    }
 
-  .lightbox-prev {
-    left: 20px;
-  }
+    &__next {
+      right: 20px;
+    }
 
-  .lightbox-next {
-    right: 20px;
-  }
+    &__close {
+      top: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+    }
 
-  .lightbox-close {
-    top: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
+    &__label {
+      font-size: 14px;
+      margin-inline: 15px;
+      text-align: center;
+    }
   }
 
   .showAd {
@@ -1131,24 +1125,17 @@ h2 {
       height: 12px;
     }
   }
-
-  .lightbox__label {
-    font-size: 14px;
-    margin-inline: 15px;
-    text-align: center;
-  }
 }
 
 @media (max-width: 480px) {
-  .mobile-photos-gallery {
+  .ad-mobile-photos__gallery {
     grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    &-img {
+      height: 110px;
+    }
   }
 
-  .mobile-photo-img {
-    height: 110px;
-  }
-
-  .copy-btn {
+  .ad-contacts__copy-btn {
     width: 100%;
     justify-content: center;
   }

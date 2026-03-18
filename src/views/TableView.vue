@@ -10,12 +10,12 @@
 
 <script setup lang="ts">
 import DynamicTable from '@/components/Table/DynamicTable.vue'
-import { useAdvertisements } from '@/composables/useAdvertisements.ts'
+import { useAdvertisements } from '@/composables/advertisements.ts'
 import { useRouter } from 'vue-router'
 import {computed, ref} from 'vue'
-import type { Advertisement, UseAdvertisementsReturn } from "@/composables/useAdvertisements.ts";
+import type { Advertisement, UseAdvertisementsReturn } from "@/composables/advertisements.ts";
 import { useSoldAutoStore } from "@/stores/soldAutoStore.ts"
-import { useAdvertisementFilter } from "@/composables/useAdvertisementFilter.ts";
+import { useAdvertisementFilter } from "@/composables/advertisementFilter.ts";
 
 export interface Headers {
   key: string,

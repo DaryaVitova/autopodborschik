@@ -58,4 +58,12 @@ function toggleVisibleFilter (): void {
   }
 }
 
+@media(max-width: 747px) {
+  .table {
+    &__sortable-icon {
+      margin-left: 5px;
+    }
+  }
+}
+
 </style>

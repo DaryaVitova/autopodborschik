@@ -1,7 +1,7 @@
 import { useRoute, useRouter, type LocationQuery } from 'vue-router'
 import { computed, onMounted, reactive, ref, watch, type Ref } from 'vue'
 import type { Headers } from "@/views/TableView.vue";
-import type { Advertisement } from "@/composables/useAdvertisements.ts";
+import type { Advertisement } from "@/composables/advertisements.ts";
 
 type StringObj = Record<string, string | string[]>
 type PayloadVisibleFilter = { headerKey: string }

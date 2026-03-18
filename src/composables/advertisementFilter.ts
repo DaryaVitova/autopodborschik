@@ -1,5 +1,5 @@
 import { computed, type Ref, type ComputedRef } from "vue";
-import type {Advertisement, UseAdvertisementsReturn} from "@/composables/useAdvertisements.ts";
+import type {Advertisement, UseAdvertisementsReturn} from "@/composables/advertisements.ts";
 import type { SoldAutoStore } from "@/stores/soldAutoStore.ts";
 
 export function useAdvertisementFilter(

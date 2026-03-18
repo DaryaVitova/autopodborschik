@@ -36,4 +36,15 @@ withDefaults(defineProps<{
     }
   }
 }
+
+@media(max-width: 500px) {
+  .calculate-credit__right-side-elem {
+    &--text {
+      font-size: 12px;
+    }
+    &--value {
+      font-size: 18px;
+    }
+  }
+}
 </style>

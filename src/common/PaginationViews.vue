@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, watch, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import type { Advertisement } from "@/composables/useAdvertisements";
+import type { Advertisement } from "@/composables/advertisements.ts";
 
 const props = withDefaults(defineProps<{
   columnPerPage: number,
@@ -176,19 +176,6 @@ watch(columnPerPageLocal, (newVal, oldVal) => {
   }
   getPageRange()
 })
-
-// watchEffect( () => {
-//   if (!isMounted.value) return
-//
-//   if (props.isFiltering || props.isNavigating || props.isRestoringFromBack) return
-//
-//   if (currentPage.value > totalPages.value && isInitialized.value) {
-//     currentPage.value = Math.max(1, totalPages.value)
-//     console.log('watchEffect')
-//     updateQuery()
-//   }
-//   getPageRange()
-// })
 
 watch(
   [
@@ -334,13 +321,14 @@ onMounted(async () => {
     margin: 20px 0 0 20px;
   }
 }
+
 .pagination {
   display: flex;
   gap: 8px;
   align-items: center;
   margin: 20px 20px 0 0;
   &__btn {
-    padding: 8px 12px;
+    padding: 6px 10px;
     border: 1px solid #ddd;
     background: white;
     cursor: pointer;
@@ -359,6 +347,7 @@ onMounted(async () => {
   &__button {
     border: 1px solid #b8b8b8;
     border-radius: 2px;
+    font-size: 14px;
     &:hover {
       opacity: 0.7;
     }
@@ -369,6 +358,39 @@ button:disabled {
   cursor: not-allowed;
   &:hover {
     opacity: 1;
+  }
+}
+
+@media(max-width: 767px) {
+  .pagination-container {
+    &__count-showElem {
+      font-size: 12px;
+    }
+  }
+
+  .pagination {
+    &__btn {
+      padding: 4px 8px;
+    }
+
+    &__button {
+      font-size: 12px;
+    }
+  }
+}
+
+@media(max-width: 450px) {
+  .pagination-container {
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 40px;
+    &__count-showElem {
+      margin: 0;
+    }
+  }
+
+  .pagination {
+    margin: 0;
   }
 }
 </style>

@@ -9,7 +9,7 @@
     </div>
     <div
       class="custom-select__dropdown"
-      v-show="isDropdownOpen"
+      v-show="isOpen"
     >
       <div
         class="custom-select__option custom-select__option--reset"
@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 
 const props = withDefaults(defineProps<{
   modelValue: number | null | string,
@@ -40,6 +40,7 @@ const props = withDefaults(defineProps<{
   endYear?: number,
   disabledBefore?: number | null,
   disabledAfter?: number | null,
+  isOpen?: boolean,
 }>(), {
   changeTextColor: false,
   startYear: 1960,
@@ -49,10 +50,10 @@ const props = withDefaults(defineProps<{
 })
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: number | null): void
+  (e: 'update:modelValue', value: number | null): void,
+  (e: 'toggle'): void,
+  (e: 'close'): void,
 }>()
-
-const isDropdownOpen = ref<boolean>(false)
 
 const yearRange = computed((): number[] => {
   const years = []
@@ -63,36 +64,32 @@ const yearRange = computed((): number[] => {
 })
 
 function isYearDisabled(year: number): boolean {
-  if (props.disabledBefore && year < props.disabledBefore) {
+  if (props.disabledBefore && year < props.disabledBefore ||
+    props.disabledAfter && year > props.disabledAfter) {
     return true
   }
-  // Если есть disabledAfter и год больше этого значения
-  if (props.disabledAfter && year > props.disabledAfter) {
-    return true
-  }
-
   return false
 }
 
 function toggleDropdown(): void {
-  isDropdownOpen.value = !isDropdownOpen.value
+  emit('toggle')
 }
 
 function selectYear(year: number): void {
   if (!isYearDisabled(year)) {
     emit('update:modelValue', year)
-    isDropdownOpen.value = false
+    emit('close')
   }
 }
 
 function resetSelection(): void {
   emit('update:modelValue', null)
-  isDropdownOpen.value = false
+  emit('close')
 }
 
 function handleClickOutside(event: MouseEvent) {
   if (!(event.target as HTMLElement).closest('.custom-select')) {
-    isDropdownOpen.value = false
+    emit('close')
   }
 }
 
@@ -105,7 +102,7 @@ onUnmounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .custom-select {
   position: relative;
   width: 100%;

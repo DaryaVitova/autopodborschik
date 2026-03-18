@@ -55,22 +55,28 @@
       <div class="cards__filters--box3">
         <div class="cards__search-filter">
           <div class="cards__search--input-group">
-            <custom-select-year
+            <CustomSelectYear
               class="cards__search cards__search--change-width cards__search--one"
               v-model="startYear"
               placeholderText="Год от"
               :changeTextColor="true"
               :disabled-after="endYear"
+              :isOpen="isOpenFirstSelect"
+              @toggle="handleToggle('start')"
+              @close="openSelect = null"
             />
           </div>
 
           <div class="cards__search--input-group">
-            <custom-select-year
+            <CustomSelectYear
               class="cards__search cards__search--change-width cards__search--two"
               v-model="endYear"
               placeholderText="до"
               :changeTextColor="true"
               :disabled-before="startYear"
+              :isOpen="isOpenSecondSelect"
+              @toggle="handleToggle('end')"
+              @close="openSelect = null"
             />
           </div>
         </div>
@@ -140,7 +146,7 @@
       <p>Загрузка объявлений...</p>
     </div>
 
-    <pagination-views
+    <PaginationViews
       class="cards__pagination"
       v-show="!loader"
       :data="filteredData"
@@ -154,17 +160,15 @@
 </template>
 
 <script setup lang="ts">
-import PaginationViews from '@/components/common/PaginationViews.vue'
-import CustomSelectYear from '@/components/common/CustomSelectYear.vue'
 import CarCard from '@/components/Cards/CarCard.vue'
 import SearchInput from '@/components/Cards/SearchInput.vue'
 import SearchInputByNumber from '@/components/Cards/SearchInputByNumber.vue'
 import { useRoute, useRouter } from 'vue-router'
-import { computed, watch, onMounted, nextTick } from 'vue'
-import type { Advertisement } from "@/composables/useAdvertisements"
-import { useFilterState } from "@/composables/FiltersCards/useFilterCardsState.ts"
-import { useFilterDataCards } from "@/composables/FiltersCards/useFilterDataCards.ts";
-import { useFilterOperationsCards } from "@/composables/FiltersCards/useFilterOperationsCards.ts";
+import { computed, watch, onMounted, nextTick, ref } from 'vue'
+import type { Advertisement } from "@/composables/advertisements.ts"
+import { useFilterState } from "@/composables/FiltersCards/filterCardsState.ts"
+import { useFilterDataCards } from "@/composables/FiltersCards/filterDataCards.ts";
+import { useFilterOperationsCards } from "@/composables/FiltersCards/filterOperationsCards.ts";
 
 const props = withDefaults(defineProps<{
   data: Advertisement[],
@@ -182,6 +186,8 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const route = useRoute()
+
+const openSelect = ref<string | null>(null)
 
 const filterState = useFilterState()
 const {
@@ -350,6 +356,18 @@ watch([startYear, endYear], ([min, max]) => {
 
   pushQuery(query)
 })
+
+const isOpenFirstSelect = computed(() => {
+  return openSelect.value === 'start'
+})
+
+const isOpenSecondSelect = computed(() => {
+  return openSelect.value === 'end'
+})
+
+function handleToggle (selectId: string) {
+  openSelect.value = openSelect.value === selectId ? null : selectId
+}
 
 async function pushQuery(query: Record<string, string | string[]>): Promise<void> {
   isNavigating.value = true

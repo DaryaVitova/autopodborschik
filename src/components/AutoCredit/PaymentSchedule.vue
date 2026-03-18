@@ -67,7 +67,7 @@
 
 <script setup lang="ts">
 import PieChart from "@/components/AutoCredit/PieChart.vue"
-import { useFormatters } from "@/composables/useFormatters.ts"
+import { useFormatters } from "@/composables/formatters.ts"
 import YearsButtons from "@/components/AutoCredit/YearsButtons.vue"
 import {computed, ref} from "vue"
 import PaymentTable, { type PaymentTableExpose } from "@/components/AutoCredit/PaymentTable.vue"
@@ -182,6 +182,31 @@ const handleManualSelect = () => {
     z-index: 150;
     background: white;
     padding: 10px 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .payment-schedule {
+    width: 100%;
+    &__header {
+      padding: 20px;
+      &-first-section {
+        display: none;
+      }
+
+      &-title {
+        font-size: 20px;
+        text-align: center;
+      }
+
+      &-container {
+        justify-content: center;
+      }
+    }
+
+    &__sticky-container {
+      padding-right: 10px;
+    }
   }
 }
 </style>

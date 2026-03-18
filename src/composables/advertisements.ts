@@ -48,19 +48,27 @@ export function useAdvertisements() {
           let timestamp = 0
           if (docData.createdAt) {
             try {
-              if (
-                docData.createdAt &&
-                typeof docData.createdAt === 'object' &&
-                'toDate' in docData.createdAt
-              ) {
-                timestamp = docData.createdAt.toDate().getTime()
-              } else if (docData.createdAt instanceof Date) {
-                timestamp = docData.createdAt.getTime()
-              } else if (typeof docData.createdAt === 'string') {
-                timestamp = new Date(docData.createdAt).getTime()
-              } else if (typeof docData.createdAt === 'number') {
-                timestamp = docData.createdAt
+              let time;
+              if ('toDate' in docData.createdAt) {
+                time = docData?.createdAt?.toDate()
+                // timestamp = new Date(docData?.createdAt?.toDate() ?? docData?.createdAt).getTime();
+              } else {
+                time = docData?.createdAt
               }
+              timestamp = new Date(time).getTime()
+              // if (
+              //   docData.createdAt &&
+              //   typeof docData.createdAt === 'object' &&
+              //   'toDate' in docData.createdAt
+              // ) {
+              //   timestamp = new Date(docData.createdAt.toDate()).getTime() // 123141923 TODO упростить констукцию
+              // } else if (docData.createdAt instanceof Date) {
+              //   timestamp = docData.createdAt.getTime()
+              // } else if (typeof docData.createdAt === 'string') {
+              //   timestamp = new Date(docData.createdAt).getTime()
+              // } else if (typeof docData.createdAt === 'number') {
+              //   timestamp = docData.createdAt
+              // }
             } catch (error) {
               console.error("Ошибка парсинга даты для сортировки:", error)
               timestamp = Date.now()
