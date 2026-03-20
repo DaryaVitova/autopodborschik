@@ -115,6 +115,7 @@ onUnmounted(() => {
   background-size: 16px;
   border: none;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
   &__value {
     color: #090909;
     &--color {
@@ -133,10 +134,11 @@ onUnmounted(() => {
     left: 0;
     right: 0;
     background-color: white;
-    border-top: none;
+    //border-top: none;
     max-height: 200px;
     overflow-y: auto;
     z-index: 1000;
+    border: 2px solid #e5e7eb;
   }
 
   &__option {

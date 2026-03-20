@@ -13,7 +13,6 @@
       class="cards__search--close-filter"
       @click="closeClick"
     >
-      X
     </span>
   </div>
 
@@ -53,19 +52,16 @@ function closeClick(): void {
 
 .cards__search {
   @include cards-search-styles;
-}
 
-.cards__search--close-filter {
-  @include close-filter-styles;
+  &--close-filter {
+    @include close-filter-styles;
+  }
 
-  @media (max-width: 600px) {
-    font-size: 12px !important;
+  &--input-group {
+    position: relative;
   }
 }
 
-.cards__search--input-group {
-  position: relative;
-}
 
 @media (max-width: 767px) {
   .cards__search {

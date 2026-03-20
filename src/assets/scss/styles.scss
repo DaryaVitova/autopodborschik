@@ -19,7 +19,7 @@ body:has(.loader) {
   height: 50px;
   background: #b3c9e1;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius-md);
   cursor: pointer;
   transition: all 0.3s ease;
   &::before {
@@ -34,7 +34,7 @@ body:has(.loader) {
     transform: translate(-25%, -50%) rotate(45deg);
   }
   &:hover {
-    background: #6a92bd;
+    background-color: var(--color-light-blue);
     transform: translateX(-3px);
     transition-duration: 0.3s;
   }

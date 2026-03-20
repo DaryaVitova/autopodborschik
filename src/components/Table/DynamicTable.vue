@@ -538,6 +538,7 @@ const {
     position: relative;
     padding-block: 5px;
     white-space: nowrap;
+    color: #04224e;
   }
   &__pagination-select {
     margin-top: 60px;

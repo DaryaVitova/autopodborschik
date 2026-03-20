@@ -155,7 +155,7 @@
     </div>
   </div>
 </template>
-<!--label="Первоначальный взнос (минимум 10% от стоимости)"-->
+
 <script setup lang="ts">
 import PriceSlider from "@/components/AutoCredit/PriceSlider.vue"
 import {computed, onMounted, onUnmounted, ref, watch} from "vue"
@@ -164,6 +164,10 @@ import { useCreditCalculation } from "@/composables/creditCalculation.ts"
 import CalculateCredit from "@/components/AutoCredit/CalculateCredit.vue"
 import ScheduleIcon from "@/components/SvgIcons/ScheduleIcon.vue"
 import PaymentSchedule from "@/components/AutoCredit/PaymentSchedule.vue"
+
+const props = defineProps<{
+  exposePrice?: string
+}>()
 
 interface CreditCalculatorData {
   priceAuto: number,
@@ -208,6 +212,11 @@ const savedData = loadFromStorage()
 
 onMounted(() => {
   activePercent.value = basePercent
+
+  if (props.exposePrice) {
+    priceAuto.value = Number(props.exposePrice)
+    downPayment.value = Math.round(priceAuto.value * 0.1)
+  }
 
   if (savedData?.activeRate) {
     switch(savedData.activeRate) {
@@ -255,22 +264,6 @@ const checkMobile = () => {
   window.innerWidth < 768 ? isMobile.value = true : isMobile.value = false
 }
 
-const setActiveRate = (rate: 'base' | 'family' | 'military') => {
-  activeRate.value = rate
-
-  switch(rate) {
-    case 'base':
-      activePercent.value = basePercent
-      break
-    case 'family':
-      activePercent.value = familyPercent
-      break
-    case 'military':
-      activePercent.value = militaryPercent
-      break
-  }
-}
-
 const calcTermCredit = computed((): number => {
   if (!toggleCalcInMonths.value) {
     return loanTerm.value
@@ -316,10 +309,6 @@ watch(() => activeRate.value, () => {
   saveToStorage()
 })
 
-watch(() => localLoanTerm.value, (newVal) => {
-  console.log(newVal, 'localLoanTerm')
-})
-
 const minOldValue = computed(() => {
   return !toggleCalcInMonths.value ? 1 : 12
 })
@@ -354,6 +343,22 @@ watch(() => downPayment.value, (newValue) => {
   }
   saveToStorage()
 })
+
+const setActiveRate = (rate: 'base' | 'family' | 'military') => {
+  activeRate.value = rate
+
+  switch(rate) {
+    case 'base':
+      activePercent.value = basePercent
+      break
+    case 'family':
+      activePercent.value = familyPercent
+      break
+    case 'military':
+      activePercent.value = militaryPercent
+      break
+  }
+}
 
 function openLightbox() {
   lightboxActive.value = true
@@ -395,7 +400,7 @@ const {
   &__percent-btn {
     border: 1px solid #afafaf;
     padding: 7px 12px;
-    border-radius: 8px;
+    border-radius: var(--border-radius-md);
     &:hover {
       background-color: #e8e8e8;
       transition: transform 0.2s ease;
@@ -446,7 +451,7 @@ const {
     gap: 25px;
     margin-top: 35px;
     background-color: #ffffff;
-    border-radius: 8px;
+    border-radius: var(--border-radius-md);
     padding: 20px;
     width: 450px;
   }
@@ -463,7 +468,7 @@ const {
     gap: 10px;
     padding: 5px 6px 8px 6px;
     border: 2px solid #1f6a1f;
-    border-radius: 8px;
+    border-radius: var(--border-radius-md);
     margin-top: 50px;
     background-color: #fff;
     &:hover {

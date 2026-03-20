@@ -43,9 +43,10 @@ const routes = [
     component: FavoritesAdView
   },
   {
-    path: '/credit',
+    path: '/credit:exposePrice?',
     name: 'credit',
-    component: AutoCreditView
+    component: AutoCreditView,
+    props: true
   }
 ]
 

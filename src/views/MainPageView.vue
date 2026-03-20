@@ -56,9 +56,9 @@ onMounted(() => {
       font-size: 18px;
       color: #000d17;
       padding: 8px 16px;
-      border-radius: 6px;
+      border-radius: var(--border-radius-sm);
       transition: all 0.3s ease;
-      border: 2px solid #5296bc;
+      border: 2px solid var(--color-middle-blue);
 
       &:hover {
         background-color: #f0f8ff;
@@ -66,7 +66,7 @@ onMounted(() => {
       }
 
       &.active {
-        background-color: #5296bc;
+        background-color: var(--color-middle-blue);
         color: white;
         font-weight: 600;
       }

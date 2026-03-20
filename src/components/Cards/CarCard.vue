@@ -203,7 +203,6 @@ function clickCard(): void {
 .car-card {
   position: relative;
   width: 100%;
-  //max-width: 900px;
   display: flex;
   flex-direction: column;
   background: white;

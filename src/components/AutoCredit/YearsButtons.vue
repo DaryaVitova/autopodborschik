@@ -75,7 +75,7 @@ function selectAllYears() {
   width: fit-content;
   max-width: 90%;
   background-color: var(--background-color);
-  border-radius: 10px;
+  border-radius: var(--border-radius-lg);
   margin: 30px 0 0 30px;
   overflow-x: auto;
   overflow-y: hidden;
@@ -112,7 +112,7 @@ function selectAllYears() {
     &.active {
       background-color: var(--active-color);
       color: var(--active-text-color);
-      border-radius: 6px;
+      border-radius: var(--border-radius-sm);
 
       &:not(:last-child) {
         margin-right: var(--half-indent);

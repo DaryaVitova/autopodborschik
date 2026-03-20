@@ -461,7 +461,7 @@ onMounted(() => {
     padding: 5px 8px;
     font-size: 14px;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--border-radius-sm);
     background-color: #438eb8;
     color: white;
     &:hover {
@@ -511,12 +511,12 @@ onMounted(() => {
     }
 
     &--one {
-      border-radius: 10px 0 0 10px;
+      border-radius: var(--border-radius-lg) 0 0 var(--border-radius-lg);
       appearance: textfield;
     }
 
     &--two {
-      border-radius: 0 10px 10px 0;
+      border-radius: 0  var(--border-radius-lg) var(--border-radius-lg) 0;
     }
   }
 
@@ -556,7 +556,7 @@ onMounted(() => {
     width: 50px;
     height: 50px;
     border: 3px solid #f3f4f6;
-    border-top-color: #5296bc;
+    border-top-color: var(--color-middle-blue);
     border-radius: 50%;
     margin: 0 auto 20px;
     animation: spin 1s linear infinite;

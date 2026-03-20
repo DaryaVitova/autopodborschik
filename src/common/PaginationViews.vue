@@ -334,9 +334,9 @@ onMounted(async () => {
     cursor: pointer;
 
     &.active {
-      background-color: #024760;
+      background-color: var(--color-dark-blue);
       color: white;
-      border-color: #024760;
+      border-color: var(--color-dark-blue);
     }
 
     &:hover:not(.active) {

@@ -195,7 +195,7 @@ onMounted(() => {
     width: 500px;
     background-color: #dbe5ec;
     padding: 7px 5px 0 0;
-    border-radius: 10px 10px 0 0;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
     height: 80px;
 
     @media (max-width: 1130px) {

@@ -36,6 +36,15 @@
                 @input="clearError('mileage')"
               />
 
+              <InputCreateAd
+                v-model="formData.city"
+                :errorData="isErrorData.city"
+                id="city"
+                errorText="*Заполните это поле"
+                labelText="Город *"
+                @input="clearError('city')"
+              />
+
               <div class="form__group">
                 <span v-if="isErrorData.year" class="form__error-message">*Выберите год выпуска</span>
                 <label for="year" class="form__label">Год выпуска *</label>
@@ -49,15 +58,6 @@
                   @close="isSelectOpen = false"
                 />
               </div>
-
-              <InputCreateAd
-                v-model="formData.city"
-                :errorData="isErrorData.city"
-                id="city"
-                errorText="*Заполните это поле"
-                labelText="Город *"
-                @input="clearError('city')"
-              />
 
               <div class="form__group">
                 <span v-if="isErrorData.phone" class="form__error-message">*Введите номер телефона</span>
@@ -277,8 +277,7 @@ const mileageDisplay = computed({
     return formatNumber(formData.value.mileage) || ''
   },
   set: (value: string) => {
-    const parsed = parseNumber(value)
-    formData.value.mileage = parsed
+    formData.value.mileage = parseNumber(value)
   }
 })
 
@@ -288,8 +287,7 @@ const priceDisplay = computed({
     return formatNumber(formData.value.price) || ''
   },
   set: (value: string) => {
-    const parsed = parseNumber(value)
-    formData.value.price = parsed
+    formData.value.price = parseNumber(value)
   }
 })
 
@@ -358,7 +356,7 @@ const uploadToImgBB = async (base64Image: string): Promise<ImgBBUploadResult> =>
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      console.error(`❌ HTTP ошибка: ${response.status}`)
     }
 
     const result = await response.json()
@@ -694,11 +692,10 @@ const resetForm = () => {
     width: fit-content;
     align-self: center;
     margin-top: 30px;
-    //border: 2px solid #45576a;
     border: 2px solid #fff;
     color: white;
-    background-color: #5296bc;
-    border-radius: 8px;
+    background-color: var(--color-middle-blue);
+    border-radius: var(--border-radius-md);
     &:hover {
       opacity: 0.8;
       transform: scale(1.03);
@@ -714,6 +711,7 @@ const resetForm = () => {
     border: none;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
+
   &__select-year {
     padding-left: 10px;
     height: var(--height-input);

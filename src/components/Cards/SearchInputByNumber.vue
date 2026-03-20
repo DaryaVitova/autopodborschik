@@ -16,7 +16,6 @@
       class="cards__search--close-filter"
       @click="closeClick"
     >
-      X
     </span>
   </div>
 </template>

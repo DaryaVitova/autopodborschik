@@ -110,10 +110,9 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  //background-color: #a1b5d6;
-  background-color: #a5bfd5;
+  background-color: var(--color-light-blue);
   &__logo {
-    color: #024760;
+    color: var( --color-dark-blue);
     font-weight: bold;
     font-size: 22px;
     margin-left: 80px;
@@ -146,7 +145,7 @@ onUnmounted(() => {
    font-weight: 500;
    padding: 5px 10px;
    border: 2px solid rgba(17, 69, 124, 0.5);
-   border-radius: 8px;
+   border-radius: var(--border-radius-md);
    transition: all 0.3s ease;
     &:hover {
       opacity: 0.7;
@@ -155,7 +154,6 @@ onUnmounted(() => {
     &--form {
       padding: 9px 11px !important;
       margin-right: 0;
-      //background-color: #3ab151;
       background-color: #5d9a68;
       color: white;
       border: 1px solid #e1e0e0;
@@ -179,7 +177,7 @@ onUnmounted(() => {
     background: #45576a;
   }
   &--active {
-    background: #5296bc !important;
+    background: var(--color-middle-blue) !important;
     cursor: default;
     outline: none;
   }

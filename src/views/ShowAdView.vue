@@ -12,9 +12,16 @@
       />
 
       <h2>{{ adData?.brand }} {{ adData?.model }}</h2>
-      <span v-if="!isAdInSoldAuto" class="ad-header__price">
-        {{ (adData?.price ? adData.price.toLocaleString('ru-RU') : '') + ' ₽' }}
-      </span>
+      <div v-if="!isAdInSoldAuto" class="ad-header__price-container">
+        <span class="ad-header__price">{{ (adData?.price ? adData.price.toLocaleString('ru-RU') : '') + ' ₽' }}</span>
+        <button
+          class="ad-header__carLoan-calculation"
+          @click="goToCalcCredit(adData?.price ? adData?.price : 0)"
+        >
+          Рассчитать автокредит
+          <arrow-icon class="ad-header__carLoan-calculation--arrow"/>
+        </button>
+      </div>
 
       <div v-else class="ad-header__sold-price">
         <span class="ad-header__price ad-header__price--cross-out">
@@ -76,6 +83,7 @@
             📋 Скопировать номер
           </button>
         </div>
+        <div v-if="showCopyMessage" class="showAd__copy-msg">Скопировано</div>
       </div>
 
       <!-- Правая колонка - фото (только на десктопе) -->
@@ -229,6 +237,7 @@
 import {ref, computed, onMounted, type Ref } from 'vue'
 import { useRouter } from "vue-router"
 import type { Advertisement } from "@/composables/advertisements.ts"
+import ArrowIcon from "@/components/SvgIcons/ArrowIcon.vue"
 import { useFavoritesStore } from "@/stores/favoritesStore.ts"
 import { useFormatters } from "@/composables/formatters.ts"
 import { useSoldAutoStore } from "@/stores/soldAutoStore.ts"
@@ -253,6 +262,8 @@ const priceSoldAuto = ref<number | null>(null)
 const errorInputPriceSoldData = ref<boolean>(false)
 
 const isAdInSoldAuto = ref(false)
+
+const showCopyMessage = ref(false)
 
 const validPhotos = computed((): string[] => {
   if (!adData.value?.photoUrls || !Array.isArray(adData.value.photoUrls)) {
@@ -287,6 +298,17 @@ const formattedPrice = computed({
   }
 })
 
+function goToCalcCredit(price: number) {
+  if (price !== 0) {
+    router.push({
+      name: 'credit',
+      params: {
+        exposePrice: price.toString()
+      }
+    })
+  }
+}
+
 // Функции лайтбокса
 const openLightbox = (index: number): void => {
   currentPhotoIndex.value = index
@@ -312,7 +334,12 @@ const copyPhone = async (): Promise<void> => {
 
   try {
     await navigator.clipboard.writeText(cleanPhone.value)
-      .then(() => console.log('Copy is success'))
+      .then(() => {
+        showCopyMessage.value = true
+        setTimeout(() => {
+          showCopyMessage.value = false
+        }, 2000)
+      })
   } catch (error) {
     console.error('❌ Ошибка копирования:', error)
   }
@@ -395,7 +422,7 @@ onMounted(() => {
 
   document.addEventListener('keydown', handleKeydown)
 
-  return () => { // функция очистки - вызывается при размонтировании компонента
+  return () => {
     document.removeEventListener('keydown', handleKeydown)
   }
 })
@@ -447,17 +474,54 @@ onMounted(() => {
       background-color: #6d5f8f;
     }
   }
+
+  &__copy-msg {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 14px;
+    background-color: #fff;
+    padding: 4px 5px;
+    border: 1px solid #b5b5b5;
+    border-radius: 4px;
+  }
 }
 
 /* Заголовок */
 .ad-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: relative;
   text-align: center;
   margin-bottom: 50px;
   padding: 35px;
   background: white;
-  border-radius: 16px;
+  border-radius: var(--border-radius-xlg);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+  &__carLoan-calculation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    padding: 6px;
+    border: none;
+    margin-top: 10px;
+    background-color: transparent;
+    border-radius: var(--border-radius-md);
+
+    &:hover {
+      cursor: pointer;
+      transition-duration: 0.5s;
+      background-color: #e3e3e3;
+    }
+
+    &--arrow {
+      color: #1d771d;
+    }
+  }
 
   &__sold-price {
     display: flex;
@@ -516,7 +580,7 @@ h2 {
   flex: 1;
   background: white;
   padding: 35px;
-  border-radius: 16px;
+  border-radius: var(--border-radius-xlg);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 
   &__title {
@@ -525,7 +589,7 @@ h2 {
     font-size: 1.6rem;
     font-weight: 600;
     padding-bottom: 15px;
-    border-bottom: 2px solid #5296bc;
+    border-bottom: 2px solid var(--color-middle-blue);
   }
 
   &__grid {
@@ -563,7 +627,7 @@ h2 {
       max-width: 400px;
 
       &--phone {
-        color: #5296bc;
+        color: var(--color-middle-blue);
         font-size: 1.1rem;
       }
     }
@@ -573,7 +637,7 @@ h2 {
 .ad-desc {
   background: white;
   padding: 35px;
-  border-radius: 16px;
+  border-radius: var(--border-radius-xlg);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   margin-top: 15px;
   &__title {
@@ -615,7 +679,7 @@ h2 {
   }
 
   &__phone {
-    color: #5296bc;
+    color: var(--color-middle-blue);
     font-size: 1.3rem;
     font-weight: 600;
     text-decoration: none;
@@ -627,11 +691,11 @@ h2 {
   }
 
   &__copy-btn {
-    background: linear-gradient(135deg, #5296bc, #45576a);
+    background: linear-gradient(135deg, var(--color-middle-blue), #45576a);
     color: white;
     border: none;
     padding: 14px 28px;
-    border-radius: 10px;
+    border-radius: var(--border-radius-lg);
     cursor: pointer;
     font-size: 16px;
     font-weight: 500;
@@ -653,7 +717,7 @@ h2 {
   width: 480px;
   background: white;
   padding: 35px;
-  border-radius: 16px;
+  border-radius: var(--border-radius-xlg);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 40px;
@@ -667,14 +731,14 @@ h2 {
     font-size: 1.6rem;
     font-weight: 600;
     padding-bottom: 15px;
-    border-bottom: 2px solid #5296bc;
+    border-bottom: 2px solid var(--color-middle-blue);
     display: flex;
     align-items: center;
     gap: 10px;
   }
 
   &__count {
-    color: #5296bc;
+    color: var(--color-middle-blue);
     font-size: 1.2rem;
     font-weight: 500;
   }
@@ -750,8 +814,8 @@ h2 {
     margin-top: 25px;
     padding: 15px;
     background: #f0f8ff;
-    border-radius: 10px;
-    color: #5296bc;
+    border-radius: var(--border-radius-lg);
+    color: var(--color-middle-blue);
     font-size: 14px;
     display: flex;
     align-items: center;
@@ -906,7 +970,7 @@ h2 {
     max-width: 100%;
     max-height: calc(90vh - 60px);
     object-fit: contain;
-    border-radius: 10px;
+    border-radius: var(--border-radius-lg);
   }
 
   &__counter {
@@ -973,7 +1037,7 @@ h2 {
     display: block; /* Показываем фото под информацией */
     background: white;
     padding: 30px;
-    border-radius: 16px;
+    border-radius: var(--border-radius-xlg);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     margin-top: 30px;
 
@@ -988,7 +1052,7 @@ h2 {
     }
 
     &__count {
-      color: #5296bc;
+      color: var(--color-middle-blue);
       font-size: 1.2rem;
       font-weight: 500;
     }
@@ -999,7 +1063,7 @@ h2 {
       gap: 15px;
 
       &-item {
-        border-radius: 10px;
+        border-radius: var(--border-radius-lg);
         overflow: hidden;
         cursor: pointer;
         transition: transform 0.3s ease;
