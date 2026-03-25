@@ -410,7 +410,6 @@ onMounted(() => {
     isRestoringFromBack.value = true
     const query = JSON.parse(savedQuery)
 
-    // Применяем сохраненные query параметры
     router.replace({ query })
 
     setTimeout(() => {

@@ -112,7 +112,6 @@ import IconsTable from '@/components/Table/IconsTable.vue'
 import LoaderTable from '@/components/Table/LoaderTable.vue'
 import InputTable from '@/components/Table/InputTable.vue'
 import ContextMenuTable from '@/components/Table/ContextMenuTable.vue'
-// import PaginationViews from '@/common/PaginationViews.vue'
 import { useContextMenu } from '@/components/Table/composables/useContextMenu.ts'
 import type { Headers } from "@/views/TableView.vue";
 import type { Advertisement } from "@/composables/advertisements.ts";
@@ -169,7 +168,6 @@ onMounted(() => {
 })
 
 const initializeFromQuery = (): void => {
-  // Ждем пока данные загрузятся
   if (!isDataLoaded.value) {
     return
   }
@@ -290,7 +288,6 @@ watch(() => props.data, (val) => {
       if (currentSortKey) {
         const rawValue = route.query[currentSortKey]
 
-        // Приводим к нужному типу
         const direction =
           rawValue === 'asc' || rawValue === 'desc' ? rawValue :
             rawValue === null ? null :
@@ -320,7 +317,6 @@ function toggleSort (link: Headers['key']): void {
   const currentQuery = { ...route.query } as Record<string, any>
   const newQuery: Record<string, any> = {}
 
-  // Копируем только нужные параметры
   Object.keys(currentQuery).forEach(key => {
     if (key.startsWith('search_') || key === 'page' || key === 'count') {
       newQuery[key] = currentQuery[key]
@@ -449,8 +445,6 @@ function filterTable (headerKey: string, value: string): void {
   } else {
     activeFilterKeys.value[headerKey] = value
   }
-
-  console.log(activeFilterKeys.value, 'activeFilterKeys.value')
 
   const currentQuery = { ...route.query } as LocationQuery
 

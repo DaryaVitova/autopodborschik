@@ -79,7 +79,6 @@ watch(() => props.selectedYear, (newYear) => {
   }
 }, { immediate: true })
 
-// Очищаем рефы при обновлении данных
 watch(() => props.yearsOld, () => {
   yearRowRefs.value.clear()
 }, { immediate: true })
@@ -106,11 +105,9 @@ const scrollToYear = (year: number): void => {
 
   if (!element) return
 
-  // Временное решение - убираем sticky и прокручиваем
   const originalPosition = element.style.position
   const originalTop = element.style.top
 
-  // Временно убираем sticky
   element.style.position = 'static'
 
   element.scrollIntoView({
@@ -118,14 +115,12 @@ const scrollToYear = (year: number): void => {
     block: 'start'
   })
 
-  // Возвращаем sticky через небольшую задержку
   setTimeout(() => {
     element.style.position = originalPosition || 'sticky'
     element.style.top = originalTop || '127px'
   }, 500)
 }
 
-// Экспортируем метод
 defineExpose<PaymentTableExpose>({
   scrollToYear
 })
@@ -159,8 +154,8 @@ const checkVisibleYear = () => {
     const rect = element.getBoundingClientRect()
 
     const isVisible = (
-      rect.bottom > containerRect.top && // rect.bottom - расстояние от верхней границы экрана до нижнего края элемента
-      rect.top < containerRect.bottom // containerRect.bottom - видимая часть низа контейнера при прорутке относительно окна браузера
+      rect.bottom > containerRect.top &&
+      rect.top < containerRect.bottom
     )
 
     if (isVisible) {
@@ -353,9 +348,8 @@ watch([() => props.sumCredit, () => props.monthlyPayment], () => {
     }
 
     &-cell {
-      flex: 1; /* Равномерное распределение */
+      flex: 1;
       padding: 10px 12px;
-      //border-bottom: 1px solid #eee;
       border-bottom: 1px solid #d5d5d5;
 
       &--year {

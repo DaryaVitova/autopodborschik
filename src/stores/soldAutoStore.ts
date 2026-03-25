@@ -4,7 +4,6 @@ import type { Advertisement } from '@/composables/advertisements.ts'
 export const useSoldAutoStore = defineStore('soldAutoStore', {
   state: () => {
     const soldCars: Advertisement[] = []
-    // localStorage.removeItem('soldAutoStore')
 
     if (typeof window !== 'undefined') {
       try {
@@ -62,7 +61,6 @@ export const useSoldAutoStore = defineStore('soldAutoStore', {
         }
       } catch (error) {
         console.error('Ошибка загрузки из localStorage:', error)
-        // Очищаем поврежденные данные
         localStorage.removeItem('favorites')
       }
     }

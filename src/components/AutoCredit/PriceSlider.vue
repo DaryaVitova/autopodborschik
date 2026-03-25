@@ -135,7 +135,6 @@ watch(() => displayValue.value, (newVal) => {
 
 const handleFocus = () => {
   isEditing.value = true
-  // displayValue.value = rangeModel.value.toString().replace(/\s+/g, '')
 }
 
 const handleInput = (event: Event) => {
@@ -149,7 +148,6 @@ const handleInput = (event: Event) => {
 
   displayValue.value = rawValue
 
-  // Обновляем в реальном времени
   const numValue = parseInt(rawValue) || effectiveMinValue.value
   const limitedValue = Math.max(effectiveMinValue.value, Math.min(numValue, effectiveMaxValue.value))
   rangeModel.value = limitedValue

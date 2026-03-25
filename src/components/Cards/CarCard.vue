@@ -101,7 +101,6 @@
 <script setup lang="ts">
 import {computed, ref, inject } from 'vue'
 import type { Advertisement } from '@/composables/advertisements.ts'
-// import FavoriteButton from '@/common/FavoriteButton.vue'
 import {useRoute} from "vue-router";
 
 const props = withDefaults(defineProps<{
@@ -193,7 +192,6 @@ const formatDate = (dateString: string): string => {
 }
 
 function clickCard(): void {
-  // console.log(route.query, 'route.query clickCard')
   sessionStorage.setItem('cards-query', JSON.stringify(route.query))
   emit('card-click', props.item)
 }

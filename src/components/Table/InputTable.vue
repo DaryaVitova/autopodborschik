@@ -43,7 +43,6 @@ watch(() => route.query, (newQuery) => {
   }
 }, { immediate: true })
 
-// Автофокус при открытии инпута
 watch(() => props.openInput, async (newVal) => {
   if (newVal && inputRef.value) {
     await nextTick()

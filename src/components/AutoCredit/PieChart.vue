@@ -64,7 +64,6 @@ const dynamicPercent = computed(() => {
         var(--color-2) var(--percent) 100%
     );
 
-    /* Белая середина для текста */
     display: flex;
     align-items: center;
     justify-content: center;

@@ -148,18 +148,13 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import InputCreateAd from "@/components/CreateAd/InputCreateAd.vue";
-import { db } from '@/firebase.ts'
-import { collection, addDoc, serverTimestamp } from "firebase/firestore"
-import { useRouter } from 'vue-router'
-import {useFormatters} from "@/composables/formatters.ts";
+import { useFormatPhone } from "@/composables/formatPhone.ts";
+import { useFormatters } from "@/composables/formatters.ts"
+import { useFormSubmit } from "@/composables/formSubmit.ts"
 
 const { formatNumber, parseNumber } = useFormatters()
 
-// Конфигурация ImgBB
-const IMGBB_API_KEY = '88b06633d3d37ab1abf4c2c01303e6b9'
-const IMGBB_UPLOAD_URL = 'https://api.imgbb.com/1/upload'
-
-interface FormData {
+export interface FormData {
   brand: string,
   model: string,
   mileage: number | null,
@@ -175,14 +170,14 @@ interface FormData {
 export type FormErrors = Record<keyof Pick<FormData,
   'brand' | 'model' | 'mileage' | 'year' | 'city' | 'phone' | 'price'>, boolean>
 
-interface Country {
+export interface Country {
   code: string,
   name: string
   phoneCode: string,
   flag: string
 }
 
-interface ImgBBUploadResult {
+export interface ImgBBUploadResult {
   url: string
   thumb: string       // URL миниатюры
   medium: string     // URL среднего размера
@@ -195,7 +190,7 @@ interface FirebasePhotoData {
   medium: string
 }
 
-interface FirebaseAdvertisementData {
+export interface FirebaseAdvertisementData {
   brand: string
   model: string
   mileage: number
@@ -214,15 +209,13 @@ interface FirebaseAdvertisementData {
   storageProvider: 'imgbb' | 'none'
 }
 
-interface SaveToFirebaseResult {
+export interface SaveToFirebaseResult {
   success: boolean
   id?: string
   data?: FirebaseAdvertisementData
   imgbbData?: ImgBBUploadResult[]
   error?: string
 }
-
-const router = useRouter()
 
 const formData = ref<FormData>({
   brand: '',
@@ -250,7 +243,6 @@ const isErrorData = reactive<FormErrors>({
 type FormErrorField = keyof FormErrors
 
 const selectedCountry = ref<string>('RU')
-const phone = ref<string>('')
 
 const uploadedPhotos = ref<string[]>([])
 const maxPhotos: number = 5
@@ -270,6 +262,21 @@ const countries = ref<readonly Country[]>([
   { code: 'GB', name: 'Великобритания', phoneCode: '44', flag: '🇬🇧' },
   { code: 'CN', name: 'Китай', phoneCode: '86', flag: '🇨🇳' }
 ])
+
+const {
+  phone,
+  phonePlaceholder,
+  formatPhoneNumber
+} = useFormatPhone(selectedCountry.value)
+
+const { submitForm } = useFormSubmit(
+  countries,
+  formData,
+  selectedCountry,
+  phone,
+  uploadedPhotos,
+  isErrorData
+)
 
 const mileageDisplay = computed({
   get: () => {
@@ -291,12 +298,6 @@ const priceDisplay = computed({
   }
 })
 
-const phonePlaceholder = () => {
-  if (selectedCountry.value === 'RU') {
-    return 'XXX XXX-XX-XX'
-  }
-}
-
 const updatePhoneCode = (): void => {
   phone.value = ''
   clearError('phone')
@@ -305,100 +306,6 @@ const updatePhoneCode = (): void => {
 function inputPhone (event: InputEvent): void | '' {
   clearError('phone')
   return selectedCountry.value === 'RU' ? formatPhoneNumber(event) : ''
-}
-
-function formatPhoneNumber (e: InputEvent): void {
-  if (!(e.target instanceof HTMLInputElement)) {
-    console.error('Event target is not an input element')
-    return
-  }
-
-  const target: HTMLInputElement = e.target
-
-  let input = target.value.replace(/[^0-9]/g, '')
-
-  input = input.slice(0, 10)
-
-  // Форматируем по шаблону XXX XXX-XX-XX
-  let formatted = ''
-
-  if (input.length > 0) {
-    formatted = input.slice(0, 3)
-
-    if (input.length > 3) {
-      formatted += ' ' + input.slice(3, 6)
-    }
-
-    if (input.length > 6) {
-      formatted += '-' + input.slice(6, 8)
-    }
-
-    if (input.length > 8) {
-      formatted += '-' + input.slice(8)
-    }
-  }
-  phone.value = formatted
-}
-
-// загрузка фото на ImgBB
-const uploadToImgBB = async (base64Image: string): Promise<ImgBBUploadResult> => {
-  try {
-    console.log("📤 Загружаем фото на ImgBB...")
-
-    const base64Data = base64Image.split(',')[1] || base64Image
-
-    const formData = new FormData()
-    formData.append('image', base64Data)
-
-    const response = await fetch(`${IMGBB_UPLOAD_URL}?key=${IMGBB_API_KEY}`, {
-      method: 'POST',
-      body: formData
-    })
-
-    if (!response.ok) {
-      console.error(`❌ HTTP ошибка: ${response.status}`)
-    }
-
-    const result = await response.json()
-
-    if (result.success) {
-      console.log("✅ Фото загружено на ImgBB:", result.data.url)
-      return {
-        url: result.data.url,
-        thumb: result.data.thumb.url,
-        medium: result.data.medium?.url || result.data.url,
-        deleteUrl: result.data.delete_url
-      }
-    } else {
-      throw new Error(result.error?.message || 'Unknown ImgBB error')
-    }
-
-  } catch (error) {
-    console.error("❌ Ошибка загрузки на ImgBB:", error)
-    throw error
-  }
-}
-
-// Загрузка всех фото на ImgBB
-const uploadAllPhotosToImgBB = async (photosBase64: string[]): Promise<ImgBBUploadResult[]> => {
-  const uploadedPhotos: ImgBBUploadResult[] = []
-
-  for (let i = 0; i < photosBase64.length; i++) {
-    try {
-      const imgbbResult = await uploadToImgBB(photosBase64[i] || '')
-      uploadedPhotos.push(imgbbResult)
-
-      // Небольшая задержка чтобы не превысить лимиты ImgBB
-      if (i < photosBase64.length - 1) {
-        await new Promise(resolve => setTimeout(resolve, 500))
-      }
-
-    } catch (error) {
-      console.error(`❌ Не удалось загрузить фото ${i+1}:`, error)
-    }
-  }
-
-  return uploadedPhotos
 }
 
 function handleFileUpload(event: Event): void {
@@ -434,208 +341,8 @@ function removePhoto (index: number): void {
   uploadedPhotos.value.splice(index, 1)
 }
 
-// Очистка ошибки при вводе
 const clearError = (field: FormErrorField): void => {
   isErrorData[field] = false
-}
-
-const validateForm = (): boolean => {
-  let isValid: boolean = true
-
-  // Сбрасываем все ошибки
-  const errorKeys: (keyof FormErrors)[] = ['brand', 'model', 'mileage', 'year', 'city', 'phone', 'price']
-  errorKeys.forEach(key => {
-    isErrorData[key] = false
-  })
-
-  // Проверка каждого поля с защитой от ошибок
-  const checkString = (value: unknown): value is string => {
-    return typeof value === 'string' && value.trim().length > 0
-  }
-
-  if (!checkString(formData.value.brand)) {
-    isErrorData.brand = true
-    isValid = false
-  }
-
-  if (!checkString(formData.value.model)) {
-    isErrorData.model = true
-    isValid = false
-  }
-
-  if (!formData.value.mileage || formData.value.mileage <= 0) {
-    isErrorData.mileage = true
-    isValid = false
-  }
-
-  if (!formData.value.year) {
-    isErrorData.year = true
-    isValid = false
-  }
-
-  if (!checkString(formData.value.city)) {
-    isErrorData.city = true
-    isValid = false
-  }
-
-  if (!phone.value || !phone.value.trim()) {
-    isErrorData.phone = true
-    isValid = false
-  }
-
-  if (!formData.value.price || formData.value.price <= 0) {
-    isErrorData.price = true
-    isValid = false
-  }
-
-  return isValid
-}
-
-const saveToFirebase = async (advertisementData: FormData): Promise<SaveToFirebaseResult> => {
-  try {
-    let imgbbPhotoData: ImgBBUploadResult[] = []
-
-    // 1. Загружаем фото на ImgBB если они есть
-    if (uploadedPhotos.value.length > 0) {
-
-      try {
-        imgbbPhotoData = await uploadAllPhotosToImgBB(uploadedPhotos.value)
-        console.log("✅ Фото загружены на ImgBB:", imgbbPhotoData.length)
-      } catch (error) {
-        console.warn("⚠️  Не удалось загрузить фото на ImgBB, продолжаем без фото:", error)
-      }
-    }
-
-    // 2. Подготавливаем данные для Firestore
-    const firebaseData: FirebaseAdvertisementData = {
-      brand: advertisementData.brand,
-      model: advertisementData.model,
-      mileage: Number(advertisementData.mileage),
-      year: advertisementData.year,
-      city: advertisementData.city,
-      phone: advertisementData.phone,
-      price: Number(advertisementData.price),
-      description: advertisementData.description || '',
-
-      // Данные о фото с ImgBB
-      photos: imgbbPhotoData.map(photo => ({
-        url: photo.url,
-        thumb: photo.thumb,
-        medium: photo.medium
-      })),
-      photoCount: imgbbPhotoData.length,
-      hasPhotos: imgbbPhotoData.length > 0,
-
-      // Метаданные
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      countryCode: selectedCountry.value,
-      status: 'active',
-      storageProvider: imgbbPhotoData.length > 0 ? 'imgbb' : 'none'
-    }
-
-    console.log("📝 Данные для Firestore:", {
-      ...firebaseData,
-      photos: `[${firebaseData.photos.length} фото с ImgBB]`
-    })
-
-    // 3. Сохраняем в Firestore
-    const docRef = await addDoc(collection(db, "advertisements"), firebaseData)
-
-    console.log("✅ Объявление сохранено с ID:", docRef.id)
-    return {
-      success: true,
-      id: docRef.id,
-      data: firebaseData,
-      imgbbData: imgbbPhotoData
-    }
-
-  } catch (error) {
-    console.error("❌ Ошибка при сохранении:", error)
-
-    const errorMessage = error instanceof Error
-      ? error.message
-      : "Неизвестная ошибка"
-
-    return { success: false, error: errorMessage }
-  }
-}
-
-const submitForm = async (): Promise<void> => {
-  // Проверяем API ключ
-  if (!IMGBB_API_KEY || IMGBB_API_KEY.includes('b1234567890')) {
-    console.warn("⚠️  API ключ ImgBB не настроен!")
-  }
-
-  const country = countries.value.find(c => c.code === selectedCountry.value)
-  if (country) {
-    formData.value.phone = `+${country.phoneCode} ${phone.value}`
-  }
-
-  if (!validateForm()) {
-    console.log("❌ Валидация не пройдена")
-    return
-  }
-
-  // Создаем объект с данными
-  const advertisementData: FormData = {
-    ...formData.value,
-    id: Date.now()
-  }
-
-  try {
-    // Сохраняем в Firebase с фото на ImgBB
-    const firebaseResult: SaveToFirebaseResult = await saveToFirebase(advertisementData)
-
-    if (firebaseResult.success) {
-      console.log("🎉 Успешно! Объявление сохранено")
-
-      let successMessage = '✅ Объявление успешно отправлено!'
-      if (firebaseResult.imgbbData && firebaseResult.imgbbData.length > 0) {
-        successMessage += `\n📸 Загружено ${firebaseResult.imgbbData.length} фото`
-      }
-
-      alert(successMessage)
-      resetForm()
-      router.push({ name: 'cards' })
-
-    } else {
-      console.error("❌ Ошибка Firebase:", firebaseResult.error)
-      alert('❌ Ошибка при сохранении: ' + firebaseResult.error)
-    }
-
-  } catch (error) {
-    console.error("💥 Общая ошибка:", error)
-    const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка'
-    // Если error является экземпляром класса Error, тогда возьми его свойство message, в противном случае верни строку "Неизвестная ошибка"
-    alert('❌ Произошла ошибка: ' + errorMessage)
-  }
-}
-
-// Сброс формы
-const resetForm = () => {
-  formData.value = {
-    brand: '',
-    model: '',
-    mileage: null,
-    year: '',
-    city: '',
-    phone: '',
-    photos: [],
-    price: null,
-    description: '',
-    id: Date.now()
-  }
-
-  phone.value = ''
-  uploadedPhotos.value = []
-  selectedCountry.value = 'RU'
-
-  const errorKeys: (keyof FormErrors)[] = ['brand', 'model', 'mileage', 'year', 'city', 'phone', 'price']
-
-  errorKeys.forEach(key => {
-    isErrorData[key] = false
-  })
 }
 </script>
 

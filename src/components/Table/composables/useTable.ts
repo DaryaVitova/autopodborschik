@@ -22,7 +22,7 @@ export function useTable (headers: Headers[], data: Advertisement[]) {
   const inputValues = ref<StringObj>({})
   const activeMenu = ref(null)
 
-  // ✅ Флаг для предотвращения циклических обновлений
+  // Флаг для предотвращения циклических обновлений
   const isInitialized: Ref<boolean> = ref(false)
 
   const isDataLoaded: Ref<boolean> = ref(false)
@@ -48,7 +48,6 @@ export function useTable (headers: Headers[], data: Advertisement[]) {
   })
 
   const initializeFromQuery = (): void => {
-    // Ждем пока данные загрузятся
     if (!isDataLoaded.value) {
       return
     }
@@ -240,7 +239,6 @@ export function useTable (headers: Headers[], data: Advertisement[]) {
       ? JSON.parse(JSON.stringify(localData.value))
       : JSON.parse(JSON.stringify(data))
 
-    // Выполняем сортировку
     if (direction === 'asc') {
       localData.value = dataToSort.sort((a: Advertisement, b: Advertisement): number => {
         const valueA = (a as any)[fieldName!]
@@ -365,10 +363,6 @@ export function useTable (headers: Headers[], data: Advertisement[]) {
       sorting(direction, currentSortKey)
     }
   }
-
-  // const setActiveMenu = (menuId): void => {
-  //   activeMenu.value = menuId
-  // }
 
   return {
     openFilterInputs,

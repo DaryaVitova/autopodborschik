@@ -61,7 +61,6 @@ const menuStyle = ref<MenuStyle | {}>({})
 // Нормализуем menuField к единому формату
 const normalizedMenuField = computed<MenuField[]>(() => {
   return props.menuField.map(item => {
-    // Если item - строка, преобразуем в объект
     if (typeof item === 'string') {
       return {
         text: item,
@@ -114,13 +113,11 @@ watch(() => props.position, async () => {
   }
 }, { immediate: true })
 
-// Обработчик действий - передаем название действия
 const handleAction = (actionName: MenuField): void => {
   emit('action', actionName)
   emit('close')
 }
 
-// Закрытие при клике вне меню
 const handleClickOutside = (event: MouseEvent): void => {
   if (props.visible && !(event.target as Element).closest('.table__context-menu')) {
     emit('close')

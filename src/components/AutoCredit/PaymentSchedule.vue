@@ -69,7 +69,7 @@
 import PieChart from "@/components/AutoCredit/PieChart.vue"
 import { useFormatters } from "@/composables/formatters.ts"
 import YearsButtons from "@/components/AutoCredit/YearsButtons.vue"
-import {computed, ref} from "vue"
+import { computed, ref } from "vue"
 import PaymentTable, { type PaymentTableExpose } from "@/components/AutoCredit/PaymentTable.vue"
 
 const props = defineProps<{
