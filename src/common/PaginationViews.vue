@@ -314,8 +314,7 @@ onMounted(async () => {
   width: 100%;
   display: flex;
   align-items: center;
-  margin: 6px 0 100px 0;
-  margin-inline: 20px;
+  margin: 6px 20px 100px 20px;
   &__count-showElem {
     color: #686868;
     margin: 20px 0 0 20px;
@@ -326,7 +325,7 @@ onMounted(async () => {
   display: flex;
   gap: 8px;
   align-items: center;
-  margin: 20px 20px 0 0;
+  margin-top: 20px;
   &__btn {
     padding: 6px 10px;
     border: 1px solid #ddd;

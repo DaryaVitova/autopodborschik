@@ -119,7 +119,7 @@ onUnmounted(() => {
   &__value {
     color: #090909;
     &--color {
-      color: #676666;
+      color: #7e7e7e;
     }
   }
 

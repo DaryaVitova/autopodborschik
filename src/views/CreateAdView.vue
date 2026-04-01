@@ -1,6 +1,8 @@
 <template>
-  <div class="container">
-    <div class="form-container">
+  <div :class="loader ? 'container__loader' : 'container'">
+    <loader-wheels v-if="loader" class="loader" text="Объявление загружается"/>
+
+    <div class="form-container" v-if="!loader">
       <form class="form" @submit.prevent>
 
         <div class="form__main">
@@ -148,6 +150,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import InputCreateAd from "@/components/CreateAd/InputCreateAd.vue";
+import LoaderWheels from "@/common/LoaderWheels.vue";
 import { useFormatPhone } from "@/composables/formatPhone.ts";
 import { useFormatters } from "@/composables/formatters.ts"
 import { useFormSubmit } from "@/composables/formSubmit.ts"
@@ -269,7 +272,7 @@ const {
   formatPhoneNumber
 } = useFormatPhone(selectedCountry.value)
 
-const { submitForm } = useFormSubmit(
+const { submitForm, loader } = useFormSubmit(
   countries,
   formData,
   selectedCountry,
@@ -352,7 +355,16 @@ const clearError = (field: FormErrorField): void => {
   justify-content: center;
   align-items: center;
   width: 100vw;
+
+  &__loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 70vh;
+  }
 }
+
 .form {
   --height-input: 33px;
 

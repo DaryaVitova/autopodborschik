@@ -60,6 +60,10 @@ function closeClick(): void {
   &--input-group {
     position: relative;
   }
+
+  &::placeholder {
+    color: #7e7e7e;
+  }
 }
 
 

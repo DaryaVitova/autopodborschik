@@ -5,10 +5,16 @@
       <div class="wheel"></div>
     </div>
     <div class="loading-text">
-      Загрузка<span class="dots"></span>
+      {{ text }}<span class="dots"></span>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+defineProps<{
+  text: string
+}>()
+</script>
 
 <style lang="scss" scoped>
 .wheel-loader {

@@ -520,7 +520,7 @@ onMounted(() => {
   }
 
   &__pagination {
-    margin-top: 30px;
+    margin-top: 50px !important;
   }
 }
 
@@ -608,6 +608,7 @@ onMounted(() => {
 
 @media (max-width: 660px) {
   .cards {
+    margin: 60px auto 40px auto;
     &__search {
       font-size: 12px;
       &--change-width {

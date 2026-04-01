@@ -335,6 +335,7 @@ const calcDownPaymentPercent = computed((): number => {
 })
 
 watch(() => downPayment.value, (newValue) => {
+  console.log(newValue, 'downPayment----')
   if (newValue > priceAuto.value) {
     downPayment.value = priceAuto.value
   }

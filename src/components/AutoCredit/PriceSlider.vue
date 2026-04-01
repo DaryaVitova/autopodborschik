@@ -92,8 +92,9 @@ const updateProgress = (): void => {
 }
 
 watch(() => rangeModel.value, (newVal) => {
+  console.log(rangeModel.value, 'rangeModel.value')
   if (!isEditing.value) {
-    displayValue.value = formatNumber(newVal) as string
+    displayValue.value = formatNumber(Math.round(newVal)) as string
   }
   updateProgress()
 }, { immediate: true })

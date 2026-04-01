@@ -394,6 +394,7 @@ const deleteAd = async (id: string | undefined): Promise<void> => {
 }
 
 onMounted(() => {
+  console.log(adData.value, 'adDataa')
   try {
     const saved = localStorage.getItem('advertisements')
     if (saved) {
@@ -863,6 +864,7 @@ h2 {
   @include lightbox;
   &--for-sold {
     background: rgba(177, 177, 177, 0.97);
+    cursor: auto;
   }
 
   &__input-group {
@@ -904,11 +906,11 @@ h2 {
     height: 60px;
     border-radius: 50%;
     font-size: 28px;
-    cursor: pointer;
     transition: background 0.3s;
 
     &:hover {
       background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
     }
   }
 

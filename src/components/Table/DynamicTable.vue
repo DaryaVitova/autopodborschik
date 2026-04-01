@@ -94,10 +94,11 @@
       @action="handleMenuAction"
     />
 
-    <loader-table v-if="loader" />
+    <loader-wheels v-if="loader" text="Загрузка"/>
   </div>
 
   <PaginationViews
+    class="table__pagination-component"
     v-show="!loader"
     :columnPerPage="columnPerPage"
     :data="localData"
@@ -109,7 +110,7 @@
 <script setup lang="ts">
 import {defineProps, watch} from 'vue'
 import IconsTable from '@/components/Table/IconsTable.vue'
-import LoaderTable from '@/components/Table/LoaderTable.vue'
+import LoaderWheels from '@/common/LoaderWheels.vue'
 import InputTable from '@/components/Table/InputTable.vue'
 import ContextMenuTable from '@/components/Table/ContextMenuTable.vue'
 import { useContextMenu } from '@/components/Table/composables/useContextMenu.ts'
@@ -485,7 +486,6 @@ function applyFilters (): void {
   cloneLocalData.value = localData.value
   isFilterActive.value = Object.keys(activeFilterKeys.value).length > 0
 
-  // ✅ Применяем сортировку после фильтрации
   const currentSortKey = Object.keys(route.query).find(key =>
     !key.startsWith('search_') && (route.query[key] === 'asc' || route.query[key] === 'desc')
   )
@@ -534,6 +534,7 @@ const {
     white-space: nowrap;
     color: #04224e;
   }
+
   &__pagination-select {
     margin-top: 60px;
     text-align: center;
@@ -545,6 +546,10 @@ const {
       color: #05080b;
       margin-left: 5px;
     }
+  }
+
+  &__pagination-component {
+    padding-right: 20px;
   }
 
   &__checkbox {
@@ -613,6 +618,14 @@ const {
     &__header, &__element {
       min-width: 150px;
       white-space: nowrap;
+    }
+  }
+}
+
+@media(max-width: 450px) {
+  .table {
+    &__pagination-component {
+      padding: 0;
     }
   }
 }

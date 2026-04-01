@@ -1,8 +1,8 @@
 import {IMGBB_API_KEY, IMGBB_UPLOAD_URL} from "@/helpers/consts_db.ts";
 import type { Country, FormData, FormErrors, SaveToFirebaseResult, ImgBBUploadResult, FirebaseAdvertisementData } from "@/views/CreateAdView.vue";
 import { useRouter } from "vue-router";
-import { type Ref, type Reactive } from "vue"
-import {addDoc, collection, serverTimestamp} from "firebase/firestore";
+import { type Ref, type Reactive, ref } from "vue"
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import {db} from "@/firebase.ts";
 
 export function useFormSubmit(
@@ -15,6 +15,8 @@ export function useFormSubmit(
 ) {
 
   const router = useRouter()
+
+  const loader = ref<boolean>(false)
 
   const validateForm = (): boolean => {
     let isValid: boolean = true
@@ -191,6 +193,7 @@ export function useFormSubmit(
   }
 
   const submitForm = async (): Promise<void> => {
+    loader.value = true
 
     if (!IMGBB_API_KEY || IMGBB_API_KEY.includes('b1234567890')) {
       console.warn("⚠️  API ключ ImgBB не настроен!")
@@ -218,12 +221,14 @@ export function useFormSubmit(
       if (firebaseResult.success) {
         console.log("🎉 Успешно! Объявление сохранено")
 
-        let successMessage = '✅ Объявление успешно отправлено!'
-        if (firebaseResult.imgbbData && firebaseResult.imgbbData.length > 0) {
-          successMessage += `\n📸 Загружено ${firebaseResult.imgbbData.length} фото`
-        }
+        // let successMessage = '✅ Объявление успешно отправлено!'
+        // if (firebaseResult.imgbbData && firebaseResult.imgbbData.length > 0) {
+        //   successMessage += `\n📸 Загружено ${firebaseResult.imgbbData.length} фото`
+        // }
 
-        alert(successMessage)
+        loader.value = false
+
+        // alert(successMessage)
         resetForm()
         router.push({ name: 'cards' })
 
@@ -264,6 +269,6 @@ export function useFormSubmit(
     })
   }
 
-  return { submitForm }
+  return { submitForm, loader }
 
 }
