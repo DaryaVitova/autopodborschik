@@ -1,5 +1,9 @@
 <template>
   <div class="main">
+    <button class="main__about-app-btn">
+      <arrow-icon :arrowLeft="true" />О приложении
+    </button>
+
     <div class="main__select-show">
       <router-link
         to="/cards"
@@ -27,6 +31,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted } from 'vue'
+import ArrowIcon from '@/components/SvgIcons/ArrowIcon.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -77,6 +82,29 @@ onMounted(() => {
       color: #4e4e4e;
     }
   }
+
+  &__about-app-btn {
+    position: absolute;
+    right: 30px;
+    top: 130px;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px;
+    color: #113f60;
+    &:hover {
+      opacity: 0.8;
+      transition-duration: 0.2s;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .main__about-app-btn {
+    top: 240px;
+    right: 20px;
+  }
 }
 
 @media (max-width: 600px) {
@@ -88,6 +116,16 @@ onMounted(() => {
         font-size: 15px;
       }
     }
+
+    &__about-app-btn {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (max-width: 400px) {
+  .main__about-app-btn {
+    top: 220px;
   }
 }
 </style>

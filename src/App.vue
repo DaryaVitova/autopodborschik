@@ -42,6 +42,7 @@
       </div>
     </nav>
   </header>
+
   <div class="app" id="app">
     <router-view />
   </div>
