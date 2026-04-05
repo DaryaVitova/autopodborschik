@@ -87,7 +87,7 @@ const goBack = (): void => {
     font-weight: 500;
     padding: 7px 10px;
     border-radius: var(--border-radius-md);
-    margin-bottom: 50px;
+    margin-bottom: 80px;
 
     &:hover {
       opacity: 0.7;
