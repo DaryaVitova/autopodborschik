@@ -1,8 +1,24 @@
 <template>
   <div class="main">
-    <button class="main__about-app-btn">
+    <button
+      v-if="!openAboutApp"
+      class="main__about-app-btn"
+      @click="openAboutAppBtn"
+    >
       <arrow-icon :arrowLeft="true" />О приложении
     </button>
+
+    <button
+      v-if="openAboutApp"
+      class="main__about-app-btn"
+      @click="closeAboutAppBtn"
+    >
+      Закрыть<arrow-icon />
+    </button>
+
+    <Transition name="slide">
+      <about-app v-if="openAboutApp" />
+    </Transition>
 
     <div class="main__select-show">
       <router-link
@@ -28,13 +44,24 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import ArrowIcon from '@/components/SvgIcons/ArrowIcon.vue'
+import AboutApp from "@/components/Main/AboutApp.vue"
 
 const route = useRoute()
 const router = useRouter()
+
+const openAboutApp = ref(false)
+
+function openAboutAppBtn() {
+  openAboutApp.value = true
+}
+
+function closeAboutAppBtn() {
+  openAboutApp.value = false
+}
 
 onMounted(() => {
   if (route.path === '/') {
@@ -98,6 +125,21 @@ onMounted(() => {
       transition-duration: 0.2s;
     }
   }
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.5s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  transform: translateX(100%);
+}
+
+.slide-enter-to,
+.slide-leave-from {
+  transform: translateX(0);
 }
 
 @media (max-width: 768px) {
