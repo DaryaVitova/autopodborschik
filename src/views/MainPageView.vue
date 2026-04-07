@@ -120,6 +120,7 @@ onMounted(() => {
     gap: 10px;
     padding: 7px;
     color: #113f60;
+    background: none;
     &:hover {
       opacity: 0.8;
       transition-duration: 0.2s;

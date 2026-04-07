@@ -87,6 +87,10 @@
 
 details > summary {
   list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
 
   &:hover {
     cursor: pointer;
@@ -107,6 +111,10 @@ details > summary {
     background-repeat: no-repeat;
     transition: transform 0.2s ease;
   }
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
 }
 
 details[open] > summary::after {
