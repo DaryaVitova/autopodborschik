@@ -37,6 +37,17 @@
         </div>
       </router-link>
 
+      <router-link
+        :to="{ name: 'insurance' }"
+        class="header__link"
+        :class="{ 'header__link--active': $route.name === 'insurance' }"
+      >
+        <div class="header__href">
+          <InsuranceIcon />
+          <span class="header__href--text">ОСАГО</span>
+        </div>
+      </router-link>
+
       <div class="header__create-ad-container">
         <router-link :to="{name: 'createAd'}" class="header__link header__link--form">Выложить объявление</router-link>
       </div>
@@ -54,6 +65,7 @@ import { useFavoritesStore } from "@/stores/favoritesStore"
 import HomeIcon from "@/components/SvgIcons/HomeIcon.vue"
 import HeartIcon from "@/components/SvgIcons/HeartIcon.vue"
 import CreditIcon from "@/components/SvgIcons/CreditIcon.vue"
+import InsuranceIcon from "@/components/SvgIcons/InsuranceIcon.vue"
 
 const favoritesStore = useFavoritesStore()
 
