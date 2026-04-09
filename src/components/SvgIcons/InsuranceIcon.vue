@@ -1,5 +1,5 @@
 <template>
-  <svg class="insurance-icon" width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg class="insurance-icon" width="27" height="27" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <!-- щит -->
     <path d="M12 2L3 6V12C3 17 12 21 12 21C12 21 21 17 21 12V6L12 2Z" fill="white" stroke="currentColor" stroke-width="1.3"/>
     <!-- автомобиль внутри щита -->
