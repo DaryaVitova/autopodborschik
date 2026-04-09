@@ -5,7 +5,8 @@ import ShowAdView from '@/views/ShowAdView.vue'
 import CardsView from '@/views/CardsView.vue'
 import TableView from '@/views/TableView.vue'
 import FavoritesAdView from "@/views/FavoritesAdView.vue"
-import AutoCreditView from "@/views/AutoCreditView.vue";
+import AutoCreditView from "@/views/AutoCreditView.vue"
+import InsuranceView from "@/views/InsuranceView.vue"
 
 const routes = [
   {
@@ -47,7 +48,12 @@ const routes = [
     name: 'credit',
     component: AutoCreditView,
     props: true
-  }
+  },
+  {
+    path: '/insurance',
+    name: 'insurance',
+    component: InsuranceView
+  },
 ]
 
 const router = createRouter({
