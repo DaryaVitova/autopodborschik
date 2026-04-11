@@ -22,16 +22,33 @@
       </div>
     </div>
 
-
+    <div class="insurance__content">
+      <car-make-model />
+    </div>
   </div>
 </template>
 
 <script setup lang='ts'>
+import CarMakeModel from "@/components/Insurance/CarMakeModel.vue"
 </script>
 
 <style lang="scss" scoped>
 .insurance {
   margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &__content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 800px;
+    margin-top: 100px;
+    background-color: #fff;
+    border-radius: 10px;
+  }
 }
 
 .steps {
