@@ -23,15 +23,51 @@
         <span class="car-search__tab-text">Модель</span>
       </div>
     </div>
+
+    <div class="car-list">
+      <div v-for="group in groupedBrands" :key="group.letter" class="car-list-group">
+        <span class="car-list-group__letter">{{ group.letter }}</span>
+        <div class="car-list-group__items">
+          <a
+            v-for="brand in group.brands"
+            :key="brand"
+            class="car-list-group__item"
+          >
+            {{ brand }}
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang='ts'>
 import LoupeIcon from "@/components/SvgIcons/LoupeIcon.vue"
-import { ref } from "vue"
+import { ref, computed } from "vue"
+import { dataCarsKeys } from "@/data/CarMakeModelData.ts"
 
 const isActiveTab = ref<'make' | 'model'>('make')
 
+const groupedBrands = computed(() => {
+  const groups: Record<string, string[]> = {}
+
+  const sortedBrands = [...dataCarsKeys].sort()
+
+  sortedBrands.forEach(brand => {
+    const letter = brand.charAt(0).toUpperCase()
+    if (!groups[letter]) {
+      groups[letter] = []
+      console.log(groups, 'groups1')
+    }
+    groups[letter].push(brand)
+    console.log(groups, 'groups2')
+  })
+
+  return Object.entries(groups).map(([letter, brands]) => ({
+    letter, // сокращённая запись для { letter: letter, brands: brands }
+    brands
+  }))
+})
 </script>
 
 <style lang="scss" scoped>
@@ -41,6 +77,7 @@ const isActiveTab = ref<'make' | 'model'>('make')
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-bottom: 80px;
 
   --border-radius-tab: 80px;
 
@@ -103,6 +140,38 @@ const isActiveTab = ref<'make' | 'model'>('make')
     }
     &-text {
       padding-inline: 30px;
+    }
+  }
+}
+
+.car-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  margin-top: 65px;
+
+  &-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    &__items {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    &__letter {
+      margin-right: 5px;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--color-dark-blue);
+    }
+
+    &__item {
+      border-bottom: 1px dashed #BDBDBDFF;
+      width: fit-content;
     }
   }
 }

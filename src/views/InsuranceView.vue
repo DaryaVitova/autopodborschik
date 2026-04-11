@@ -44,10 +44,11 @@ import CarMakeModel from "@/components/Insurance/CarMakeModel.vue"
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 800px;
+    width: 900px;
     margin-top: 100px;
     background-color: #fff;
     border-radius: 10px;
+    margin-bottom: 150px;
   }
 }
 
