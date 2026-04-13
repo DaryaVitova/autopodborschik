@@ -54,9 +54,9 @@
       <!-- Информация -->
       <div class="car-card__info">
         <h3 class="car-card__title">
-          <span v-html="highlightText(item?.brand, highlightBrand)"></span>
+          <span v-html="useHighlightText(item?.brand, highlightBrand)"></span>
           <span>{{ `&nbsp` }}</span>
-          <span v-html="highlightText(item?.model, highlightModel)"></span>
+          <span v-html="useHighlightText(item?.model, highlightModel)"></span>
         </h3>
 
 
@@ -73,7 +73,7 @@
             <span class="car-card__detail-label">Город:</span>
             <span
               class="car-card__detail-value"
-              v-html="highlightText(item?.city, highlightCity)"
+              v-html="useHighlightText(item?.city, highlightCity)"
             ></span>
           </div>
         </div>
@@ -102,6 +102,7 @@
 import {computed, ref, inject } from 'vue'
 import type { Advertisement } from '@/composables/advertisements.ts'
 import {useRoute} from "vue-router";
+import { useHighlightText } from "@/composables/highlightText.ts";
 
 const props = withDefaults(defineProps<{
   item: Advertisement,
@@ -149,15 +150,6 @@ const nextPhoto = (): void => {
   } else {
     currentPhotoIndex.value++
   }
-}
-
-const highlightText = (text: string, searchValue: string): string => {
-  if (!text || !searchValue) return text
-
-  const searchTerm = searchValue.toLowerCase().trim()
-  const regex = new RegExp(`(${searchTerm})`, 'gi')
-
-  return String(text).replace(regex, '<span class="highlight">$1</span>')
 }
 
 const formatPrice = (price: number): string => {

@@ -73,13 +73,8 @@ export function useFilterOperationsCards(
   }
 
   function savePage (query: Record<string, string | string[]>) {
-    console.log('pisda1')
-    console.log(savedPageBeforeFilterData.value, 'savedPageBeforeFilterData.value pizda2')
-    console.log(query.page, 'query.page pizda3')
     if (savedPageBeforeFilterData.value === null && query.page) {
-      console.log('pisda4')
       savedPageBeforeFilterData.value = query.page
-      console.log(savedPageBeforeFilterData.value, 'savedPageBeforeFilterData.value')
       sessionStorage.setItem('savedPageBeforeFilter', savedPageBeforeFilterData.value as string)
     }
   }

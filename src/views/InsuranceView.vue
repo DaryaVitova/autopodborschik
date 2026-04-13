@@ -23,13 +23,48 @@
     </div>
 
     <div class="insurance__content">
-      <car-make-model />
+      <button
+        v-if="isShowNextStepBtn()"
+        type="button"
+        class="insurance__content-next-btn"
+      >
+        Далее
+      </button>
+      <component
+        :is="currentComponent"
+        @make-model-value="(value: string) => makeModelValue = value"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang='ts'>
 import CarMakeModel from "@/components/Insurance/CarMakeModel.vue"
+import { ref, computed } from "vue"
+
+const makeModelValue = ref<string>('')
+
+const currentStep = ref(1)
+
+const steps = [
+  { title: 'Марка / модель ТС', component: CarMakeModel, needConfirm: true }
+  // { title: 'Данные ТС', component: CarData, needConfirm: true },
+  // { title: 'Водители', component: Drivers, needConfirm: true },
+  // { title: 'Расчет', component: Calculation, needConfirm: false }
+]
+
+const currentComponent = computed(() => {
+  return steps[currentStep.value - 1]?.component
+})
+
+function isShowNextStepBtn () {
+  if (makeModelValue.value !== '' && currentStep.value === 1) {
+    return true
+  } else {
+    return false
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -42,6 +77,7 @@ import CarMakeModel from "@/components/Insurance/CarMakeModel.vue"
 
   &__content {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 900px;
@@ -49,6 +85,21 @@ import CarMakeModel from "@/components/Insurance/CarMakeModel.vue"
     background-color: #fff;
     border-radius: 10px;
     margin-bottom: 150px;
+
+    &-next-btn {
+      border: none;
+      margin: 30px 20px 0 0;
+      padding: 7px 25px;
+      background-color: #528a52;
+      color: #fff;
+      border-radius: 20px;
+      align-self: flex-end;
+
+      &:hover {
+        opacity: 0.8;
+        transition-duration: 0.4s;
+      }
+    }
   }
 }
 

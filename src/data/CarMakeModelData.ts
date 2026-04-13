@@ -10,8 +10,8 @@ export interface CarData {
   models: readonly string[]  // readonly для неизменяемости
 }
 
-// export type CarBrandType = keyof typeof dataCars
-// export type CarModelType<T extends CarBrandType> = typeof dataCars[T]['models'][number]
+export type CarBrandType = keyof typeof dataCars
+export type CarModelType<T extends CarBrandType> = typeof dataCars[T]['models'][number]
 
 export const dataCars = {
   Kia: {
@@ -213,8 +213,8 @@ export const dataCars = {
     models: [
       "101 FC", "Defender (90)", "Defender (110)", "Defender (130)", "Discovery (L316)", "Discovery (L319)", "Discovery (L462)",
       "Discovery Sport (L550)", "Freelander (L314)", "Freelander 2 (L359)", "LR2", "LR3", "LR4", "Range Rover (Classic)", "Range Rover (L322)",
-      "Range Rover (L405)", "Range Rover (L460)", "Range Rover Evoque (L538)", "Range Rover Evoque (L551)", "Range Rover Sport (L320)",
-      "Range Rover Sport (L494)", "Range Rover Sport (L461)", "Range Rover Velar (L560)", "Series I", "Series II", "Series IIA", "Series III"
+      "Range Rover (L405)", "Range Rover (L460)", "Range Rover Evoque", "Range Rover Sport", "Range Rover Sport (L461)",
+      "Range Rover Velar", "Series I", "Series II", "Series IIA", "Series III"
     ]
   },
 
