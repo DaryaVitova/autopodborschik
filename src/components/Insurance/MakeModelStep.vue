@@ -5,6 +5,7 @@
       <input
         class="car-search__input"
         v-model="inputValue"
+        @input="handleInput"
         ref="inputRef"
         @focus="handleInputFocus"
         @blur="handleInputBlur"
@@ -19,7 +20,7 @@
       <span
         v-if="inputValue && !isShowMarkIcon"
         class="car-search__input--close-filter"
-        @click.stop="inputValue = ''"
+        @click="cleanInput"
       />
 
       <div
@@ -64,7 +65,7 @@
             v-for="brand in group.brands"
             :key="brand"
             class="car-list-group__item"
-            :class="activeBrand === brand ? 'car-list-group__item--active' : ''"
+            :class="activeBrand === brand && isShowMarkIcon ? 'car-list-group__item--active' : ''"
             @click="openModels(brand)"
           >
             {{ brand }}
@@ -77,7 +78,7 @@
       <div
         class="car-models__model car-list-group__item"
         v-for="model in dataCars[activeBrand].models"
-        :class="activeModel === model ? 'car-list-group__item--active' : ''"
+        :class="activeModel === model && isShowMarkIcon ? 'car-list-group__item--active' : ''"
         :key="model"
         @click="modelSelection(model)"
       >
@@ -113,19 +114,6 @@ const isShowMarkIcon = ref<boolean>(false)
 const isShowListOfSuitable = ref<boolean>(false)
 
 const listOfSuitableCars = ref<string[]>([])
-
-function clickMakeTab () {
-  isActiveTab.value = 'make'
-}
-
-function clickModelTab () {
-  if (activeBrand.value === null) {
-    errorMsg.value = true
-    return
-  }
-  errorMsg.value = false
-  isActiveTab.value = 'model'
-}
 
 const groupedBrands = computed(() => {
   const groups: Record<string, CarBrandType[]> = {}
@@ -191,6 +179,26 @@ watch(() => inputValue.value, (newVal) => {
   }
 })
 
+function clickMakeTab () {
+  isActiveTab.value = 'make'
+}
+
+function clickModelTab () {
+  if (activeBrand.value === null) {
+    errorMsg.value = true
+    return
+  }
+  errorMsg.value = false
+  isActiveTab.value = 'model'
+}
+
+
+function handleInput(event: Event) {
+  const target = event.target as HTMLInputElement
+  target.value = target.value.trimStart()
+  inputValue.value = target.value
+}
+
 function searchModelsPrioritized(searchVal: string): string[] {
   let lowerVal = searchVal.toLowerCase()
   const results = { startsWith: [] as string[], includes: [] as string[] }
@@ -216,6 +224,12 @@ function searchModelsPrioritized(searchVal: string): string[] {
   }
 
   return [...results.startsWith, ...results.includes].slice(0, 30)
+}
+
+function cleanInput() {
+  inputValue.value = ''
+  isActiveTab.value = 'make'
+  activeBrand.value = null
 }
 
 function handleInputBlur() {
@@ -244,6 +258,12 @@ function modelSelection(model: CarModelType<NonNullable<typeof activeBrand.value
 }
 
 function carSelected(car: string) {
+  const spaceIndex = car.indexOf(' ')
+  const makeModel = [car.slice(0, spaceIndex), car.slice(spaceIndex + 1)]
+
+  if(makeModel[0]) activeBrand.value = makeModel[0] as CarBrandType
+  if (makeModel[1]) activeModel.value = makeModel[1]
+
   inputValue.value = car
   isShowMarkIcon.value = true
   inputRef.value?.blur()
