@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang='ts'>
-import CarMakeModel from "@/components/Insurance/CarMakeModel.vue"
+import MakeModelStep from "@/components/Insurance/MakeModelStep.vue"
 import { ref, computed } from "vue"
 
 const makeModelValue = ref<string>('')
@@ -47,7 +47,7 @@ const makeModelValue = ref<string>('')
 const currentStep = ref(1)
 
 const steps = [
-  { title: 'Марка / модель ТС', component: CarMakeModel, needConfirm: true }
+  { title: 'Марка / модель ТС', component: MakeModelStep, needConfirm: true }
   // { title: 'Данные ТС', component: CarData, needConfirm: true },
   // { title: 'Водители', component: Drivers, needConfirm: true },
   // { title: 'Расчет', component: Calculation, needConfirm: false }
