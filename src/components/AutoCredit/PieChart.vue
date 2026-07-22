@@ -44,8 +44,8 @@ const dynamicPercent = computed(() => {
 
 <style lang="scss" scoped>
 .pie-chart {
-  --color-1: #217a25;
-  --color-2: #b5b8b5;
+  --color-1: var(--primary);
+  --color-2: var(--warning);
 
   display: flex;
   justify-content: center;
@@ -53,8 +53,9 @@ const dynamicPercent = computed(() => {
   gap: 20px;
   width: fit-content;
   padding: 20px;
-  background-color: #f1f1f1;
-  border-radius: 12px;
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   &__drawing {
     width: 150px;
     height: 150px;
@@ -71,7 +72,7 @@ const dynamicPercent = computed(() => {
   }
 
   &__inner-circle {
-    background: white;
+    background: var(--surface-2);
     width: 45%;
     height: 45%;
     border-radius: 50%;
@@ -109,7 +110,7 @@ const dynamicPercent = computed(() => {
 
     &-label {
       font-size: 14px;
-      color: #737272;
+      color: var(--ink-muted);
     }
   }
 }

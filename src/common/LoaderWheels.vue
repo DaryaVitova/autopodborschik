@@ -32,7 +32,7 @@ defineProps<{
 .wheel {
   width: 80px;
   height: 80px;
-  border: 8px solid #2c3e50;
+  border: 8px solid var(--ink);
   border-top: 8px solid transparent;
   border-radius: 50%;
   animation: wheel-spin 1.5s linear infinite;
@@ -44,7 +44,7 @@ defineProps<{
   position: absolute;
   width: 20px;
   height: 20px;
-  background: #2c3e50;
+  background: var(--ink);
   border-radius: 50%;
   top: 50%;
   left: 50%;
@@ -56,23 +56,23 @@ defineProps<{
   position: absolute;
   width: 100%;
   height: 8px;
-  background: #2c3e50;
+  background: var(--ink);
   top: 50%;
   left: 0;
   transform: translateY(-50%);
 }
 
 .wheel:nth-child(2) {
-  border-color: #2c72a1;
+  border-color: var(--primary);
   animation-delay: -0.5s;
 }
 
 .wheel:nth-child(2)::after {
-  background: #2c72a1;
+  background: var(--primary);
 }
 
 .loading-text {
-  color: #2c3e50;
+  color: var(--ink);
   font-size: 18px;
   font-weight: bold;
 }

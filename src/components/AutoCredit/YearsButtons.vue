@@ -63,10 +63,10 @@ function selectAllYears() {
 
 <style lang="scss" scoped>
 .years-buttons {
-  --background-color: #eae8e8;
-  --active-color: green;
-  --text-color: #333;
-  --active-text-color: white;
+  --background-color: var(--surface-3);
+  --active-color: var(--primary);
+  --text-color: var(--ink);
+  --active-text-color: var(--on-primary);
   --indent: 15px;
   --half-indent: calc(var(--indent) / 2);
 
@@ -102,7 +102,7 @@ function selectAllYears() {
         content: "|";
         position: absolute;
         right: calc(var(--indent) / -2);
-        color: #999;
+        color: var(--ink-faint);
         pointer-events: none;
         font-weight: 300;
         transition: opacity 0.3s;

@@ -144,12 +144,12 @@ const handleManualSelect = () => {
 
     &-title {
       margin-bottom: 25px;
-      color: #373737;
+      color: var(--ink);
     }
 
     &-label {
       font-size: 14px;
-      color: #5a5b5c;
+      color: var(--ink-muted);
     }
 
     &-value {
@@ -180,7 +180,7 @@ const handleManualSelect = () => {
     position: sticky;
     top: 0;
     z-index: 150;
-    background: white;
+    background: var(--surface);
     padding: 10px 0;
   }
 }

@@ -399,18 +399,23 @@ const {
   }
 
   &__percent-btn {
-    border: 1px solid #afafaf;
-    padding: 7px 12px;
-    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-strong);
+    background-color: var(--surface);
+    color: var(--ink);
+    padding: 8px 14px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
     &:hover {
-      background-color: #e8e8e8;
-      transition: transform 0.2s ease;
+      background-color: var(--surface-3);
     }
     &--active {
-      border: 2px solid #3f7e3f;
+      border: 1px solid var(--primary);
+      background-color: var(--primary-soft);
+      color: var(--primary);
     }
     &--color-text {
-      color: green !important;
+      color: var(--primary) !important;
       margin-left: 5px;
     }
   }
@@ -429,13 +434,13 @@ const {
       bottom: 50%;
       z-index: 300;
       font-size: 18px;
-      color: #3f7e3f;
+      color: var(--primary);
     }
   }
 
   &__note {
     font-size: 14px;
-    color: #9e9e9e;
+    color: var(--ink-muted);
     display: block;
     margin-bottom: 10px;
   }
@@ -451,9 +456,11 @@ const {
     flex-direction: column;
     gap: 25px;
     margin-top: 35px;
-    background-color: #ffffff;
-    border-radius: var(--border-radius-md);
-    padding: 20px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    border-radius: var(--radius-lg);
+    padding: 24px;
     width: 450px;
   }
 
@@ -467,14 +474,17 @@ const {
     justify-content: center;
     align-items: flex-end;
     gap: 10px;
-    padding: 5px 6px 8px 6px;
-    border: 2px solid #1f6a1f;
-    border-radius: var(--border-radius-md);
+    padding: 8px 14px;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-pill);
     margin-top: 50px;
-    background-color: #fff;
+    background-color: var(--surface);
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
     &:hover {
-      opacity: 0.7;
-      transition-duration: 0.5s;
+      background-color: var(--primary-soft);
+      box-shadow: var(--shadow-sm);
     }
   }
 
@@ -483,7 +493,7 @@ const {
     text-align: start;
     justify-content: flex-start !important;
     &--mark {
-      accent-color: #118021;
+      accent-color: var(--primary);
       &:hover {
         transition-duration: 0.5s;
       }
@@ -498,14 +508,14 @@ const {
 
 .lightbox {
   @include lightbox;
-  background: rgba(126, 126, 126, 0.7);
+  background: rgba(2, 6, 23, 0.6);
   align-items: flex-end;
   &__content {
     width: 700px;
     //width: 70%;
     height: 90%;
-    border-radius: 12px;
-    background-color: white;
+    border-radius: var(--radius-lg);
+    background-color: var(--surface);
   }
 }
 

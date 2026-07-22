@@ -68,7 +68,8 @@ const goBack = (): void => {
     gap: 15px;
     margin-top: 200px;
     &--text1 {
-      color: #024760;
+      color: var(--ink);
+      font-weight: 700;
       white-space: nowrap;
     }
     &--text2 {
@@ -82,17 +83,21 @@ const goBack = (): void => {
   &__clear-btn {
     align-self: flex-end;
     text-decoration: none;
-    background-color: #fff;
-    border: 2px solid #4b92af;
-    font-weight: 500;
-    padding: 7px 10px;
-    border-radius: var(--border-radius-md);
+    color: var(--primary);
+    background-color: var(--surface);
+    border: 1px solid var(--primary);
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
     margin-bottom: 80px;
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+      transform var(--dur-fast) var(--ease);
 
     &:hover {
-      opacity: 0.7;
+      background-color: var(--primary-soft);
+      box-shadow: var(--shadow-sm);
       transform: scale(1.02);
-      transition-duration: 0.2s;
     }
   }
 }

@@ -192,7 +192,7 @@ onMounted(() => {
     align-items: flex-start;
     gap: 7px;
     width: 500px;
-    background-color: #dbe5ec;
+    background-color: var(--surface-3);
     padding: 7px 5px 0 0;
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
     height: 80px;
@@ -207,7 +207,7 @@ onMounted(() => {
     border: none;
     outline: none;
     box-shadow: none;
-    color: #031220;
+    color: var(--ink);
     font: inherit;
     font-size: 18px;
     font-weight: bold;
@@ -230,11 +230,11 @@ onMounted(() => {
     margin-left: 13px;
 
     &--text {
-      color: #676666;
+      color: var(--ink-muted);
     }
 
     strong {
-      color: #031220;
+      color: var(--ink);
       font-size: 18px;
     }
   }
@@ -258,10 +258,10 @@ onMounted(() => {
       height: 6px;
       background: linear-gradient(
           to right,
-          #118021 0%,
-          #118021 var(--progress, 50%),
-          #c1c1c1 var(--progress, 50%),
-          #c1c1c1 100%
+          var(--primary) 0%,
+          var(--primary) var(--progress, 50%),
+          var(--border-strong) var(--progress, 50%),
+          var(--border-strong) 100%
       );
       border-radius: 0;
       border: none;
@@ -276,7 +276,7 @@ onMounted(() => {
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      background-color: #03420c;
+      background-color: var(--primary-hover);
       cursor: pointer;
       margin-top: -7px;
       border: 2px solid white;
@@ -288,14 +288,14 @@ onMounted(() => {
     &::-moz-range-track {
       width: 100%;
       height: 6px;
-      background: #e2e8f0;
+      background: var(--surface-3);
       border-radius: 0;
       border: none;
     }
 
     &::-moz-range-progress {
       height: 6px;
-      background: #118021;
+      background: var(--primary);
       border-radius: 0;
     }
 
@@ -303,7 +303,7 @@ onMounted(() => {
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      background-color: #03420c;
+      background-color: var(--primary-hover);
       cursor: pointer;
       border: 2px solid white;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);

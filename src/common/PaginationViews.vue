@@ -316,7 +316,7 @@ onMounted(async () => {
   align-items: center;
   margin: 6px 20px 100px 20px;
   &__count-showElem {
-    color: #686868;
+    color: var(--ink-muted);
     margin: 20px 0 0 20px;
   }
 }
@@ -327,25 +327,30 @@ onMounted(async () => {
   align-items: center;
   margin-top: 20px;
   &__btn {
-    padding: 6px 10px;
-    border: 1px solid #ddd;
-    background: white;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--ink);
     cursor: pointer;
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease),
+      color var(--dur) var(--ease);
 
     &.active {
-      background-color: var(--color-dark-blue);
-      color: white;
-      border-color: var(--color-dark-blue);
+      background-color: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
     }
 
     &:hover:not(.active) {
-      background-color: #f8f9fa;
+      background-color: var(--surface-3);
+      border-color: var(--border-strong);
     }
   }
 
   &__button {
-    border: 1px solid #b8b8b8;
-    border-radius: 2px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
     font-size: 14px;
     &:hover {
       opacity: 0.7;

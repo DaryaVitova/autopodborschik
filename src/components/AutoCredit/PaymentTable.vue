@@ -310,7 +310,7 @@ watch([() => props.sumCredit, () => props.monthlyPayment], () => {
     position: sticky;
     top: 80px;
     z-index: 100;
-    background-color: white;
+    background-color: var(--surface);
     &-row {
       display: flex;
       width: 100%;
@@ -342,7 +342,7 @@ watch([() => props.sumCredit, () => props.monthlyPayment], () => {
         position: sticky;
         top: 127px;
         z-index: 50;
-        background-color: white;
+        background-color: var(--surface);
         scroll-margin-top: 125px;
       }
     }
@@ -350,10 +350,10 @@ watch([() => props.sumCredit, () => props.monthlyPayment], () => {
     &-cell {
       flex: 1;
       padding: 10px 12px;
-      border-bottom: 1px solid #d5d5d5;
+      border-bottom: 1px solid var(--border);
 
       &--year {
-        background-color: #efefef;
+        background-color: var(--surface-3);
       }
     }
   }

@@ -49,8 +49,8 @@ const toggleFavorite = (): void => {
   width: 38px;
   padding: 3px;
   &:hover {
-    background-color: #ededed;
-    border-radius: 5px;
+    background-color: var(--surface-3);
+    border-radius: var(--radius-sm);
     transition-duration: 0.2s;
   }
 }
