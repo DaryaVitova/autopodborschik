@@ -276,6 +276,8 @@ function carSelected(car: string) {
 
 .car-search {
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -292,6 +294,8 @@ function carSelected(car: string) {
 
   &__input {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     border: 1px solid #bbb;
     padding: 15px 10px 15px 60px;
     border-radius: 100px;
@@ -389,6 +393,8 @@ function carSelected(car: string) {
     height: 50px;
     border-radius: var(--border-radius-tab);
     width: 40%;
+    max-width: 100%;
+    box-sizing: border-box;
 
     &--error-msg {
       position: absolute;
@@ -396,6 +402,10 @@ function carSelected(car: string) {
       left: 50%;
       transform: translateX(-50%);
       color: #ec1518;
+      white-space: normal;
+      width: max-content;
+      max-width: 90vw;
+      text-align: center;
     }
   }
 
@@ -469,6 +479,73 @@ function carSelected(car: string) {
   justify-items: center;
   gap: 25px;
   margin-top: 60px;
+}
+
+@media (max-width: 767px) {
+  .car-search {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 16px;
+    margin-bottom: 50px;
+
+    &__input-group {
+      width: 100%;
+      margin-top: 30px;
+    }
+
+    &__input {
+      padding: 12px 10px 12px 45px;
+
+      &-suitable-cars-item {
+        padding-inline: 20px;
+      }
+    }
+
+    &__tabs {
+      width: 100%;
+    }
+
+    &__tab-text {
+      padding-inline: 15px;
+    }
+  }
+
+  .car-list {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 40px;
+
+    &-group {
+      justify-content: flex-start;
+      min-width: 0;
+      width: 100%;
+
+      &__items {
+        min-width: 0;
+      }
+
+      &__item {
+        width: auto;
+        max-width: 100%;
+        white-space: normal;
+        word-break: break-word;
+      }
+    }
+  }
+
+  .car-models {
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: 15px;
+    margin-top: 40px;
+
+    &__model {
+      width: auto;
+      max-width: 100%;
+      white-space: normal;
+      word-break: break-word;
+    }
+  }
 }
 
 :deep(.highlight) {

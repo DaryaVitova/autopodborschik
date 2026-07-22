@@ -1,5 +1,6 @@
 html, body {
   background-color: #f0f0f1;
+  overflow-x: hidden;
 }
 body:has(.loader) {
   display: flex;

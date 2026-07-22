@@ -131,6 +131,9 @@ function goToPrevStep () {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 
   &__content {
     display: flex;
@@ -138,6 +141,9 @@ function goToPrevStep () {
     justify-content: center;
     align-items: center;
     width: 900px;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     margin-top: 100px;
     background-color: #fff;
     border-radius: 10px;
@@ -146,6 +152,8 @@ function goToPrevStep () {
     &-buttons {
       display: flex;
       width: 80%;
+      min-width: 0;
+      box-sizing: border-box;
       margin-top: 30px;
     }
 
@@ -239,6 +247,63 @@ function goToPrevStep () {
       top: 110%;
       color: #504f4f;
       white-space: nowrap;
+    }
+  }
+}
+
+@media (max-width: 1023px) {
+  .insurance {
+    margin-top: 60px;
+    padding: 0 15px;
+
+    &__content {
+      margin-top: 60px;
+      margin-bottom: 100px;
+    }
+  }
+
+  .steps {
+    --margin-step: 50px;
+
+    &__item-text {
+      width: 90px;
+      font-size: 13px;
+      white-space: normal;
+      text-align: center;
+      line-height: 1.2;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .insurance {
+    margin-top: 30px;
+
+    &__content {
+      margin-top: 40px;
+      margin-bottom: 60px;
+    }
+
+    &__content-buttons {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  }
+
+  .steps {
+    --margin-step: 24px;
+    padding-bottom: 10px;
+
+    &__item-circle {
+      width: 30px;
+      height: 30px;
+      font-size: 14px;
+    }
+
+    &__item-text {
+      width: 54px;
+      font-size: 10px;
+      line-height: 1.2;
     }
   }
 }

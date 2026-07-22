@@ -158,6 +158,8 @@ function handleYearInput(event: Event) {
   grid-template-columns: repeat(2, 1fr);
   gap: 30px;
   width: 80%;
+  min-width: 0;
+  box-sizing: border-box;
   margin-top: 60px;
   margin-bottom: 80px;
 
@@ -165,6 +167,7 @@ function handleYearInput(event: Event) {
     display: flex;
     flex-direction: column;
     position: relative;
+    min-width: 0;
   }
 
   &__label {
@@ -173,6 +176,8 @@ function handleYearInput(event: Event) {
   }
 
   &__input {
+    width: 100%;
+    box-sizing: border-box;
     border: 1px solid #bbb;
     padding: 12px 15px;
     border-radius: var(--border-radius-md);
@@ -187,6 +192,8 @@ function handleYearInput(event: Event) {
     --select-border-width: 1px;
     --select-border-color: #bbb;
 
+    width: 100%;
+    box-sizing: border-box;
     position: relative;
     display: flex;
     align-items: center;
@@ -254,6 +261,18 @@ function handleYearInput(event: Event) {
     left: 0;
     font-size: 13px;
     color: #ec1518;
+  }
+}
+
+@media (max-width: 767px) {
+  .car-data {
+    grid-template-columns: 1fr;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 16px;
+    margin-top: 40px;
+    margin-bottom: 50px;
+    gap: 25px;
   }
 }
 </style>

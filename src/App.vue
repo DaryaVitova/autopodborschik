@@ -229,11 +229,14 @@ onUnmounted(() => {
 
     &__nav {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       margin-right: 0;
       justify-content: center;
       margin-top: 10px;
+      width: 100%;
+      padding: 0 15px;
+      box-sizing: border-box;
     }
 
     &__create-ad-container {
@@ -245,6 +248,7 @@ onUnmounted(() => {
 
     &__logo {
       font-size: 20px;
+      margin-left: 0;
     }
 
     &__link {
@@ -253,6 +257,7 @@ onUnmounted(() => {
       justify-content: center;
       padding: 8px 6px !important;
       font-size: 10px;
+      min-width: 0;
 
       &--form {
         max-width: 250px;

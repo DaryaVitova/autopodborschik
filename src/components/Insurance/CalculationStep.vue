@@ -126,6 +126,8 @@ const {
 <style lang="scss" scoped>
 .calculation {
   width: 80%;
+  min-width: 0;
+  box-sizing: border-box;
   margin-top: 60px;
   margin-bottom: 80px;
 
@@ -133,6 +135,7 @@ const {
     display: flex;
     flex-direction: column;
     width: 320px;
+    max-width: 100%;
   }
 
   &__label {
@@ -144,6 +147,8 @@ const {
     --select-border-width: 1px;
     --select-border-color: #bbb;
 
+    width: 100%;
+    box-sizing: border-box;
     position: relative;
     display: flex;
     align-items: center;
@@ -249,6 +254,35 @@ const {
     margin-top: 20px;
     font-size: 13px;
     color: #999999;
+  }
+}
+
+@media (max-width: 767px) {
+  .calculation {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 16px;
+    margin-top: 40px;
+    margin-bottom: 50px;
+
+    &__field {
+      width: 100%;
+    }
+
+    &__row {
+      flex-direction: column;
+      gap: 2px;
+
+      span:last-child {
+        align-self: flex-start;
+      }
+    }
+
+    &__total {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
   }
 }
 </style>

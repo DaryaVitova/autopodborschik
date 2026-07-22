@@ -176,6 +176,8 @@ watch([mode, drivers], () => {
 <style lang="scss" scoped>
 .drivers {
   width: 80%;
+  min-width: 0;
+  box-sizing: border-box;
   margin-top: 60px;
   margin-bottom: 80px;
 
@@ -256,6 +258,7 @@ watch([mode, drivers], () => {
     display: flex;
     flex-direction: column;
     position: relative;
+    min-width: 0;
   }
 
   &__label {
@@ -264,6 +267,8 @@ watch([mode, drivers], () => {
   }
 
   &__input {
+    width: 100%;
+    box-sizing: border-box;
     border: 1px solid #bbb;
     padding: 12px 15px;
     border-radius: var(--border-radius-md);
@@ -295,6 +300,29 @@ watch([mode, drivers], () => {
       background-color: var(--color-middle-blue);
       color: #fff;
       transition-duration: 0.4s;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .drivers {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 16px;
+    margin-top: 40px;
+    margin-bottom: 50px;
+
+    &__tabs {
+      width: 100%;
+    }
+
+    &__tab {
+      flex: 1;
+    }
+
+    &__card-fields {
+      grid-template-columns: 1fr;
+      gap: 25px;
     }
   }
 }
