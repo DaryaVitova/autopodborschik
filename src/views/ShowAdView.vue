@@ -436,7 +436,7 @@ onMounted(() => {
   max-width: 1000px;
   margin: 0 auto 60px auto;
   padding: 40px 20px;
-  background: #f8f9fa;
+  background: var(--surface-2);
   min-height: 100vh;
 
   &__sticky-container-btn {
@@ -461,18 +461,19 @@ onMounted(() => {
 
   &__btn {
     border: none;
-    border-radius: 7px;
-    color: #fff;
-    padding: 7px 15px;
+    border-radius: var(--radius-pill);
+    color: var(--on-primary);
+    padding: 8px 16px;
+    cursor: pointer;
     &:hover {
       opacity: 0.7;
       transition-duration: 0.5s;
     }
     &--delete {
-      background-color: #bd3838;
+      background-color: var(--danger);
     }
     &--sold {
-      background-color: #6d5f8f;
+      background-color: var(--primary);
     }
   }
 
@@ -481,9 +482,9 @@ onMounted(() => {
     bottom: 20px;
     right: 20px;
     font-size: 14px;
-    background-color: #fff;
+    background-color: var(--surface);
     padding: 4px 5px;
-    border: 1px solid #b5b5b5;
+    border: 1px solid var(--border-strong);
     border-radius: 4px;
   }
 }
@@ -498,9 +499,9 @@ onMounted(() => {
   text-align: center;
   margin-bottom: 50px;
   padding: 35px;
-  background: white;
+  background: var(--surface);
   border-radius: var(--border-radius-xlg);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-lg);
 
   &__carLoan-calculation {
     display: flex;
@@ -516,11 +517,11 @@ onMounted(() => {
     &:hover {
       cursor: pointer;
       transition-duration: 0.5s;
-      background-color: #e3e3e3;
+      background-color: var(--surface-3);
     }
 
     &--arrow {
-      color: #1d771d;
+      color: var(--success);
     }
   }
 
@@ -548,7 +549,7 @@ onMounted(() => {
 }
 
 h2 {
-  color: #333;
+  color: var(--ink);
   margin: 20px 0 20px 0;
   font-size: 2.4rem;
   font-weight: 700;
@@ -566,7 +567,7 @@ h2 {
   border-radius: 25px;
   font-size: 1.2rem;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 /* Основной контент - два столбца */
@@ -579,13 +580,13 @@ h2 {
 /* Левая колонка - информация */
 .ad-info {
   flex: 1;
-  background: white;
+  background: var(--surface);
   padding: 35px;
   border-radius: var(--border-radius-xlg);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-lg);
 
   &__title {
-    color: #333;
+    color: var(--ink);
     margin: 0 0 25px 0;
     font-size: 1.6rem;
     font-weight: 600;
@@ -604,7 +605,7 @@ h2 {
     display: flex;
     justify-content: space-between;
     padding: 16px 0;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border);
     align-items: flex-start;
 
     &:last-child {
@@ -612,7 +613,7 @@ h2 {
     }
 
     &-label {
-      color: #666;
+      color: var(--ink-muted);
       font-weight: 500;
       font-size: 16px;
       flex-shrink: 0;
@@ -620,7 +621,7 @@ h2 {
     }
 
     &-value {
-      color: #333;
+      color: var(--ink);
       font-weight: 600;
       font-size: 16px;
       text-align: right;
@@ -636,10 +637,10 @@ h2 {
 }
 
 .ad-desc {
-  background: white;
+  background: var(--surface);
   padding: 35px;
   border-radius: var(--border-radius-xlg);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-lg);
   margin-top: 15px;
   &__title {
     margin-bottom: 15px;
@@ -648,7 +649,7 @@ h2 {
 
 .value.description {
   font-style: italic;
-  color: #555;
+  color: var(--ink-muted);
   text-align: left;
   line-height: 1.6;
   max-width: 500px;
@@ -657,10 +658,10 @@ h2 {
 /* Контакты */
 .ad-contacts {
   padding-top: 30px;
-  border-top: 2px solid #f0f0f0;
+  border-top: 2px solid var(--border);
 
   &__title {
-    color: #333;
+    color: var(--ink);
     margin: 0 0 20px 0;
     font-size: 1.6rem;
     font-weight: 600;
@@ -674,7 +675,7 @@ h2 {
   }
 
   &__label {
-    color: #666;
+    color: var(--ink-muted);
     font-weight: 500;
     font-size: 16px;
   }
@@ -686,7 +687,7 @@ h2 {
     text-decoration: none;
     transition: color 0.3s ease;
     &:hover {
-      color: #45576a;
+      color: var(--ink-muted);
       text-decoration: underline;
     }
   }
@@ -704,11 +705,11 @@ h2 {
     display: flex;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 4px 15px rgba(82, 150, 188, 0.3);
+    box-shadow: var(--shadow-primary);
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(82, 150, 188, 0.4);
+      box-shadow: var(--shadow-lg);
     }
   }
 }
@@ -716,10 +717,10 @@ h2 {
 /* Правая колонка - фото (десктоп) */
 .ad-photos {
   width: 480px;
-  background: white;
+  background: var(--surface);
   padding: 35px;
   border-radius: var(--border-radius-xlg);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-lg);
   position: sticky;
   top: 40px;
   align-self: flex-start;
@@ -727,7 +728,7 @@ h2 {
   overflow-y: auto;
 
   &__title {
-    color: #333;
+    color: var(--ink);
     margin: 0 0 25px 0;
     font-size: 1.6rem;
     font-weight: 600;
@@ -758,10 +759,10 @@ h2 {
       overflow: hidden;
       cursor: pointer;
       transition: all 0.3s ease;
-      background: #f8f8f8;
+      background: var(--surface-2);
       &:hover {
         transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--shadow-lg);
       }
     }
 
@@ -814,14 +815,14 @@ h2 {
   &__hint {
     margin-top: 25px;
     padding: 15px;
-    background: #f0f8ff;
+    background: var(--primary-soft);
     border-radius: var(--border-radius-lg);
     color: var(--color-middle-blue);
     font-size: 14px;
     display: flex;
     align-items: center;
     gap: 10px;
-    border: 1px solid #d1e9ff;
+    border: 1px solid var(--border);
 
     &-icon {
       font-size: 16px;
@@ -836,9 +837,9 @@ h2 {
     height: fit-content;
     text-align: center;
     padding: 40px 20px;
-    background: #f9f9f9;
+    background: var(--surface-2);
     border-radius: 12px;
-    border: 2px dashed #ddd;
+    border: 2px dashed var(--border-strong);
 
     &-icon {
       font-size: 70px;
@@ -847,7 +848,7 @@ h2 {
     }
 
     &-text {
-      color: #888;
+      color: var(--ink-faint);
       font-size: 20px;
       margin: 0;
     }
@@ -863,7 +864,7 @@ h2 {
 .lightbox {
   @include lightbox;
   &--for-sold {
-    background: rgba(177, 177, 177, 0.97);
+    background: rgba(2, 6, 23, 0.9);
     cursor: auto;
   }
 
@@ -891,7 +892,7 @@ h2 {
 
     &--error-message {
       font-size: 14px;
-      color: #bf0606;
+      color: var(--danger);
     }
   }
 
@@ -1037,14 +1038,14 @@ h2 {
 
   .ad-mobile-photos {
     display: block; /* Показываем фото под информацией */
-    background: white;
+    background: var(--surface);
     padding: 30px;
     border-radius: var(--border-radius-xlg);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-lg);
     margin-top: 30px;
 
     &__title {
-      color: #333;
+      color: var(--ink);
       margin: 0 0 20px 0;
       font-size: 1.6rem;
       font-weight: 600;
@@ -1069,7 +1070,7 @@ h2 {
         overflow: hidden;
         cursor: pointer;
         transition: transform 0.3s ease;
-        background: #f8f8f8;
+        background: var(--surface-2);
         &:hover {
           transform: translateY(-3px);
         }

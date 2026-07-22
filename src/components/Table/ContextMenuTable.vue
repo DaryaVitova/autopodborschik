@@ -139,10 +139,10 @@ onUnmounted(() => {
 .table__context-menu {
   position: fixed;
   z-index: 1000;
-  background: white;
-  border: 1px solid #d0d7de;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 5px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-lg);
   padding: 4px 0;
   min-width: 180px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -155,32 +155,32 @@ onUnmounted(() => {
     padding: 8px 12px;
     cursor: pointer;
     transition: background-color 0.1s;
-    color: #1f2328;
+    color: var(--ink);
 
     &:hover {
-      background-color: #f6f8fa;
-      color: #1f2328;
+      background-color: var(--surface-3);
+      color: var(--ink);
     }
 
     &:not(:last-child) {
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--border);
     }
 
     &--disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      background-color: #f9f9f9;
+      background-color: var(--surface-2);
 
       &:hover {
-        background-color: #f9f9f9;
-        color: #1f2328;
+        background-color: var(--surface-2);
+        color: var(--ink);
       }
     }
   }
 
   .context-menu__hint {
     font-size: 11px;
-    color: #666;
+    color: var(--ink-muted);
     font-style: italic;
   }
 }

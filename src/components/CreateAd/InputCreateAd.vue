@@ -78,17 +78,20 @@ function handleInput(e: Event): void {
     }
   }
   &__label {
-    color: #616161;
+    color: var(--ink-muted);
   }
   &__input {
     height: 33px;
     padding-left: 10px;
-    border: none;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
   }
   &__error-message {
     font-size: 14px;
-    color: #bf0606;
+    color: var(--danger);
   }
 }
 </style>

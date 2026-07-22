@@ -532,7 +532,7 @@ const {
     position: relative;
     padding-block: 5px;
     white-space: nowrap;
-    color: #04224e;
+    color: var(--ink);
   }
 
   &__pagination-select {
@@ -543,7 +543,7 @@ const {
     }
     &--label {
       font-weight: 500;
-      color: #05080b;
+      color: var(--ink);
       margin-left: 5px;
     }
   }
@@ -562,10 +562,10 @@ const {
     height: 30px;
     &:hover {
       cursor: pointer;
-      background-color: #c6d7e8 !important;
+      background-color: var(--primary-soft) !important;
     }
     &:nth-child(odd) {
-      background-color: #e4e4e4;
+      background-color: var(--surface-3);
     }
   }
   &__element {

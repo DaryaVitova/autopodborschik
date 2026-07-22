@@ -370,7 +370,7 @@ const clearError = (field: FormErrorField): void => {
 
   display: flex;
   flex-direction: column;
-  background-color: #ededed;
+  background-color: var(--surface-2);
   border-radius: 5px;
   backdrop-filter: blur(200px);
   padding: 60px 60px 40px 60px;
@@ -411,24 +411,31 @@ const clearError = (field: FormErrorField): void => {
     width: fit-content;
     align-self: center;
     margin-top: 30px;
-    border: 2px solid #fff;
-    color: white;
-    background-color: var(--color-middle-blue);
-    border-radius: var(--border-radius-md);
+    border: none;
+    color: var(--on-primary);
+    background-color: var(--primary);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-primary);
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease), transform var(--dur-fast) var(--ease),
+      box-shadow var(--dur) var(--ease);
     &:hover {
-      opacity: 0.8;
+      background-color: var(--primary-hover);
+      box-shadow: var(--shadow-lg);
       transform: scale(1.03);
-      transition-duration: 0.2s;
     }
   }
   &__label {
-    color: #616161;
+    color: var(--ink-muted);
   }
   &__input {
     height: var(--height-input);
     padding-left: 10px;
-    border: none;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
   }
 
   &__select-year {
@@ -442,12 +449,15 @@ const clearError = (field: FormErrorField): void => {
     width: 400px;
     margin-bottom: 10px;
     padding-inline: 10px;
-    border: none;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: var(--shadow-sm);
   }
   &__error-message {
     font-size: 14px;
-    color: #bf0606;
+    color: var(--danger);
   }
   &__phone-input {
     height: var(--height-input);
@@ -455,14 +465,21 @@ const clearError = (field: FormErrorField): void => {
     width: 100%;
     &-country {
       width: 30%;
-      border: none;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: var(--shadow-sm);
     }
     &-number {
       padding-left: 15px;
       width: 70%;
-      border: none;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--border);
+      border-left: none;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: var(--shadow-sm);
       &:focus {
         outline: none;
       }
@@ -479,7 +496,7 @@ const clearError = (field: FormErrorField): void => {
     position: relative;
     width: 100px;
     height: 100px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border);
 
     img {
       width: 100%;

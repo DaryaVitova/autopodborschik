@@ -84,14 +84,14 @@ function resetFiltering () {
   display: flex;
   align-items: center;
   &--input {
-    border: 2px solid #d8d7d7;
+    border: 2px solid var(--border-strong);
     outline: none;
     transition: border-color 0.3s ease;
     padding-left: 5px;
   }
   &-close {
     position: absolute;
-    color: #5a5a5a;
+    color: var(--ink-muted);
     right: 10px;
     cursor: pointer;
     &:hover {
