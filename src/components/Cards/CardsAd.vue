@@ -460,13 +460,13 @@ onMounted(() => {
     padding: 5px 8px;
     font-size: 14px;
     border: none;
-    border-radius: var(--border-radius-sm);
-    background-color: #438eb8;
-    color: white;
+    border-radius: var(--radius-pill);
+    background-color: var(--primary);
+    color: var(--on-primary);
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease);
     &:hover {
-      background-color: #5793c8;
-      transition-duration: 0.2s;
-      opacity: 0.8;
+      background-color: var(--primary-hover);
     }
     &--price, &--mileage {
       position: absolute;
@@ -537,13 +537,13 @@ onMounted(() => {
 
   .empty-text {
     font-size: 18px;
-    color: #6b7280;
+    color: var(--ink-muted);
     margin-bottom: 10px;
   }
 
   .empty-subtext {
     font-size: 14px;
-    color: #9ca3af;
+    color: var(--ink-faint);
   }
 }
 
@@ -554,15 +554,15 @@ onMounted(() => {
   .loading-spinner {
     width: 50px;
     height: 50px;
-    border: 3px solid #f3f4f6;
-    border-top-color: var(--color-middle-blue);
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
     border-radius: 50%;
     margin: 0 auto 20px;
     animation: spin 1s linear infinite;
   }
 
   p {
-    color: #6b7280;
+    color: var(--ink-muted);
   }
 }
 

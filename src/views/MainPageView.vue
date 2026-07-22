@@ -75,55 +75,62 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 100px;
+  margin-top: var(--space-10);
 
   &__select-show {
     display: flex;
-    gap: 20px;
-    margin-top: 40px;
+    gap: var(--space-2);
+    margin-top: var(--space-10);
     align-items: center;
+    padding: 4px;
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
 
     &--link {
       text-decoration: none;
-      font-size: 18px;
-      color: #000d17;
-      padding: 8px 16px;
-      border-radius: var(--border-radius-sm);
-      transition: all 0.3s ease;
-      border: 2px solid var(--color-middle-blue);
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: var(--ink-muted);
+      padding: var(--space-2) var(--space-5);
+      border-radius: var(--radius-pill);
+      transition: color var(--dur) var(--ease), background-color var(--dur) var(--ease);
 
       &:hover {
-        background-color: #f0f8ff;
-        opacity: 0.8;
+        color: var(--ink);
       }
 
       &.active {
-        background-color: var(--color-middle-blue);
-        color: white;
-        font-weight: 600;
+        background-color: var(--surface);
+        color: var(--primary);
+        box-shadow: var(--shadow-sm);
       }
     }
 
     &--span {
-      font-size: 18px;
-      color: #4e4e4e;
+      display: none;
     }
   }
 
   &__about-app-btn {
     position: absolute;
     right: 30px;
-    top: 130px;
-    border: none;
+    top: 90px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 7px;
-    color: #113f60;
-    background: none;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    color: var(--primary);
+    font-weight: 600;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
     &:hover {
-      opacity: 0.8;
-      transition-duration: 0.2s;
+      background: var(--primary-soft);
+      box-shadow: var(--shadow-md);
     }
   }
 }

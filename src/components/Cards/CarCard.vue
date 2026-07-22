@@ -195,11 +195,13 @@ function clickCard(): void {
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease);
 
   &__sold-overlay::before {
     content: '';
@@ -208,9 +210,9 @@ function clickCard(): void {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(228, 228, 228, 0.5);
+    background: color-mix(in srgb, var(--surface) 55%, transparent);
     z-index: 5;
-    border-radius: 15px;
+    border-radius: var(--radius-lg);
     pointer-events: none; /* Чтобы можно было кликать сквозь overlay */
   }
 
@@ -221,8 +223,9 @@ function clickCard(): void {
   }
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-strong);
   }
 
   &:hover .car-card__photo-nav {
@@ -236,7 +239,7 @@ function clickCard(): void {
     height: 50px;
     font-weight: 500;
     font-size: 20px;
-    color: #22334a;
+    color: var(--ink);
     z-index: 6;
   }
 
@@ -250,9 +253,9 @@ function clickCard(): void {
     position: relative;
     width: 400px;
     height: 300px;
-    background: #f8f9fa;
+    background: var(--surface-2);
     overflow: hidden;
-    border-radius: 15px 0 0 15px;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
 
 
     @media (max-width: 480px) {
@@ -347,7 +350,7 @@ function clickCard(): void {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #9ca3af;
+    color: var(--ink-faint);
 
     span {
       font-size: 48px;
@@ -364,12 +367,13 @@ function clickCard(): void {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: rgba(82, 150, 188, 0.95);
-    color: white;
+    background: var(--primary);
+    color: var(--on-primary);
     padding: 8px 15px;
-    border-radius: 20px;
+    border-radius: var(--radius-pill);
     font-weight: 600;
     font-size: 16px;
+    box-shadow: var(--shadow-md);
   }
 
   &__info {
@@ -381,7 +385,7 @@ function clickCard(): void {
     margin-bottom: 20px;
     font-size: 22px;
     font-weight: 600;
-    color: #1f2937;
+    color: var(--ink);
   }
 
   &__details {
@@ -398,11 +402,11 @@ function clickCard(): void {
   }
 
   &__detail-label {
-    color: #6b7280;
+    color: var(--ink-muted);
   }
 
   &__detail-value {
-    color: #374151;
+    color: var(--ink);
     font-weight: 500;
   }
 
@@ -411,9 +415,9 @@ function clickCard(): void {
     justify-content: space-between;
     align-items: center;
     padding-top: 15px;
-    border-top: 1px solid #f3f4f6;
+    border-top: 1px solid var(--border);
     font-size: 13px;
-    color: #9ca3af;
+    color: var(--ink-faint);
   }
 
   &__photos-count {
@@ -424,8 +428,8 @@ function clickCard(): void {
 }
 
 :deep(.highlight) {
-  background-color: yellow;
-  color: #333;
+  background-color: var(--warning-soft);
+  color: var(--ink);
   padding: 2px 2px;
   border-radius: 4px;
   font-weight: 600;
@@ -438,7 +442,7 @@ function clickCard(): void {
     left: 0;
     right: 0;
     height: 2px;
-    background: #ff9800;
+    background: var(--warning);
     border-radius: 2px;
   }
 }

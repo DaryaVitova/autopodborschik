@@ -82,7 +82,7 @@ function closeClick(): void {
   }
 
   &--color {
-    background-color: #cee3ed;
+    background-color: var(--primary-soft);
   }
 }
 

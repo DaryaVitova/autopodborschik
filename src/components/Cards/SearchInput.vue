@@ -62,7 +62,7 @@ function closeClick(): void {
   }
 
   &::placeholder {
-    color: #7e7e7e;
+    color: var(--ink-faint);
   }
 }
 

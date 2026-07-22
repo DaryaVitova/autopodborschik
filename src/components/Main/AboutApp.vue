@@ -62,14 +62,17 @@
   height: fit-content;
   padding-bottom: 150px;
   padding-left: 20px;
-  background-color: #f0f0f1;
-  border-radius: var(--border-radius-lg);
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-lg);
 
   &__details {
     position: relative;
     padding: 15px;
-    background-color: #fff;
-    border-radius: var(--border-radius-lg);
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
     margin-inline: 15px;
     display: flex;
     flex-direction: column;
