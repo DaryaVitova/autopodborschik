@@ -12,6 +12,11 @@
   },
   "dependencies": {
     "@dataconnect/generated": "file:src/dataconnect-generated",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/onest": "^5.3.0",
+    "@lucide/vue": "^1.25.0",
+    "@vueuse/core": "^14.3.0",
+    "@vueuse/motion": "^3.0.3",
     "firebase": "^12.6.0",
     "pinia": "^3.0.4",
     "vue": "^3.4.0",

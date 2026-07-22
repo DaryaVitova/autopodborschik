@@ -1,80 +1,62 @@
 <template>
-  <div class="calculation">
-    <div class="calculation__field">
-      <label class="calculation__label">Регион регистрации ТС</label>
-      <div
-        class="calculation__select"
-        :class="{ 'calculation__select--open': isRegionOpen }"
-        tabindex="0"
-        @click="isRegionOpen = !isRegionOpen"
-        @blur="isRegionOpen = false"
-      >
-        <span>{{ selectedRegionLabel }}</span>
-        <arrow-icon
-          class="calculation__select-arrow"
-          :class="{ 'calculation__select-arrow--open': isRegionOpen }"
-        />
+  <div class="calc">
+    <BaseSelect
+      class="calc__region"
+      label="Регион регистрации ТС"
+      placeholder="Выберите регион"
+      :options="regions"
+      v-model="regionValue"
+    />
 
-        <div v-if="isRegionOpen" class="calculation__select-dropdown">
+    <Transition name="reveal">
+      <div v-if="isReadyToCalculate" class="calc__result">
+        <div class="calc__coeffs">
           <div
-            v-for="option in regions"
-            :key="option.value"
-            class="calculation__select-option"
-            @mousedown.prevent="selectRegion(option.value)"
+            v-for="c in coefficients"
+            :key="c.key"
+            class="calc__chip"
+            :class="`calc__chip--${direction(c.value)}`"
           >
-            {{ option.label }}
+            <span class="calc__chip-head">
+              <span class="calc__chip-key">{{ c.key }}</span>
+              <component :is="directionIcon(c.value)" :size="15" class="calc__chip-icon" />
+            </span>
+            <span class="calc__chip-label">{{ c.label }}</span>
+            <span class="calc__chip-value mono">×{{ c.value }}</span>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div v-if="isReadyToCalculate" class="calculation__result">
-      <div class="calculation__breakdown">
-        <div class="calculation__row">
-          <span>Базовый тариф</span>
-          <span>{{ formatNumber(baseRate) }} ₽</span>
+        <div class="calc__total">
+          <div class="calc__total-meta">
+            <span class="calc__total-label">Стоимость полиса ОСАГО</span>
+            <span class="calc__total-base">
+              Базовый тариф <b class="mono">{{ formatNumber(baseRate) }} ₽</b>
+            </span>
+          </div>
+          <div class="calc__total-price">
+            <span class="calc__total-amount mono">{{ formatNumber(Math.round(displayPrice)) }}</span>
+            <span class="calc__total-currency">₽</span>
+          </div>
         </div>
-        <div class="calculation__row">
-          <span>Территориальный коэффициент (КТ)</span>
-          <span>{{ territoryCoefficient }}</span>
-        </div>
-        <div class="calculation__row">
-          <span>Коэффициент возраста и стажа (КВС)</span>
-          <span>{{ ageExperienceCoefficient }}</span>
-        </div>
-        <div class="calculation__row">
-          <span>Коэффициент бонус-малус (КБМ)</span>
-          <span>{{ bonusMalusCoefficient }}</span>
-        </div>
-        <div class="calculation__row">
-          <span>Без ограничения водителей (КО)</span>
-          <span>{{ unlimitedDriversCoefficient }}</span>
-        </div>
-        <div class="calculation__row">
-          <span>Коэффициент мощности двигателя (КМ)</span>
-          <span>{{ powerCoefficient }}</span>
-        </div>
+
+        <p class="calc__note">
+          Расчёт приблизительный и не является публичной офертой. Итоговая стоимость полиса
+          рассчитывается страховой компанией.
+        </p>
       </div>
 
-      <div class="calculation__total">
-        <span class="calculation__total-label">Стоимость полиса ОСАГО</span>
-        <span class="calculation__total-value">{{ formatNumber(totalPrice) }} ₽</span>
-      </div>
-
-      <p class="calculation__note">
-        Расчёт приблизительный и не является публичной офертой. Итоговая стоимость полиса рассчитывается страховой компанией.
+      <p v-else class="calc__hint">
+        Заполните данные ТС и водителей на предыдущих шагах, чтобы увидеть расчёт стоимости.
       </p>
-    </div>
-
-    <p v-else class="calculation__note">
-      Заполните данные ТС и водителей на предыдущих шагах, чтобы увидеть расчёт стоимости.
-    </p>
+    </Transition>
   </div>
 </template>
 
 <script setup lang='ts'>
 import { ref, computed } from "vue"
-import ArrowIcon from "@/components/SvgIcons/ArrowIcon.vue"
+import { TrendingUp, TrendingDown, Minus } from "@lucide/vue"
+import { useTransition, TransitionPresets, useMediaQuery } from "@vueuse/core"
+import BaseSelect from "@/components/ui/BaseSelect.vue"
 import { useFormatters } from "@/composables/formatters.ts"
 import {
   useInsuranceCalculation,
@@ -95,16 +77,6 @@ const { formatNumber } = useFormatters()
 
 const regions = REGIONS
 const regionValue = ref(regions[0]?.value ?? 'other')
-const isRegionOpen = ref(false)
-
-const selectedRegionLabel = computed(() => {
-  return regions.find(region => region.value === regionValue.value)?.label ?? ''
-})
-
-function selectRegion(value: string) {
-  regionValue.value = value
-  isRegionOpen.value = false
-}
 
 const category = computed(() => props.category)
 const enginePower = computed(() => props.enginePower)
@@ -121,168 +93,179 @@ const {
   isReadyToCalculate,
   totalPrice
 } = useInsuranceCalculation(category, enginePower, regionValue, mode, drivers)
+
+const coefficients = computed(() => [
+  { key: 'КТ', label: 'Территория', value: territoryCoefficient.value },
+  { key: 'КВС', label: 'Возраст и стаж', value: ageExperienceCoefficient.value },
+  { key: 'КБМ', label: 'Бонус-малус', value: bonusMalusCoefficient.value },
+  { key: 'КО', label: 'Без ограничений', value: unlimitedDriversCoefficient.value },
+  { key: 'КМ', label: 'Мощность', value: powerCoefficient.value }
+])
+
+function direction(value: number): 'up' | 'down' | 'flat' {
+  if (value > 1) return 'up'
+  if (value < 1) return 'down'
+  return 'flat'
+}
+function directionIcon(value: number) {
+  const d = direction(value)
+  return d === 'up' ? TrendingUp : d === 'down' ? TrendingDown : Minus
+}
+
+// Odometer-style count-up on the final price; instant if reduced motion.
+const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
+const displayPrice = useTransition(totalPrice, {
+  duration: reducedMotion.value ? 0 : 850,
+  transition: TransitionPresets.easeOutCubic
+})
 </script>
 
 <style lang="scss" scoped>
-.calculation {
-  width: 80%;
-  min-width: 0;
-  box-sizing: border-box;
-  margin-top: 60px;
-  margin-bottom: 80px;
+@use '@/assets/scss/mixins' as *;
 
-  &__field {
-    display: flex;
-    flex-direction: column;
-    width: 320px;
-    max-width: 100%;
-  }
+.calc {
+  width: 100%;
 
-  &__label {
-    margin-bottom: 8px;
-    color: #504f4f;
-  }
-
-  &__select {
-    --select-border-width: 1px;
-    --select-border-color: #bbb;
-
-    width: 100%;
-    box-sizing: border-box;
-    position: relative;
-    display: flex;
-    align-items: center;
-    border: var(--select-border-width) solid var(--select-border-color);
-    padding: 12px 40px 12px 15px;
-    border-radius: var(--border-radius-md);
-    background-color: #fff;
-    cursor: pointer;
-
-    &:focus {
-      outline: none;
-      --select-border-color: var(--color-middle-blue);
-    }
-
-    &--open {
-      --select-border-color: var(--color-middle-blue);
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-
-    &-arrow {
-      position: absolute;
-      right: 28px;
-      top: 50%;
-      transform: translateY(-50%) rotate(90deg);
-      color: var(--select-border-color);
-      pointer-events: none;
-      transition: transform 0.2s ease;
-
-      &--open {
-        transform: translateY(-50%) rotate(-90deg);
-      }
-    }
-
-    &-dropdown {
-      position: absolute;
-      top: 100%;
-      left: -1px;
-      right: -1px;
-      z-index: 100;
-      background-color: #fff;
-      border: var(--select-border-width) solid var(--select-border-color);
-      border-top: none;
-      border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
-      overflow: hidden;
-    }
-
-    &-option {
-      padding: 10px 15px;
-
-      &:hover {
-        background-color: #f4f4f4;
-        transition-duration: 0.2s;
-      }
-    }
+  &__region {
+    max-width: 360px;
   }
 
   &__result {
-    margin-top: 40px;
+    margin-top: var(--space-8);
   }
 
-  &__breakdown {
+  &__coeffs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-3);
+  }
+
+  &__chip {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-  }
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--surface-2);
 
-  &__row {
-    display: flex;
-    justify-content: space-between;
-    color: #504f4f;
-
-    span:last-child {
-      color: var(--color-dark-blue);
-      font-weight: 600;
+    &--up {
+      border-color: color-mix(in srgb, var(--warning) 45%, var(--border));
+      background: var(--warning-soft);
     }
+    &--down {
+      border-color: color-mix(in srgb, var(--success) 40%, var(--border));
+      background: var(--success-soft);
+    }
+  }
+  &__chip-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  &__chip-key {
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--ink);
+  }
+  &__chip-icon {
+    .calc__chip--up & { color: var(--warning); }
+    .calc__chip--down & { color: var(--success); }
+    .calc__chip--flat & { color: var(--ink-faint); }
+  }
+  &__chip-label {
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+  &__chip-value {
+    margin-top: var(--space-1);
+    font-size: var(--text-base);
+    font-weight: 600;
+    color: var(--ink);
   }
 
   &__total {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    margin-top: var(--space-6);
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    color: var(--on-primary);
+    background:
+      radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--accent) 55%, transparent), transparent 60%),
+      linear-gradient(135deg, var(--primary), var(--primary-hover));
+    box-shadow: var(--shadow-primary);
+  }
+  &__total-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  &__total-label {
+    font-size: var(--text-base);
+    font-weight: 600;
+  }
+  &__total-base {
+    font-size: var(--text-sm);
+    opacity: 0.8;
+    b { font-weight: 700; }
+  }
+  &__total-price {
+    display: flex;
     align-items: baseline;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #e5e7eb;
-
-    &-label {
-      font-size: 14px;
-      color: #504f4f;
-    }
-
-    &-value {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--color-middle-blue);
-      border: 1px solid var(--color-middle-blue);
-      border-radius: var(--border-radius-md);
-      padding: 4px 12px;
-    }
+    gap: var(--space-2);
+  }
+  &__total-amount {
+    font-size: var(--text-4xl);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  &__total-currency {
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    opacity: 0.85;
   }
 
   &__note {
-    margin-top: 20px;
-    font-size: 13px;
-    color: #999999;
+    margin: var(--space-5) 0 0;
+    font-size: var(--text-xs);
+    color: var(--ink-faint);
   }
-}
 
-@media (max-width: 767px) {
-  .calculation {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0 16px;
-    margin-top: 40px;
-    margin-bottom: 50px;
+  &__hint {
+    margin: var(--space-8) 0 0;
+    padding: var(--space-5);
+    background: var(--surface-2);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+    color: var(--ink-muted);
+    text-align: center;
+  }
 
-    &__field {
-      width: 100%;
+  @include mobile {
+    &__region {
+      max-width: 100%;
     }
-
-    &__row {
-      flex-direction: column;
-      gap: 2px;
-
-      span:last-child {
-        align-self: flex-start;
-      }
-    }
-
     &__total {
       flex-direction: column;
       align-items: flex-start;
-      gap: 8px;
+    }
+    &__total-amount {
+      font-size: var(--text-3xl);
     }
   }
+}
+
+.reveal-enter-active {
+  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease-out);
+}
+.reveal-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
 }
 </style>

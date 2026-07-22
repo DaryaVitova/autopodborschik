@@ -81,3 +81,43 @@
   z-index: 1000;
   cursor: pointer;
 }
+
+// ------------------------------------------------------------
+//  Shared design-system mixins (added for the 2026 redesign)
+// ------------------------------------------------------------
+
+// Responsive breakpoints — kept aligned with the existing app.
+@mixin tablet {
+  @media (max-width: 1023px) { @content; }
+}
+@mixin mobile {
+  @media (max-width: 767px) { @content; }
+}
+@mixin mobile-sm {
+  @media (max-width: 400px) { @content; }
+}
+
+// Soft focus ring driven by tokens.
+@mixin focus-ring($color: var(--focus-ring)) {
+  outline: none;
+  box-shadow: 0 0 0 3px $color;
+}
+
+// Elevated surface card.
+@mixin card($radius: var(--radius-lg)) {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: $radius;
+  box-shadow: var(--shadow-sm);
+}
+
+// Lift-on-hover interaction for cards / tiles.
+@mixin hover-lift {
+  transition: transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease);
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-strong);
+  }
+}

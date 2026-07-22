@@ -1,58 +1,51 @@
 <template>
   <div class="insurance">
-    <div class="steps">
-      <div
-        v-for="(step, index) in stepTitles"
-        :key="step"
-        class="steps__item"
-        :class="{ 'steps__item--completed': currentStep > index + 1 }"
-      >
-        <div
-          class="steps__item-circle"
-          :class="{
-            'steps__item-circle--active': currentStep === index + 1 && index + 1 !== stepTitles.length,
-            'steps__item-circle--completed': currentStep > index + 1 || (currentStep === index + 1 && index + 1 === stepTitles.length)
-          }"
-        >
-          {{ index + 1 }}
-        </div>
-        <span class="steps__item-text">{{ step }}</span>
-      </div>
-    </div>
+    <header class="insurance__head">
+      <p class="insurance__eyebrow">Расчёт стоимости</p>
+      <h1 class="insurance__title">Полис ОСАГО</h1>
+      <p class="insurance__subtitle">
+        Заполните данные автомобиля и водителей — рассчитаем цену за пару минут.
+      </p>
+    </header>
 
-    <div class="insurance__content">
-      <div class="insurance__content-buttons">
-        <button
+    <StepProgress class="insurance__steps" :steps="stepLabels" :current="currentStep" />
+
+    <div class="insurance__panel">
+      <Transition name="step" mode="out-in">
+        <keep-alive>
+          <component
+            :is="currentComponent"
+            :category="carCategory"
+            :engine-power="carEnginePower"
+            :mode="driversMode"
+            :drivers="driversList"
+            @make-model-value="(value: string) => (makeModelValue = value)"
+            @car-data-valid="(value: boolean) => (carDataValid = value)"
+            @car-data-update="handleCarDataUpdate"
+            @drivers-valid="(value: boolean) => (driversValid = value)"
+            @drivers-update="handleDriversUpdate"
+          />
+        </keep-alive>
+      </Transition>
+
+      <div class="insurance__actions">
+        <BaseButton
           v-if="currentStep > 1"
-          type="button"
-          class="insurance__content-back-btn"
+          variant="secondary"
           @click="goToPrevStep"
         >
+          <template #leading><ArrowLeft :size="18" /></template>
           Назад
-        </button>
-        <button
-          v-if="isShowNextStepBtn()"
-          type="button"
-          class="insurance__content-next-btn"
+        </BaseButton>
+        <BaseButton
+          v-if="isShowNextStepBtn"
+          class="insurance__next"
           @click="goToNextStep"
         >
           Далее
-        </button>
+          <template #trailing><ArrowRight :size="18" /></template>
+        </BaseButton>
       </div>
-      <keep-alive>
-        <component
-          :is="currentComponent"
-          :category="carCategory"
-          :engine-power="carEnginePower"
-          :mode="driversMode"
-          :drivers="driversList"
-          @make-model-value="(value: string) => makeModelValue = value"
-          @car-data-valid="(value: boolean) => carDataValid = value"
-          @car-data-update="handleCarDataUpdate"
-          @drivers-valid="(value: boolean) => driversValid = value"
-          @drivers-update="handleDriversUpdate"
-        />
-      </keep-alive>
     </div>
   </div>
 </template>
@@ -62,6 +55,9 @@ import MakeModelStep from "@/components/Insurance/MakeModelStep.vue"
 import CarDataStep from "@/components/Insurance/CarDataStep.vue"
 import DriversStep from "@/components/Insurance/DriversStep.vue"
 import CalculationStep from "@/components/Insurance/CalculationStep.vue"
+import StepProgress from "@/components/ui/StepProgress.vue"
+import BaseButton from "@/components/ui/BaseButton.vue"
+import { ArrowLeft, ArrowRight } from "@lucide/vue"
 import { ref, computed } from "vue"
 import type { CarCategory, DriversMode, InsuranceDriver } from "@/composables/insuranceCalculation.ts"
 
@@ -77,17 +73,15 @@ const driversList = ref<InsuranceDriver[]>([])
 const currentStep = ref(1)
 
 const steps = [
-  { title: 'Марка / модель ТС', component: MakeModelStep, needConfirm: true },
-  { title: 'Данные ТС', component: CarDataStep, needConfirm: true },
-  { title: 'Водители', component: DriversStep, needConfirm: true },
-  { title: 'Расчет', component: CalculationStep, needConfirm: false }
+  { title: 'Марка / модель ТС', component: MakeModelStep },
+  { title: 'Данные ТС', component: CarDataStep },
+  { title: 'Водители', component: DriversStep },
+  { title: 'Расчёт', component: CalculationStep }
 ]
 
-const currentComponent = computed(() => {
-  return steps[currentStep.value - 1]?.component
-})
+const stepLabels = steps.map(step => step.title)
 
-const stepTitles = ['Марка / модель ТС', 'Данные ТС', 'Водители', 'Рассчет']
+const currentComponent = computed(() => steps[currentStep.value - 1]?.component)
 
 function handleCarDataUpdate(value: { enginePower: number | null, category: CarCategory | '' }) {
   carEnginePower.value = value.enginePower
@@ -99,212 +93,107 @@ function handleDriversUpdate(value: { mode: DriversMode, drivers: InsuranceDrive
   driversList.value = value.drivers
 }
 
-function isShowNextStepBtn () {
-  if (currentStep.value === 1) {
-    return makeModelValue.value.trim().split(' ').length >= 2
-  }
-  if (currentStep.value === 2) {
-    return carDataValid.value
-  }
-  if (currentStep.value === 3) {
-    return driversValid.value
-  }
+const isShowNextStepBtn = computed(() => {
+  if (currentStep.value === 1) return makeModelValue.value.trim().split(' ').length >= 2
+  if (currentStep.value === 2) return carDataValid.value
+  if (currentStep.value === 3) return driversValid.value
   return false
-}
+})
 
-function goToNextStep () {
+function goToNextStep() {
   currentStep.value++
 }
 
-function goToPrevStep () {
-  if (currentStep.value > 1) {
-    currentStep.value--
-  }
+function goToPrevStep() {
+  if (currentStep.value > 1) currentStep.value--
 }
-
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/scss/mixins' as *;
+
 .insurance {
-  margin-top: 100px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   width: 100%;
-  min-width: 0;
+  max-width: 860px;
   box-sizing: border-box;
+  margin: var(--space-16) auto var(--space-20);
+  padding: 0 var(--space-4);
 
-  &__content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 900px;
-    max-width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-    margin-top: 100px;
-    background-color: #fff;
-    border-radius: 10px;
-    margin-bottom: 150px;
-
-    &-buttons {
-      display: flex;
-      width: 80%;
-      min-width: 0;
-      box-sizing: border-box;
-      margin-top: 30px;
-    }
-
-    &-next-btn {
-      border: none;
-      padding: 7px 25px;
-      background-color: #528a52;
-      color: #fff;
-      border-radius: 20px;
-      margin-left: auto;
-
-      &:hover {
-        opacity: 0.8;
-        transition-duration: 0.4s;
-      }
-    }
-
-    &-back-btn {
-      border: 2px solid var(--color-middle-blue);
-      padding: 5px 25px;
-      background-color: transparent;
-      color: var(--color-middle-blue);
-      border-radius: 20px;
-
-      &:hover {
-        background-color: var(--color-middle-blue);
-        color: #fff;
-        transition-duration: 0.4s;
-      }
-    }
+  &__head {
+    text-align: center;
+    margin-bottom: var(--space-10);
   }
-}
+  &__eyebrow {
+    margin: 0 0 var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+  &__title {
+    font-size: var(--text-3xl);
+    margin: 0;
+  }
+  &__subtitle {
+    margin: var(--space-3) auto 0;
+    max-width: 42ch;
+    color: var(--ink-muted);
+  }
 
-.steps {
-  --margin-step: 120px;
+  &__steps {
+    margin-bottom: var(--space-8);
+  }
 
-  display: flex;
-
-  &__item {
+  &__panel {
     position: relative;
-
     display: flex;
     flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-8);
+  }
+
+  &__actions {
+    display: flex;
     align-items: center;
-    justify-content: center;
-
-    &:not(:last-child) {
-      margin-right: var(--margin-step);
-    }
-    &:not(:last-child)::after {
-      content: '';
-      position: absolute;
-      left: 100%;
-      top: 50%;
-      transform: translateY(-50%);
-      width: calc(var(--margin-step) + 2px);
-      height: 2px;
-      background-color: var(--color-middle-blue);
-    }
-
-    &--completed:not(:last-child)::after {
-      background-color: #528a52;
-    }
-
-    &-circle {
-      width: 40px;
-      height: 40px;
-      color: #504f4f;
-      border: 2px solid var(--color-middle-blue);
-      border-radius: 50%;
-      font-size: 18px;
-      font-weight: bold;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      &--active {
-        color: #fff;
-        background-color: var(--color-middle-blue);
-      }
-
-      &--completed {
-        color: #fff;
-        background-color: #528a52;
-        border-color: #528a52;
-      }
-    }
-
-    &-text {
-      position: absolute;
-      top: 110%;
-      color: #504f4f;
-      white-space: nowrap;
-    }
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border);
   }
-}
-
-@media (max-width: 1023px) {
-  .insurance {
-    margin-top: 60px;
-    padding: 0 15px;
-
-    &__content {
-      margin-top: 60px;
-      margin-bottom: 100px;
-    }
+  &__next {
+    margin-left: auto;
   }
 
-  .steps {
-    --margin-step: 50px;
+  @include mobile {
+    margin: var(--space-8) auto var(--space-12);
 
-    &__item-text {
-      width: 90px;
-      font-size: 13px;
-      white-space: normal;
-      text-align: center;
-      line-height: 1.2;
+    &__title {
+      font-size: var(--text-2xl);
     }
-  }
-}
-
-@media (max-width: 767px) {
-  .insurance {
-    margin-top: 30px;
-
-    &__content {
-      margin-top: 40px;
-      margin-bottom: 60px;
+    &__panel {
+      padding: var(--space-5);
     }
-
-    &__content-buttons {
+    &__actions {
       flex-wrap: wrap;
-      gap: 10px;
     }
   }
+}
 
-  .steps {
-    --margin-step: 24px;
-    padding-bottom: 10px;
-
-    &__item-circle {
-      width: 30px;
-      height: 30px;
-      font-size: 14px;
-    }
-
-    &__item-text {
-      width: 54px;
-      font-size: 10px;
-      line-height: 1.2;
-    }
-  }
+// Step-to-step transition
+.step-enter-active,
+.step-leave-active {
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease-out);
+}
+.step-enter-from {
+  opacity: 0;
+  transform: translateX(16px);
+}
+.step-leave-to {
+  opacity: 0;
+  transform: translateX(-16px);
 }
 </style>

@@ -1,43 +1,139 @@
-html, body {
-  background-color: #f0f0f1;
-  overflow-x: hidden;
+// ============================================================
+//  Global base styles
+// ============================================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body {
+  min-height: 100%;
+  overflow-x: hidden;
+  background-color: var(--bg);
+  // Ambient wash — very subtle, gives the flat page some depth.
+  background-image:
+    radial-gradient(1200px 600px at 15% -10%, var(--bg-tint-1), transparent 60%),
+    radial-gradient(1000px 500px at 100% 0%, var(--bg-tint-2), transparent 55%);
+  background-attachment: fixed;
+
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
 body:has(.loader) {
   display: flex;
   justify-content: center;
 }
 
+h1, h2, h3, h4 {
+  margin: 0;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+a {
+  color: var(--primary);
+}
+
+// Tabular / instrument-panel numerals for technical data.
+.mono,
+.tnum {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' 1;
+}
+
+// Kill native number spinners globally — we style our own controls.
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+// Consistent, visible keyboard focus everywhere.
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+}
+
+// Themed scrollbars.
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-faint);
+  background-clip: content-box;
+}
+
 .icon {
   opacity: 0.9;
-  transition: fill 0.3s ease;
+  transition: fill var(--dur) var(--ease);
 }
 
 .back-button-arrow {
   position: absolute;
   top: 20px;
   left: -100px;
-  width: 50px;
-  height: 50px;
-  background: #b3c9e1;
-  border: none;
-  border-radius: var(--border-radius-md);
+  width: 48px;
+  height: 48px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
   &::before {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 20px;
-    height: 20px;
-    border-left: 3px solid #333;
-    border-bottom: 3px solid #333;
+    width: 18px;
+    height: 18px;
+    border-left: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
     transform: translate(-25%, -50%) rotate(45deg);
   }
   &:hover {
-    background-color: var(--color-light-blue);
+    background-color: var(--primary-soft);
+    box-shadow: var(--shadow-md);
     transform: translateX(-3px);
-    transition-duration: 0.3s;
   }
 
   @media (max-width: 1080px) {
@@ -60,5 +156,17 @@ body:has(.loader) {
       width: 12px;
       height: 12px;
     }
+  }
+}
+
+// Respect users who prefer less motion.
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -1,282 +1,260 @@
 <template>
   <header class="header">
-    <router-link :to="{name: 'main'}" class="header__brand">
-      <span class="header__logo">Автоподборщик.ru</span>
-    </router-link>
-    <nav class="header__nav">
-      <router-link
-        :to="{name: 'main'}"
-        class="header__link"
-        :class="{ 'header__link--active': $route.name === 'main' }"
-      >
-        <div class="header__href">
-          <HomeIcon color="#024760" :size="homeIconSize" />
-          <span class="header__href--text">Главная</span>
-        </div>
+    <div class="header__inner">
+      <router-link :to="{ name: 'main' }" class="header__brand">
+        <span class="header__mark"><Car :size="22" :stroke-width="2.2" /></span>
+        <span class="header__logo">Автоподборщик<span class="header__logo-tld">.ru</span></span>
       </router-link>
 
-      <router-link
-        :to="{ name: 'favorites' }"
-        class="header__link"
-        :class="{ 'header__link--active': $route.name === 'favorites' }"
-      >
-        <div class="header__href">
-          <HeartIcon color="#c30303" :size="heartIconSize" />
-          <span class="header__href--text">Избранное ({{ favoritesStore.favoritesCount }})</span>
-        </div>
-      </router-link>
+      <nav class="header__nav" aria-label="Основная навигация">
+        <router-link
+          v-for="link in links"
+          :key="link.name"
+          :to="{ name: link.name }"
+          class="header__link"
+          :class="{ 'header__link--active': $route.name === link.name }"
+        >
+          <component :is="link.icon" :size="18" class="header__link-icon" />
+          <span class="header__link-text">{{ link.label }}</span>
+          <span v-if="link.badge" class="header__badge">{{ link.badge }}</span>
+        </router-link>
+      </nav>
 
-      <router-link
-        :to="{ name: 'credit' }"
-        class="header__link"
-        :class="{ 'header__link--active': $route.name === 'credit' }"
-      >
-        <div class="header__href">
-          <CreditIcon />
-          <span class="header__href--text">Автокредит</span>
-        </div>
-      </router-link>
-
-      <router-link
-        :to="{ name: 'insurance' }"
-        class="header__link"
-        :class="{ 'header__link--active': $route.name === 'insurance' }"
-      >
-        <div class="header__href">
-          <InsuranceIcon />
-          <span class="header__href--text">ОСАГО</span>
-        </div>
-      </router-link>
-
-      <div class="header__create-ad-container">
-        <router-link :to="{name: 'createAd'}" class="header__link header__link--form">Выложить объявление</router-link>
+      <div class="header__actions">
+        <ThemeToggle />
+        <router-link :to="{ name: 'createAd' }" class="header__cta">
+          <Plus :size="18" :stroke-width="2.4" />
+          <span>Выложить объявление</span>
+        </router-link>
       </div>
-    </nav>
+    </div>
   </header>
 
-  <div class="app" id="app">
-    <router-view />
-  </div>
+  <main class="app" id="app">
+    <router-view v-slot="{ Component }">
+      <transition name="page" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted } from 'vue'
-import { useFavoritesStore } from "@/stores/favoritesStore"
-import HomeIcon from "@/components/SvgIcons/HomeIcon.vue"
-import HeartIcon from "@/components/SvgIcons/HeartIcon.vue"
-import CreditIcon from "@/components/SvgIcons/CreditIcon.vue"
-import InsuranceIcon from "@/components/SvgIcons/InsuranceIcon.vue"
+import { computed, onMounted, markRaw } from 'vue'
+import { Home, Heart, Wallet, ShieldCheck, Plus, Car } from '@lucide/vue'
+import { useFavoritesStore } from '@/stores/favoritesStore'
+import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 
 const favoritesStore = useFavoritesStore()
 
 onMounted(() => {
   favoritesStore.loadFromLocalStorage()
-  updateHomeIconSize()
-  updateHeartIconSize() // начальный расчёт
-  window.addEventListener('resize', updateHomeIconSize)
-  window.addEventListener('resize', updateHeartIconSize)
 })
 
-const homeIconSize = ref(28)
-const heartIconSize = ref(22)
-
-const updateHomeIconSize = () => {
-  const width = window.innerWidth
-  if (width <= 767) {
-    homeIconSize.value = 20
-  } else if (width <= 1023) {
-    homeIconSize.value = 22
-  } else {
-    homeIconSize.value = 28
-  }
-}
-
-const updateHeartIconSize = () => {
-  const width = window.innerWidth
-  if (width <= 767) {
-    heartIconSize.value = 16
-  } else if (width <= 1023) {
-    heartIconSize.value = 18
-  } else {
-    heartIconSize.value = 22
-  }
-}
-
-onUnmounted(() => {
-  window.removeEventListener('resize', updateHomeIconSize)
-  window.removeEventListener('resize', updateHeartIconSize)
-})
+const links = computed(() => [
+  { name: 'main', label: 'Главная', icon: markRaw(Home), badge: 0 },
+  { name: 'favorites', label: 'Избранное', icon: markRaw(Heart), badge: favoritesStore.favoritesCount },
+  { name: 'credit', label: 'Автокредит', icon: markRaw(Wallet), badge: 0 },
+  { name: 'insurance', label: 'ОСАГО', icon: markRaw(ShieldCheck), badge: 0 },
+])
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/scss/mixins' as *;
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--border);
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-8);
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  &__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color: var(--on-primary);
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-primary);
+  }
+  &__logo {
+    font-size: var(--text-xl);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  &__logo-tld {
+    color: var(--primary);
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin-left: auto;
+  }
+  &__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--ink-muted);
+    transition: color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+
+    &:hover {
+      color: var(--ink);
+      background: var(--surface-3);
+    }
+    &--active {
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+  &__link-icon {
+    flex-shrink: 0;
+  }
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    color: var(--on-primary);
+    background: var(--primary);
+    border-radius: var(--radius-pill);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-shrink: 0;
+  }
+  &__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: 42px;
+    padding: 0 var(--space-5);
+    border-radius: var(--radius-pill);
+    background: var(--primary);
+    color: var(--on-primary);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--shadow-primary);
+    transition: background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+      transform var(--dur-fast) var(--ease);
+
+    &:hover {
+      background: var(--primary-hover);
+      box-shadow: var(--shadow-lg);
+    }
+    &:active {
+      transform: translateY(1px);
+    }
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+}
+
 .app {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.router-link-active {
-  opacity: 0.8;
+// Route transition
+.page-enter-active,
+.page-leave-active {
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease-out);
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: var(--color-light-blue);
-  &__logo {
-    color: var( --color-dark-blue);
-    font-weight: bold;
-    font-size: 22px;
-    margin-left: 80px;
+@include tablet {
+  .header__inner {
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-4);
   }
-  &__brand {
-    text-decoration: none;
-    cursor: pointer;
+  .header__link-text {
+    display: none;
   }
-  &__nav {
-    display: flex;
-    gap: 30px;
-    padding-block: 20px;
-    margin-right: 25px;
+  .header__link {
+    padding: var(--space-2);
   }
-
-  &__href {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    &--text {
-      font-size: 15px;
-      color: #272727;
-    }
+  .header__cta span {
+    display: none;
   }
-  &__link {
-   position: relative;
-   text-decoration: none;
-   color: black;
-   background-color: #f0f0f1;
-   font-weight: 500;
-   padding: 5px 10px;
-   border: 2px solid rgba(17, 69, 124, 0.5);
-   border-radius: var(--border-radius-md);
-   transition: all 0.3s ease;
-    &:hover {
-      opacity: 0.7;
-      transition-duration: 0.2s;
-    }
-    &--form {
-      padding: 9px 11px !important;
-      margin-right: 0;
-      background-color: #5d9a68;
-      color: white;
-      border: 1px solid #e1e0e0;
-    }
-  }
-}
-
-.menu-item {
-  text-align: left;
-  border: none;
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0;
-  background-color: #34495e;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  text-decoration: none;
-  &:hover {
-    background: #45576a;
-  }
-  &--active {
-    background: var(--color-middle-blue) !important;
-    cursor: default;
-    outline: none;
-  }
-}
-
-@media (max-width: 1023px) {
-  .header {
-    &__nav {
-      gap: 20px;
-      margin-right: 15px;
-    }
-    &__logo {
-      font-size: 18px;
-      margin-left: 20px;
-    }
-    &__link {
-      padding: 7px 8px;
-      font-size: 14px;
-      &--form {
-        padding: 7px 9px !important;
-      }
-    }
-
-    &__href--text {
-      font-size: 14px;
-    }
-  }
-}
-
-@media (max-width: 767px) {
-  .header {
-    flex-direction: column;
+  .header__cta {
+    padding: 0;
+    width: 42px;
     justify-content: center;
-    align-items: center;
-    padding-top: 25px;
-
-    &__nav {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-right: 0;
-      justify-content: center;
-      margin-top: 10px;
-      width: 100%;
-      padding: 0 15px;
-      box-sizing: border-box;
-    }
-
-    &__create-ad-container {
-      grid-column: 1 / -1;
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
-    }
-
-    &__logo {
-      font-size: 20px;
-      margin-left: 0;
-    }
-
-    &__link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 6px !important;
-      font-size: 10px;
-      min-width: 0;
-
-      &--form {
-        max-width: 250px;
-        text-align: center;
-        padding: 8px 15px !important;
-        font-size: 14px;
-      }
-    }
   }
 }
 
-@media (max-width: 400px) {
-  .header {
-    &__href--text {
-      font-size: 10px;
-    }
-    &__link {
-      padding: 5px 5px !important;
-    }
+@include mobile {
+  .header__inner {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .header__nav {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+  .header__link-text {
+    display: inline;
+    font-size: 10px;
+  }
+  .header__link {
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-2);
+    flex: 1;
+  }
+  .header__logo {
+    font-size: var(--text-lg);
   }
 }
 </style>

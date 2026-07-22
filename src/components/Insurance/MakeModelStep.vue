@@ -1,7 +1,7 @@
 <template>
   <div class="car-search">
     <div class="car-search__input-group">
-      <loupe-icon class="car-search__input-icon car-search__input-icon--loupe" />
+      <Search class="car-search__loupe" :size="20" />
       <input
         class="car-search__input"
         v-model="inputValue"
@@ -12,60 +12,57 @@
         type="text"
         placeholder="Введите название автомобиля"
       />
-      <check-mark-icon
-        v-if="isShowMarkIcon"
-        class="car-search__input-icon car-search__input-icon--mark"
-      />
-
-      <span
-        v-if="inputValue && !isShowMarkIcon"
-        class="car-search__input--close-filter"
+      <Check v-if="isShowMarkIcon" class="car-search__check" :size="20" />
+      <button
+        v-else-if="inputValue"
+        type="button"
+        class="car-search__clear"
+        aria-label="Очистить"
         @click="cleanInput"
-      />
-
-      <div
-        v-if="listOfSuitableCars.length > 0 && isShowListOfSuitable"
-        class="car-search__input-suitable-cars"
       >
+        <X :size="18" />
+      </button>
+
+      <Transition name="drop">
         <div
-          v-for="car in listOfSuitableCars"
-          class="car-search__input-suitable-cars-item"
-          v-html="useHighlightText(car, inputValue)"
-          @mousedown.prevent="carSelected(car)"
-        ></div>
-      </div>
+          v-if="listOfSuitableCars.length > 0 && isShowListOfSuitable"
+          class="car-search__suggest"
+        >
+          <div
+            v-for="car in listOfSuitableCars"
+            :key="car"
+            class="car-search__suggest-item"
+            v-html="useHighlightText(car, inputValue)"
+            @mousedown.prevent="carSelected(car)"
+          ></div>
+        </div>
+      </Transition>
     </div>
 
-    <div class="car-search__spacer-text">или выберете из списка</div>
+    <div class="car-search__divider"><span>или выберите из списка</span></div>
 
-    <div class="car-search__tabs">
-      <div
-        class="car-search__tab"
-        :class="{ 'car-search__tab--active' :  isActiveTab === 'make' }"
-        @click="clickMakeTab"
-      >
-        <span class="car-search__tab-text">Марка</span>
-      </div>
-      <div
-        class="car-search__tab"
-        :class="{ 'car-search__tab--active' :  isActiveTab === 'model' }"
-        @click="clickModelTab"
-      >
-        <span class="car-search__tab-text">Модель</span>
-      </div>
-
-      <span v-if="errorMsg" class="car-search__tabs--error-msg">Сначала выберете марку</span>
+    <div class="car-search__tabs-wrap">
+      <SegmentedControl
+        class="car-search__tabs"
+        aria-label="Выбор по марке или модели"
+        :options="tabOptions"
+        :model-value="isActiveTab"
+        @update:model-value="onTabChange"
+      />
+      <Transition name="drop">
+        <span v-if="errorMsg" class="car-search__tabs-error">Сначала выберите марку</span>
+      </Transition>
     </div>
 
     <div v-if="isActiveTab === 'make'" class="car-list">
-      <div v-for="group in groupedBrands" :key="group.letter" class="car-list-group">
-        <span class="car-list-group__letter">{{ group.letter }}</span>
-        <div class="car-list-group__items">
+      <div v-for="group in groupedBrands" :key="group.letter" class="car-list__group">
+        <span class="car-list__letter">{{ group.letter }}</span>
+        <div class="car-list__items">
           <a
             v-for="brand in group.brands"
             :key="brand"
-            class="car-list-group__item"
-            :class="activeBrand === brand && isShowMarkIcon ? 'car-list-group__item--active' : ''"
+            class="car-list__item"
+            :class="{ 'car-list__item--active': activeBrand === brand && isShowMarkIcon }"
             @click="openModels(brand)"
           >
             {{ brand }}
@@ -75,27 +72,27 @@
     </div>
 
     <div v-if="activeBrand && isActiveTab === 'model'" class="car-models">
-      <div
-        class="car-models__model car-list-group__item"
+      <a
+        class="car-list__item"
         v-for="model in dataCars[activeBrand].models"
-        :class="activeModel === model && isShowMarkIcon ? 'car-list-group__item--active' : ''"
+        :class="{ 'car-list__item--active': activeModel === model && isShowMarkIcon }"
         :key="model"
         @click="modelSelection(model)"
       >
         {{ model }}
-      </div>
+      </a>
     </div>
   </div>
 </template>
 
 <script setup lang='ts'>
-import LoupeIcon from "@/components/SvgIcons/LoupeIcon.vue"
+import { Search, Check, X } from "@lucide/vue"
 import { ref, computed, watch } from "vue"
+import SegmentedControl from "@/components/ui/SegmentedControl.vue"
 import { dataCars } from "@/data/CarMakeModelData.ts"
 import { dataCarsKeys } from "@/data/CarMakeModelData.ts"
 import type { CarBrandType } from "@/data/CarMakeModelData.ts"
 import type { CarModelType } from "@/data/CarMakeModelData.ts"
-import CheckMarkIcon from "@/components/SvgIcons/CheckMarkIcon.vue"
 import { useHighlightText } from "@/composables/highlightText.ts"
 
 const emit = defineEmits<{
@@ -115,6 +112,11 @@ const isShowListOfSuitable = ref<boolean>(false)
 
 const listOfSuitableCars = ref<string[]>([])
 
+const tabOptions = [
+  { value: 'make', label: 'Марка' },
+  { value: 'model', label: 'Модель' }
+]
+
 const groupedBrands = computed(() => {
   const groups: Record<string, CarBrandType[]> = {}
 
@@ -129,7 +131,7 @@ const groupedBrands = computed(() => {
   })
 
   return Object.entries(groups).map(([letter, brands]) => ({
-    letter, // сокращённая запись для { letter: letter, brands: brands }
+    letter,
     brands
   }))
 })
@@ -179,19 +181,14 @@ watch(() => inputValue.value, (newVal) => {
   }
 })
 
-function clickMakeTab () {
-  isActiveTab.value = 'make'
-}
-
-function clickModelTab () {
-  if (activeBrand.value === null) {
+function onTabChange(value: string | undefined) {
+  if (value === 'model' && activeBrand.value === null) {
     errorMsg.value = true
     return
   }
   errorMsg.value = false
-  isActiveTab.value = 'model'
+  isActiveTab.value = value as 'make' | 'model'
 }
-
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement
@@ -276,198 +273,183 @@ function carSelected(car: string) {
 
 .car-search {
   width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  margin-bottom: 80px;
-
-  --border-radius-tab: 80px;
 
   &__input-group {
-    width: 60%;
+    width: 100%;
+    max-width: 520px;
     position: relative;
-    margin-top: 50px;
   }
 
   &__input {
     width: 100%;
-    max-width: 100%;
     box-sizing: border-box;
-    border: 1px solid #bbb;
-    padding: 15px 10px 15px 60px;
-    border-radius: 100px;
+    height: 56px;
+    padding: 0 var(--space-12) 0 var(--space-12);
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
     text-overflow: ellipsis;
-    position: relative;
-    z-index: 200;
+    transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 
-    &--close-filter {
-      @include close-filter-styles;
-      z-index: 300;
-      right: 20px;
+    &::placeholder {
+      color: var(--ink-faint);
     }
-
+    &:hover {
+      border-color: var(--ink-faint);
+    }
     &:focus {
       outline: none;
-      //box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2)
+      border-color: var(--primary);
+      @include focus-ring;
     }
-    &::placeholder {
-      color: #999999;
+  }
+
+  &__loupe {
+    position: absolute;
+    left: var(--space-5);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary);
+    pointer-events: none;
+    z-index: 1;
+  }
+  &__check {
+    position: absolute;
+    right: var(--space-5);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--success);
+    z-index: 1;
+  }
+  &__clear {
+    position: absolute;
+    right: var(--space-4);
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: var(--surface-3);
+    color: var(--ink-muted);
+    cursor: pointer;
+    z-index: 1;
+    transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+    &:hover {
+      background: var(--danger-soft);
+      color: var(--danger);
     }
+  }
 
-    &-icon {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 300;
+  &__suggest {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: var(--z-dropdown);
+    max-height: 300px;
+    overflow-y: auto;
+    padding: var(--space-2);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
 
-      &--loupe {
-        left: 20px;
-        color: var(--color-middle-blue);
-      }
-
-      &--mark {
-        right: 20px;
-        color: green;
-      }
-    }
-
-    &-suitable-cars {
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      top: 85%;
-      width: 100%;
-      background-color: #fff;
-      border-radius: 20px;
-      z-index: 100;
-      height: 300px;
-      overflow-y: scroll;
-      box-shadow: 0 0 0 2px rgba(108, 108, 108, 0.2);
-
-      &::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      &::-webkit-scrollbar-track {
-        background: #fff;
-        border-radius: 10px;
-        margin-block: 12px;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: var(--color-light-blue);
-        border-radius: 10px;
-      }
-
-      &-item {
-        padding-block: 10px;
-        padding-inline: 40px;
-        &:first-child {
-          margin-top: 20px;
-        }
-        &:last-child {
-          margin-bottom: 25px;
-        }
-
-        &:hover {
-          cursor: pointer;
-          background-color: #f4f4f4;
-          transition-duration: 0.2s;
-        }
+    &-item {
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--ink);
+      transition: background-color var(--dur-fast) var(--ease);
+      &:hover {
+        background: var(--surface-3);
       }
     }
   }
 
-  &__spacer-text {
-    color: #999;
-    margin: 30px 0;
+  &__divider {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 520px;
+    margin: var(--space-8) 0 var(--space-6);
+    color: var(--ink-faint);
+    font-size: var(--text-sm);
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    span {
+      padding: 0 var(--space-4);
+    }
   }
 
-  &__tabs {
+  &__tabs-wrap {
     position: relative;
     display: flex;
-    border: 1px solid #286b8c;
-    height: 50px;
-    border-radius: var(--border-radius-tab);
-    width: 40%;
-    max-width: 100%;
-    box-sizing: border-box;
-
-    &--error-msg {
-      position: absolute;
-      bottom: -40px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #ec1518;
-      white-space: normal;
-      width: max-content;
-      max-width: 90vw;
-      text-align: center;
-    }
-  }
-
-  &__tab {
-    width: 50%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-
-    &:hover {
-      cursor: pointer;
-    }
-
-    &--active {
-      background-color: var(--color-middle-blue);
-      border-radius: var(--border-radius-tab);
-      color: #fff;
-    }
-    &-text {
-      padding-inline: 30px;
-    }
+    gap: var(--space-3);
+  }
+  &__tabs {
+    width: 280px;
+    max-width: 100%;
+  }
+  &__tabs-error {
+    color: var(--danger);
+    font-size: var(--text-sm);
   }
 }
 
 .car-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
-  margin-top: 60px;
+  gap: var(--space-8) var(--space-6);
+  width: 100%;
+  margin-top: var(--space-10);
 
-  &-group {
+  &__group {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-
-    &__items {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
+    gap: var(--space-3);
+  }
+  &__letter {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.4;
+  }
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  &__item {
+    width: fit-content;
+    color: var(--ink);
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+    transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+    &:hover {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
     }
-
-    &__letter {
-      margin-right: 5px;
-      font-size: 22px;
-      font-weight: 500;
-      color: var(--color-dark-blue);
-    }
-
-    &__item {
-      border-bottom: 1px dashed #BDBDBDFF;
-      width: fit-content;
-      &:hover {
-        color: var(--color-middle-blue);
-        cursor: pointer;
-        transition-duration: 0.2s;
-      }
-
-      &--active {
-        color: var(--color-middle-blue);
-      }
+    &--active {
+      color: var(--primary);
+      font-weight: 600;
     }
   }
 }
@@ -475,85 +457,28 @@ function carSelected(car: string) {
 .car-models {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  width: 90%;
-  justify-items: center;
-  gap: 25px;
-  margin-top: 60px;
+  width: 100%;
+  gap: var(--space-4) var(--space-6);
+  margin-top: var(--space-10);
 }
 
-@media (max-width: 767px) {
-  .car-search {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0 16px;
-    margin-bottom: 50px;
-
-    &__input-group {
-      width: 100%;
-      margin-top: 30px;
-    }
-
-    &__input {
-      padding: 12px 10px 12px 45px;
-
-      &-suitable-cars-item {
-        padding-inline: 20px;
-      }
-    }
-
-    &__tabs {
-      width: 100%;
-    }
-
-    &__tab-text {
-      padding-inline: 15px;
-    }
-  }
-
-  .car-list {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    margin-top: 40px;
-
-    &-group {
-      justify-content: flex-start;
-      min-width: 0;
-      width: 100%;
-
-      &__items {
-        min-width: 0;
-      }
-
-      &__item {
-        width: auto;
-        max-width: 100%;
-        white-space: normal;
-        word-break: break-word;
-      }
-    }
-  }
-
+@include mobile {
+  .car-list,
   .car-models {
-    grid-template-columns: 1fr;
-    width: 100%;
-    gap: 15px;
-    margin-top: 40px;
-
-    &__model {
-      width: auto;
-      max-width: 100%;
-      white-space: normal;
-      word-break: break-word;
-    }
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5) var(--space-4);
+    margin-top: var(--space-8);
+  }
+  .car-search__input {
+    height: 52px;
   }
 }
 
 :deep(.highlight) {
-  background-color: #d6e2f4;
-  color: #333;
-  padding: 2px 2px;
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+  padding: 1px 3px;
   border-radius: 4px;
   font-weight: 600;
-  position: relative;
 }
 </style>

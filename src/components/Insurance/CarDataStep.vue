@@ -1,85 +1,56 @@
 <template>
   <div class="car-data">
-    <div class="car-data__field">
-      <label class="car-data__label">VIN номер</label>
-      <input
-        v-model="vin"
-        @input="handleVinInput"
-        class="car-data__input"
-        placeholder="XTA219060N0090511"
-        maxlength="17"
-      />
-      <span v-if="vinError" class="car-data__error">VIN должен содержать 17 символов</span>
-    </div>
+    <BaseInput
+      v-model="vin"
+      label="VIN номер"
+      placeholder="XTA219060N0090511"
+      mono
+      :maxlength="17"
+      :transform="normalizeVin"
+      :error="vinError && 'VIN должен содержать 17 символов'"
+    />
 
-    <div class="car-data__field">
-      <label class="car-data__label">Гос. номер</label>
-      <input
-        v-model="plateNumber"
-        @input="handlePlateInput"
-        class="car-data__input"
-        placeholder="А123БВ777"
-        maxlength="9"
-      />
-    </div>
+    <BaseInput
+      v-model="plateNumber"
+      label="Гос. номер"
+      placeholder="А123БВ777"
+      mono
+      :maxlength="9"
+      :transform="(raw) => raw.toUpperCase()"
+    />
 
-    <div class="car-data__field">
-      <label class="car-data__label">Год выпуска</label>
-      <input
-        :value="year ?? ''"
-        @input="handleYearInput"
-        type="number"
-        class="car-data__input"
-        placeholder="2020"
-      />
-      <span v-if="yearError" class="car-data__error">Некорректный год выпуска</span>
-    </div>
+    <BaseInput
+      v-model="year"
+      label="Год выпуска"
+      type="number"
+      inputmode="numeric"
+      placeholder="2020"
+      :error="yearError && 'Некорректный год выпуска'"
+    />
 
-    <div class="car-data__field">
-      <label class="car-data__label">Мощность двигателя, л.с.</label>
-      <input
-        v-model.number="enginePower"
-        type="number"
-        class="car-data__input"
-        placeholder="150"
-      />
-    </div>
+    <BaseInput
+      v-model="enginePower"
+      label="Мощность двигателя, л.с."
+      type="number"
+      inputmode="numeric"
+      placeholder="150"
+    />
 
-    <div class="car-data__field">
-      <label class="car-data__label">Категория ТС</label>
-      <div
-        class="car-data__select"
-        :class="{ 'car-data__select--open': isCategoryOpen }"
-        tabindex="0"
-        @click="isCategoryOpen = !isCategoryOpen"
-        @blur="isCategoryOpen = false"
-      >
-        <span :class="{ 'car-data__select-value--placeholder': !category }">
-          {{ selectedCategoryLabel }}
-        </span>
-        <arrow-icon
-          class="car-data__select-arrow"
-          :class="{ 'car-data__select-arrow--open': isCategoryOpen }"
-        />
-
-        <div v-if="isCategoryOpen" class="car-data__select-dropdown">
-          <div
-            v-for="option in categoryOptions"
-            :key="option.value"
-            class="car-data__select-option"
-            @mousedown.prevent="selectCategory(option.value)"
-          >
-            {{ option.label }}
-          </div>
-        </div>
-      </div>
-    </div>
+    <BaseSelect
+      class="car-data__span"
+      label="Категория ТС"
+      placeholder="Выберите категорию"
+      :options="categoryOptions"
+      :model-value="category"
+      @update:model-value="(value) => (category = value as CarCategory)"
+    />
   </div>
 </template>
 
 <script setup lang='ts'>
 import { ref, computed, watch } from "vue"
-import ArrowIcon from "@/components/SvgIcons/ArrowIcon.vue"
+import BaseInput from "@/components/ui/BaseInput.vue"
+import BaseSelect from "@/components/ui/BaseSelect.vue"
 import type { CarCategory } from "@/composables/insuranceCalculation.ts"
 
 const emit = defineEmits<{
@@ -100,15 +71,8 @@ const categoryOptions: { value: CarCategory, label: string }[] = [
   { value: 'D', label: 'D — автобус' }
 ]
 
-const isCategoryOpen = ref(false)
-
-const selectedCategoryLabel = computed(() => {
-  return categoryOptions.find(option => option.value === category.value)?.label ?? 'Выберите категорию'
-})
-
-function selectCategory(value: CarCategory) {
-  category.value = value
-  isCategoryOpen.value = false
+function normalizeVin(raw: string): string {
+  return raw.toUpperCase().replace(/[^A-Z0-9]/g, '')
 }
 
 const currentYear = new Date().getFullYear()
@@ -135,144 +99,29 @@ watch(isValid, (value) => {
 watch([enginePower, category], () => {
   emit('CarDataUpdate', { enginePower: enginePower.value, category: category.value })
 }, { immediate: true })
-
-function handleVinInput(event: Event) {
-  const target = event.target as HTMLInputElement
-  vin.value = target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
-}
-
-function handlePlateInput(event: Event) {
-  const target = event.target as HTMLInputElement
-  plateNumber.value = target.value.toUpperCase()
-}
-
-function handleYearInput(event: Event) {
-  const target = event.target as HTMLInputElement
-  year.value = target.value === '' ? null : Number(target.value)
-}
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/scss/mixins' as *;
+
 .car-data {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
-  width: 80%;
-  min-width: 0;
-  box-sizing: border-box;
-  margin-top: 60px;
-  margin-bottom: 80px;
+  gap: var(--space-6) var(--space-6);
+  width: 100%;
 
-  &__field {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    min-width: 0;
+  &__span {
+    grid-column: 1 / -1;
+    max-width: calc(50% - var(--space-3));
   }
 
-  &__label {
-    margin-bottom: 8px;
-    color: #504f4f;
-  }
-
-  &__input {
-    width: 100%;
-    box-sizing: border-box;
-    border: 1px solid #bbb;
-    padding: 12px 15px;
-    border-radius: var(--border-radius-md);
-
-    &:focus {
-      outline: none;
-      border-color: var(--color-middle-blue);
-    }
-  }
-
-  &__select {
-    --select-border-width: 1px;
-    --select-border-color: #bbb;
-
-    width: 100%;
-    box-sizing: border-box;
-    position: relative;
-    display: flex;
-    align-items: center;
-    border: var(--select-border-width) solid var(--select-border-color);
-    padding: 12px 40px 12px 15px;
-    border-radius: var(--border-radius-md);
-    background-color: #fff;
-    cursor: pointer;
-
-    &:focus {
-      outline: none;
-      --select-border-color: var(--color-middle-blue);
-    }
-
-    &--open {
-      --select-border-color: var(--color-middle-blue);
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-
-    &-value--placeholder {
-      color: #999999;
-    }
-
-    &-arrow {
-      position: absolute;
-      right: 28px;
-      top: 50%;
-      transform: translateY(-50%) rotate(90deg);
-      color: var(--select-border-color);
-      pointer-events: none;
-      transition: transform 0.2s ease;
-
-      &--open {
-        transform: translateY(-50%) rotate(-90deg);
-      }
-    }
-
-    &-dropdown {
-      position: absolute;
-      top: 100%;
-      left: -1px;
-      right: -1px;
-      z-index: 100;
-      background-color: #fff;
-      border: var(--select-border-width) solid var(--select-border-color);
-      border-top: none;
-      border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
-      overflow: hidden;
-    }
-
-    &-option {
-      padding: 10px 15px;
-
-      &:hover {
-        background-color: #f4f4f4;
-        transition-duration: 0.2s;
-      }
-    }
-  }
-
-  &__error {
-    position: absolute;
-    bottom: -20px;
-    left: 0;
-    font-size: 13px;
-    color: #ec1518;
-  }
-}
-
-@media (max-width: 767px) {
-  .car-data {
+  @include mobile {
     grid-template-columns: 1fr;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0 16px;
-    margin-top: 40px;
-    margin-bottom: 50px;
-    gap: 25px;
+    gap: var(--space-6);
+
+    &__span {
+      max-width: 100%;
+    }
   }
 }
 </style>
