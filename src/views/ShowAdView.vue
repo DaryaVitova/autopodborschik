@@ -1,5 +1,9 @@
 <template>
   <div class="showAd">
+    <button type="button" class="showAd__back" @click="goToCatalog">
+      <ArrowLeft :size="18" />
+      <span>К объявлениям</span>
+    </button>
     <!-- Заголовок -->
     <div class="ad-header">
       <FavoriteButton
@@ -235,6 +239,7 @@ import {ref, computed, onMounted, type Ref } from 'vue'
 import { useRouter } from "vue-router"
 import type { Advertisement } from "@/composables/advertisements.ts"
 import ArrowIcon from "@/components/SvgIcons/ArrowIcon.vue"
+import { ArrowLeft } from "@lucide/vue"
 import { useFavoritesStore } from "@/stores/favoritesStore.ts"
 import { useFormatters } from "@/composables/formatters.ts"
 import { useSoldAutoStore } from "@/stores/soldAutoStore.ts"
@@ -294,6 +299,11 @@ const formattedPrice = computed({
     priceSoldAuto.value = parseNumber(newValue)
   }
 })
+
+function goToCatalog(): void {
+  // CardsAd restores the saved filters/page from sessionStorage on mount.
+  router.push({ name: 'cards' })
+}
 
 function goToCalcCredit(price: number) {
   if (price !== 0) {
@@ -431,6 +441,41 @@ onMounted(() => {
   padding: 40px 20px;
   background: var(--surface-2);
   min-height: 100vh;
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+    padding: var(--space-2) var(--space-4);
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease),
+      background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+
+    svg {
+      transition: transform var(--dur) var(--ease);
+    }
+    &:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      box-shadow: var(--shadow-sm);
+    }
+    &:hover svg {
+      transform: translateX(-3px);
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+  }
 
   &__bottom-container {
     display: flex;
