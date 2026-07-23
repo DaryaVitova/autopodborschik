@@ -311,7 +311,9 @@ function goToCalcCredit(price: number) {
       name: 'credit',
       params: {
         exposePrice: price.toString()
-      }
+      },
+      // Remember which ad we came from so the credit page can link back.
+      query: adData.value?.id ? { fromAd: adData.value.id } : undefined
     })
   }
 }

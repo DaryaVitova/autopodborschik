@@ -1,6 +1,16 @@
 <template>
   <div class="calculate-credit">
     <div class="calculate-credit__left-side">
+      <button
+        v-if="backAdId"
+        type="button"
+        class="calculate-credit__back"
+        @click="goBackToAd"
+      >
+        <ArrowLeft :size="18" />
+        <span>К автомобилю</span>
+      </button>
+
       <div class="calculate-credit__buttons-container">
         <span>Процентная ставка</span>
 
@@ -164,10 +174,24 @@ import { useCreditCalculation } from "@/composables/creditCalculation.ts"
 import CalculateCredit from "@/components/AutoCredit/CalculateCredit.vue"
 import ScheduleIcon from "@/components/SvgIcons/ScheduleIcon.vue"
 import PaymentSchedule from "@/components/AutoCredit/PaymentSchedule.vue"
+import { ArrowLeft } from "@lucide/vue"
+import { useRoute, useRouter } from "vue-router"
 
 const props = defineProps<{
   exposePrice?: string
 }>()
+
+const route = useRoute()
+const router = useRouter()
+
+// Set only when arriving from a specific car ad ("Рассчитать автокредит").
+const backAdId = computed(() => (route.query.fromAd as string) || '')
+
+function goBackToAd(): void {
+  if (backAdId.value) {
+    router.push({ name: 'showAd', params: { id: backAdId.value } })
+  }
+}
 
 interface CreditCalculatorData {
   priceAuto: number,
@@ -392,6 +416,42 @@ const {
   gap: 100px;
   margin-top: 120px;
   width: 90%;
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+    padding: var(--space-2) var(--space-4);
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease),
+      background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+
+    svg {
+      transition: transform var(--dur) var(--ease);
+    }
+    &:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      box-shadow: var(--shadow-sm);
+    }
+    &:hover svg {
+      transform: translateX(-3px);
+    }
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+  }
+
   &__percent-buttons {
     display: flex;
     gap: 16px;
