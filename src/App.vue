@@ -10,6 +10,11 @@
               <line x1="16" y1="7" x2="16" y2="9.5" />
               <line x1="24.66" y1="12" x2="22.5" y2="13.25" />
             </g>
+            <g class="header__needle">
+              <line x1="16" y1="17" x2="16" y2="10" />
+              <circle cx="16" cy="10" r="1.3" />
+            </g>
+            <circle class="header__hub" cx="16" cy="17" r="1.7" />
           </svg>
         </span>
         <span class="header__logo">Автоподборщик<span class="header__logo-tld">.ru</span></span>
@@ -134,6 +139,23 @@ const links = computed(() => [
     stroke-linecap: round;
     opacity: 0.55;
   }
+  // Small needle resting at the left of the dial; sweeps to the right on hover.
+  &__needle {
+    stroke: var(--on-primary);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    fill: var(--accent);
+    transform: rotate(-120deg);
+    transform-box: view-box;
+    transform-origin: 16px 17px;
+    transition: transform 0.9s var(--ease-out);
+  }
+  &__needle circle {
+    stroke: none;
+  }
+  &__hub {
+    fill: var(--on-primary);
+  }
 
   &__logo {
     font-size: var(--text-xl);
@@ -161,6 +183,9 @@ const links = computed(() => [
   }
   &__brand:hover &__mark::after {
     transform: translateX(120%);
+  }
+  &__brand:hover &__needle {
+    transform: rotate(120deg);
   }
 
   &__nav {
