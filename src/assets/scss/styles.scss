@@ -106,59 +106,6 @@ input[type='number']::-webkit-inner-spin-button {
   transition: fill var(--dur) var(--ease);
 }
 
-.back-button-arrow {
-  position: absolute;
-  top: 20px;
-  left: -100px;
-  width: 48px;
-  height: 48px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: background-color var(--dur) var(--ease), transform var(--dur) var(--ease),
-    box-shadow var(--dur) var(--ease);
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 18px;
-    height: 18px;
-    border-left: 3px solid var(--ink);
-    border-bottom: 3px solid var(--ink);
-    transform: translate(-25%, -50%) rotate(45deg);
-  }
-  &:hover {
-    background-color: var(--primary-soft);
-    box-shadow: var(--shadow-md);
-    transform: translateX(-3px);
-  }
-
-  @media (max-width: 1080px) {
-    left: 0;
-    top: -25px;
-    position: relative;
-    width: 40px;
-    height: 40px;
-    &::before {
-      width: 14px;
-      height: 14px;
-    }
-  }
-
-  @media (max-width: 767px) {
-    top: -7px;
-    width: 35px;
-    height: 35px;
-    &::before {
-      width: 12px;
-      height: 12px;
-    }
-  }
-}
-
 // Respect users who prefer less motion.
 @media (prefers-reduced-motion: reduce) {
   *,

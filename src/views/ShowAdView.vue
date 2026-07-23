@@ -1,8 +1,5 @@
 <template>
   <div class="showAd">
-    <div class="showAd__sticky-container-btn">
-      <button class="back-button-arrow" @click="goBack" />
-    </div>
     <!-- Заголовок -->
     <div class="ad-header">
       <FavoriteButton
@@ -345,10 +342,6 @@ const copyPhone = async (): Promise<void> => {
   }
 }
 
-function goBack (): void {
-  router.go(-1)
-}
-
 function keyDownEvent(event: KeyboardEvent): void {
   allowOnlyNumbers(event)
 }
@@ -438,14 +431,6 @@ onMounted(() => {
   padding: 40px 20px;
   background: var(--surface-2);
   min-height: 100vh;
-
-  &__sticky-container-btn {
-    position: sticky;
-    top: 0;
-    left: 0;
-    height: 0;
-    z-index: 1000;
-  }
 
   &__bottom-container {
     display: flex;
@@ -1003,21 +988,6 @@ h2 {
 }
 
 @media (max-width: 1080px) {
-  .showAd__sticky-container-btn {
-    position: static;
-  }
-
-  .back-button-arrow {
-    left: 0;
-    top: -25px;
-    position: relative;
-    width: 40px;
-    height: 40px;
-    &::before {
-      width: 14px;
-      height: 14px;
-    }
-  }
   .ad-header {
     margin-top: 40px;
   }
@@ -1180,16 +1150,6 @@ h2 {
     &__btn {
       padding: 5px 10px;
       font-size: 12px;
-    }
-  }
-
-  .back-button-arrow {
-    top: -7px;
-    width: 35px;
-    height: 35px;
-    &::before {
-      width: 12px;
-      height: 12px;
     }
   }
 }
