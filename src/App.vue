@@ -5,11 +5,11 @@
         <span class="header__mark" aria-hidden="true">
           <svg class="header__gauge" viewBox="0 0 32 32" fill="none">
             <path class="header__gauge-arc" d="M7.3 22 A10 10 0 1 1 24.7 22" />
-            <g class="header__needle">
-              <line x1="16" y1="17" x2="12" y2="11.3" />
-              <circle cx="12" cy="11.3" r="1.4" />
+            <g class="header__gauge-ticks">
+              <line x1="7.34" y1="12" x2="9.5" y2="13.25" />
+              <line x1="16" y1="7" x2="16" y2="9.5" />
+              <line x1="24.66" y1="12" x2="22.5" y2="13.25" />
             </g>
-            <circle class="header__hub" cx="16" cy="17" r="1.9" />
           </svg>
         </span>
         <span class="header__logo">Автоподборщик<span class="header__logo-tld">.ru</span></span>
@@ -128,21 +128,11 @@ const links = computed(() => [
     stroke-linecap: round;
     opacity: 0.75;
   }
-  &__needle {
+  &__gauge-ticks line {
     stroke: var(--on-primary);
-    stroke-width: 2;
+    stroke-width: 1.4;
     stroke-linecap: round;
-    fill: var(--accent);
-    transform: rotate(-18deg);
-    transform-box: view-box;
-    transform-origin: 16px 17px;
-    transition: transform var(--dur-slow) var(--ease-spring);
-  }
-  &__needle circle {
-    stroke: none;
-  }
-  &__hub {
-    fill: var(--on-primary);
+    opacity: 0.55;
   }
 
   &__logo {
@@ -171,9 +161,6 @@ const links = computed(() => [
   }
   &__brand:hover &__mark::after {
     transform: translateX(120%);
-  }
-  &__brand:hover &__needle {
-    transform: rotate(74deg);
   }
 
   &__nav {
