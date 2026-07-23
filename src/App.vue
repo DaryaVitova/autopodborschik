@@ -1,8 +1,17 @@
 <template>
   <header class="header">
     <div class="header__inner">
-      <router-link :to="{ name: 'main' }" class="header__brand">
-        <span class="header__mark"><Car :size="22" :stroke-width="2.2" /></span>
+      <router-link :to="{ name: 'main' }" class="header__brand" aria-label="Автоподборщик.ru — на главную">
+        <span class="header__mark" aria-hidden="true">
+          <svg class="header__gauge" viewBox="0 0 32 32" fill="none">
+            <path class="header__gauge-arc" d="M7.3 22 A10 10 0 1 1 24.7 22" />
+            <g class="header__needle">
+              <line x1="16" y1="17" x2="12" y2="11.3" />
+              <circle cx="12" cy="11.3" r="1.4" />
+            </g>
+            <circle class="header__hub" cx="16" cy="17" r="1.9" />
+          </svg>
+        </span>
         <span class="header__logo">Автоподборщик<span class="header__logo-tld">.ru</span></span>
       </router-link>
 
@@ -41,7 +50,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, markRaw } from 'vue'
-import { Home, Heart, Wallet, ShieldCheck, Plus, Car } from '@lucide/vue'
+import { Home, Heart, Wallet, ShieldCheck, Plus } from '@lucide/vue'
 import { useFavoritesStore } from '@/stores/favoritesStore'
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 
@@ -87,16 +96,55 @@ const links = computed(() => [
     flex-shrink: 0;
   }
   &__mark {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    color: var(--on-primary);
-    background: linear-gradient(135deg, var(--primary), var(--accent));
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(140deg, var(--primary), var(--primary-hover));
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-primary);
+    overflow: hidden;
+    transition: transform var(--dur) var(--ease-spring), box-shadow var(--dur) var(--ease);
+
+    // Glossy sheen sweep that catches the eye on hover.
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 40%, rgba(255, 255, 255, 0.35) 50%, transparent 60%);
+      transform: translateX(-120%);
+      transition: transform var(--dur-slow) var(--ease);
+    }
   }
+  &__gauge {
+    width: 30px;
+    height: 30px;
+  }
+  &__gauge-arc {
+    stroke: var(--on-primary);
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    opacity: 0.75;
+  }
+  &__needle {
+    stroke: var(--on-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    fill: var(--accent);
+    transform: rotate(-18deg);
+    transform-box: view-box;
+    transform-origin: 16px 17px;
+    transition: transform var(--dur-slow) var(--ease-spring);
+  }
+  &__needle circle {
+    stroke: none;
+  }
+  &__hub {
+    fill: var(--on-primary);
+  }
+
   &__logo {
     font-size: var(--text-xl);
     font-weight: 800;
@@ -104,7 +152,28 @@ const links = computed(() => [
     color: var(--ink);
   }
   &__logo-tld {
-    color: var(--primary);
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 6px;
+    font-size: 0.58em;
+    font-weight: 700;
+    color: var(--on-primary);
+    background: var(--primary);
+    border-radius: var(--radius-sm);
+    vertical-align: middle;
+    transform: translateY(-1px);
+  }
+
+  // Brand hover: badge lifts, needle revs to full, sheen sweeps.
+  &__brand:hover &__mark {
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
+  &__brand:hover &__mark::after {
+    transform: translateX(120%);
+  }
+  &__brand:hover &__needle {
+    transform: rotate(74deg);
   }
 
   &__nav {
