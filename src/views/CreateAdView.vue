@@ -47,6 +47,14 @@
                 @input="clearError('city')"
               />
 
+              <InputCreateAd
+                v-model="formData.address"
+                :errorData="false"
+                id="address"
+                errorText=""
+                labelText="Адрес (улица, дом)"
+              />
+
               <div class="form__group">
                 <span v-if="isErrorData.year" class="form__error-message">*Выберите год выпуска</span>
                 <label for="year" class="form__label">Год выпуска *</label>
@@ -163,6 +171,7 @@ export interface FormData {
   mileage: number | null,
   year: string,
   city: string,
+  address: string,
   phone: string | null,
   photos: string[],
   price: number | null,
@@ -199,6 +208,9 @@ export interface FirebaseAdvertisementData {
   mileage: number
   year: string
   city: string
+  address: string
+  lat: number | null
+  lng: number | null
   phone: string | null
   price: number
   description: string
@@ -226,6 +238,7 @@ const formData = ref<FormData>({
   mileage: null,
   year: '',
   city: '',
+  address: '',
   phone: null,
   photos: [],
   price: null,

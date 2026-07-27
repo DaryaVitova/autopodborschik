@@ -9,6 +9,9 @@ export interface Advertisement {
   year: number;
   mileage: number;
   city: string;
+  address: string;
+  lat: number | null;
+  lng: number | null;
   phone: string;
   price: number;
   description: string;
@@ -84,6 +87,9 @@ export function useAdvertisements() {
             year: Number(docData.year) || 0,
             mileage: Number(docData.mileage) || 0,
             city: docData.city || '',
+            address: docData.address || '',
+            lat: typeof docData.lat === 'number' ? docData.lat : null,
+            lng: typeof docData.lng === 'number' ? docData.lng : null,
             phone: docData.phone || '',
             price: Number(docData.price) || 0,
             description: docData.description || '',

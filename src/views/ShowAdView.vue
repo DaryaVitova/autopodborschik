@@ -184,6 +184,8 @@
         <span>{{ adData?.description }}</span>
       </div>
 
+      <AdLocationMap :ad="adData" />
+
       <div class="showAd__buttons">
         <button
           v-if="!isAdInSoldAuto"
@@ -235,10 +237,11 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, type Ref } from 'vue'
-import { useRouter } from "vue-router"
+import {ref, computed, onMounted, watch, type Ref } from 'vue'
+import { useRouter, useRoute } from "vue-router"
 import type { Advertisement } from "@/composables/advertisements.ts"
 import ArrowIcon from "@/components/SvgIcons/ArrowIcon.vue"
+import AdLocationMap from "@/components/ShowAd/AdLocationMap.vue"
 import { ArrowLeft } from "@lucide/vue"
 import { useFavoritesStore } from "@/stores/favoritesStore.ts"
 import { useFormatters } from "@/composables/formatters.ts"
@@ -247,6 +250,7 @@ import { doc, deleteDoc } from 'firebase/firestore'
 import { db } from '@/firebase.ts'
 
 const router = useRouter()
+const route = useRoute()
 
 const favoritesStore = useFavoritesStore()
 
@@ -398,21 +402,29 @@ const deleteAd = async (id: string | undefined): Promise<void> => {
   }
 }
 
-onMounted(() => {
-  console.log(adData.value, 'adDataa')
+// openCard() (в т.ч. при клике по метке на карте) кладёт объявление в localStorage
+// и меняет :id в маршруте. Компонент ShowAdView переиспользуется, поэтому перечитываем
+// данные при каждой смене id, а не только на onMounted.
+const loadAd = (): void => {
   try {
     const saved = localStorage.getItem('advertisements')
     if (saved) {
       adData.value = JSON.parse(saved)
 
       const idFromSold = soldAuto.getSoldCars.map(item => item.id)
-      if (adData.value && idFromSold.includes(adData.value.id)) {
-       isAdInSoldAuto.value = true
-      }
+      isAdInSoldAuto.value = !!adData.value && idFromSold.includes(adData.value.id)
     }
   } catch (error) {
     console.error('❌ Ошибка загрузки данных:', error)
   }
+}
+
+watch(() => route.params.id, () => {
+  loadAd()
+})
+
+onMounted(() => {
+  loadAd()
 
   const handleKeydown = (e: KeyboardEvent): void => {
     if (e.key === 'Escape' && lightboxActive.value) {

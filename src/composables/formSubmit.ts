@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { type Ref, type Reactive, ref } from "vue"
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import {db} from "@/firebase.ts";
+import { useGeocode } from "@/composables/useGeocode.ts";
 
 export function useFormSubmit(
   countriesRef: Ref<readonly Country[]>,
@@ -15,6 +16,8 @@ export function useFormSubmit(
 ) {
 
   const router = useRouter()
+
+  const { geocode, geocodeCity } = useGeocode()
 
   const loader = ref<boolean>(false)
 
@@ -137,6 +140,22 @@ export function useFormSubmit(
         }
       }
 
+      // Геокодируем в координаты для метки на карте: по точному адресу, если он
+      // указан, иначе — в центр города.
+      const address = advertisementData.address?.trim()
+      const city = advertisementData.city?.trim()
+
+      let coords: { lat: number; lng: number } | null = null
+      if (address || city) {
+        try {
+          coords = address
+            ? await geocode(city ? `${address}, ${city}` : address)
+            : await geocodeCity(city!)
+        } catch (error) {
+          console.warn('⚠️  Не удалось определить координаты по адресу:', error)
+        }
+      }
+
       // данные для Firestore
       const firebaseData: FirebaseAdvertisementData = {
         brand: advertisementData.brand,
@@ -144,6 +163,9 @@ export function useFormSubmit(
         mileage: Number(advertisementData.mileage),
         year: advertisementData.year,
         city: advertisementData.city,
+        address: advertisementData.address || '',
+        lat: coords?.lat ?? null,
+        lng: coords?.lng ?? null,
         phone: advertisementData.phone,
         price: Number(advertisementData.price),
         description: advertisementData.description || '',
@@ -251,6 +273,7 @@ export function useFormSubmit(
       mileage: null,
       year: '',
       city: '',
+      address: '',
       phone: '',
       photos: [],
       price: null,
