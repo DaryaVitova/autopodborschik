@@ -245,6 +245,7 @@ import AdLocationMap from "@/components/ShowAd/AdLocationMap.vue"
 import { ArrowLeft } from "@lucide/vue"
 import { useFavoritesStore } from "@/stores/favoritesStore.ts"
 import { useFormatters } from "@/composables/formatters.ts"
+import { validPhotoUrls } from "@/composables/adPhotos.ts"
 import { useSoldAutoStore } from "@/stores/soldAutoStore.ts"
 import { doc, deleteDoc } from 'firebase/firestore'
 import { db } from '@/firebase.ts'
@@ -271,18 +272,7 @@ const isAdInSoldAuto = ref(false)
 
 const showCopyMessage = ref(false)
 
-const validPhotos = computed((): string[] => {
-  if (!adData.value?.photoUrls || !Array.isArray(adData.value.photoUrls)) {
-    return []
-  }
-
-  return adData.value.photoUrls.filter(photo =>
-    photo &&
-    photo.trim() !== '' &&
-    !photo.includes('null') &&
-    !photo.includes('undefined')
-  )
-})
+const validPhotos = computed((): string[] => validPhotoUrls(adData.value))
 
 const hasPhotos = computed((): boolean => {
   return validPhotos.value.length > 0

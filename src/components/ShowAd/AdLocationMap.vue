@@ -7,7 +7,7 @@
 
     <p class="ad-map__subtitle">
       {{ locationLabel }}
-      <span class="ad-map__hint">· синяя метка — этот автомобиль, светлые — другие объявления (клик открывает)</span>
+      <span class="ad-map__hint">· синяя метка — этот автомобиль, светлые — другие объявления (наведите, чтобы увидеть фото)</span>
     </p>
 
     <div class="ad-map__stage">
@@ -36,6 +36,8 @@ import { MapPin } from '@lucide/vue'
 import { useAdvertisements, type Advertisement } from '@/composables/advertisements.ts'
 import { useGeocode, isInRussia, RUSSIA_BOUNDS, type LatLng } from '@/composables/useGeocode.ts'
 import { useAdvertisementOpen } from '@/composables/advertisementOpen.ts'
+import { firstPhotoUrl } from '@/composables/adPhotos.ts'
+import { useFormatters } from '@/composables/formatters.ts'
 
 // Рамка карты ограничена Россией — вид нельзя увести в другие страны.
 const RUSSIA_LAT_LNG_BOUNDS = L.latLngBounds(
@@ -61,6 +63,7 @@ const props = defineProps<{
 const { data: allAds } = useAdvertisements()
 const { geocode, geocodeCity } = useGeocode()
 const { openCard } = useAdvertisementOpen()
+const { formatNumber } = useFormatters()
 
 const mapEl = ref<HTMLElement | null>(null)
 const isLocating = ref(false)
@@ -71,7 +74,6 @@ const overviewActive = ref(false)
 
 let map: L.Map | null = null
 let markersLayer: L.LayerGroup | null = null
-let tileLayer: L.TileLayer | null = null
 // Токен защищает от гонок: если объявление/список сменились во время геокодирования,
 // устаревший билд маркеров прекращает работу.
 let buildToken = 0
@@ -118,7 +120,100 @@ function makeIcon(isCurrent: boolean): L.DivIcon {
 }
 
 const priceLabel = (ad: Advertisement): string =>
-  ad.price ? `${ad.price.toLocaleString('ru-RU')} ₽` : ''
+  ad.price ? `${formatNumber(ad.price) ?? ''} ₽` : ''
+
+const carTitle = (ad: Advertisement): string => `${ad.brand} ${ad.model}`.trim()
+
+// Узел с классом и текстом, сразу вложенный в родителя.
+function el<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  className: string,
+  parent: HTMLElement,
+  text?: string,
+): HTMLElementTagNameMap[K] {
+  const node = document.createElement(tag)
+  node.className = className
+  if (text) node.textContent = text
+  parent.appendChild(node)
+  return node
+}
+
+// Содержимое всплывающего окна собираем DOM-узлами, а не строкой HTML:
+// так к кнопке вешается настоящий обработчик, а текст объявления попадает
+// через textContent и не может сломать разметку.
+function makePopupContent(ad: Advertisement, isCurrent: boolean): HTMLElement {
+  const root = document.createElement('div')
+  root.className = 'ad-popup'
+
+  const photo = firstPhotoUrl(ad)
+  if (photo) {
+    const img = el('img', 'ad-popup__photo', root)
+    img.src = photo
+    img.alt = carTitle(ad)
+    img.loading = 'lazy'
+    // Если ссылка битая — убираем картинку, вместо «сломанного» превью.
+    img.addEventListener('error', () => img.remove())
+  }
+
+  const body = el('div', 'ad-popup__body', root)
+  el('strong', 'ad-popup__title', body, carTitle(ad))
+
+  const price = priceLabel(ad)
+  if (price) el('span', 'ad-popup__price', body, price)
+
+  if (isCurrent) {
+    el('span', 'ad-popup__badge', body, 'Вы смотрите это объявление')
+    return root
+  }
+
+  const button = el('button', 'ad-popup__btn', body, 'Открыть объявление')
+  button.type = 'button'
+  L.DomEvent.on(button, 'click', (event) => {
+    // Гасим событие, иначе Leaflet обработает его как клик по карте/метке.
+    L.DomEvent.stop(event)
+    openCard(ad)
+  })
+
+  return root
+}
+
+// Превью держим открытым, пока курсор на метке ИЛИ на самом окне: закрытие
+// отложено, и переход курсора с метки на кнопку «Открыть объявление» его
+// отменяет. Одна и та же механика для всех меток.
+let popupCloseTimer: ReturnType<typeof setTimeout> | null = null
+const wiredPopups = new WeakSet<HTMLElement>()
+
+function cancelPopupClose(): void {
+  if (popupCloseTimer) {
+    clearTimeout(popupCloseTimer)
+    popupCloseTimer = null
+  }
+}
+
+function bindHoverPopup(marker: L.Marker): void {
+  const scheduleClose = (): void => {
+    cancelPopupClose()
+    popupCloseTimer = setTimeout(() => {
+      popupCloseTimer = null
+      marker.closePopup()
+    }, 200)
+  }
+
+  marker.on('mouseover', () => {
+    cancelPopupClose()
+    marker.openPopup()
+  })
+  marker.on('mouseout', scheduleClose)
+  marker.on('popupopen', (event: L.PopupEvent) => {
+    // Контейнер попапа Leaflet переиспользует между открытиями, поэтому
+    // слушатели вешаются один раз — иначе они копятся с каждым наведением.
+    const container = event.popup.getElement()
+    if (!container || wiredPopups.has(container)) return
+    wiredPopups.add(container)
+    L.DomEvent.on(container, 'mouseenter', cancelPopupClose)
+    L.DomEvent.on(container, 'mouseleave', scheduleClose)
+  })
+}
 
 function addMarker(ad: Advertisement, coords: LatLng, isCurrent: boolean): void {
   if (!markersLayer) return
@@ -126,16 +221,21 @@ function addMarker(ad: Advertisement, coords: LatLng, isCurrent: boolean): void 
   const marker = L.marker([coords.lat, coords.lng], {
     icon: makeIcon(isCurrent),
     zIndexOffset: isCurrent ? 1000 : 0,
-    title: `${ad.brand} ${ad.model}`.trim(),
+    title: carTitle(ad),
   })
 
-  const price = priceLabel(ad)
-  marker.bindTooltip(
-    `<strong>${ad.brand} ${ad.model}</strong>${price ? `<br>${price}` : ''}` +
-      (isCurrent ? '' : '<br><em>Открыть объявление</em>'),
-    { direction: 'top', offset: [0, -20] },
-  )
+  marker.bindPopup(() => makePopupContent(ad, isCurrent), {
+    className: 'ad-map-popup',
+    closeButton: false,
+    autoPan: false,
+    offset: [0, -18],
+    minWidth: 168,
+    maxWidth: 168,
+  })
 
+  bindHoverPopup(marker)
+
+  // Клик по самой метке тоже открывает карточку — на тач-экранах наведения нет.
   if (!isCurrent) {
     marker.on('click', () => openCard(ad))
   }
@@ -209,15 +309,6 @@ function toggleOverview(): void {
   else showOverview()
 }
 
-function applyTiles(): void {
-  if (!map || tileLayer) return
-
-  tileLayer = L.tileLayer(TILE_URL, {
-    attribution: '© OpenStreetMap',
-    maxZoom: 19,
-  }).addTo(map)
-}
-
 function initMap(): void {
   if (!mapEl.value || map) return
 
@@ -231,7 +322,10 @@ function initMap(): void {
     zoomSnap: 1,
   }).setView([55.751244, 37.618423], 9)
 
-  applyTiles()
+  L.tileLayer(TILE_URL, {
+    attribution: '© OpenStreetMap',
+    maxZoom: 19,
+  }).addTo(map)
 
   markersLayer = L.layerGroup().addTo(map)
 
@@ -268,10 +362,10 @@ watch(allAds, () => ensureMapAndBuild())
 onBeforeUnmount(() => {
   buildToken++
   if (buildTimer) clearTimeout(buildTimer)
+  cancelPopupClose()
   map?.remove()
   map = null
   markersLayer = null
-  tileLayer = null
 })
 </script>
 
@@ -372,6 +466,8 @@ onBeforeUnmount(() => {
 
 <!-- Метки и подписи Leaflet рендерятся вне scope компонента, поэтому стилизуем их глобально. -->
 <style lang="scss">
+@use '@/assets/scss/mixins' as *;
+
 .ad-pin {
   display: block;
   width: 20px;
@@ -392,19 +488,85 @@ onBeforeUnmount(() => {
   }
 }
 
-.leaflet-tooltip {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  line-height: 1.35;
-  color: var(--ink);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-md);
+// Превью объявления при наведении на метку: фото + название + кнопка перехода.
+.ad-map-popup {
+  .leaflet-popup-content-wrapper {
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: var(--shadow-lg);
+  }
 
-  em {
+  // Отступы Leaflet обнуляем, чтобы фото шло от края до края.
+  .leaflet-popup-content {
+    margin: 0;
+    line-height: 1.35;
+  }
+
+  .leaflet-popup-tip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: none;
+  }
+}
+
+.ad-popup {
+  &__photo {
+    display: block;
+    width: 100%;
+    height: 86px;
+    object-fit: cover;
+    background: var(--surface-2);
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-2);
+  }
+
+  &__title {
+    color: var(--ink);
+    font-size: var(--text-xs);
+    font-weight: 600;
+  }
+
+  &__price {
     color: var(--primary);
-    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 600;
+  }
+
+  &__badge {
+    color: var(--ink-faint);
+    font-size: 11px;
+  }
+
+  &__btn {
+    margin-top: var(--space-1);
+    padding: 5px var(--space-2);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-pill);
+    background: var(--primary);
+    color: var(--on-primary);
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+
+    &:hover {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+    &:focus-visible {
+      @include focus-ring;
+    }
   }
 }
 
