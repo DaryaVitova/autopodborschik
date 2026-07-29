@@ -60,17 +60,21 @@ $marker-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' 
 $marker-minus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E");
 
 .aboutApp {
-  position: absolute;
+  // Pinned 13px above MainPageView's round "?"/"×" toggle (its `top` is 90px at
+  // this width) so the toggle sits fully inside this corner instead of
+  // straddling the edge. Tracks the button's per-breakpoint tops below.
+  --faq-top: 77px;
+  // Fixed so the panel stays with the toggle, which is fixed too, while the
+  // listings scroll underneath. Taller content scrolls inside the panel rather
+  // than off-screen.
+  position: fixed;
   z-index: 10000;
   right: 0;
   width: 40%;
   height: fit-content;
-  // Pinned 13px above MainPageView's round "?"/"×" toggle (its `top` is 90px at
-  // this width) so the toggle sits fully inside this corner instead of
-  // straddling the edge. Anchoring to an explicit `top` rather than the static
-  // position keeps the two aligned regardless of how tall the header renders.
-  // The `top` values below track the button's per-breakpoint tops.
-  top: 77px;
+  top: var(--faq-top);
+  max-height: calc(100vh - var(--faq-top) - var(--space-5));
+  overflow-y: auto;
   // Top inset clears that toggle and leaves a 25px gap below it, so the first
   // FAQ no longer butts against the panel edge.
   padding: var(--space-20) var(--space-5) var(--space-5);
@@ -182,7 +186,7 @@ summary {
 // mobile header.
 @media (max-width: 767px) {
   .aboutApp {
-    top: 155px;
+    --faq-top: 155px;
     width: 70%;
   }
 }

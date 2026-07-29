@@ -1,11 +1,11 @@
 <template>
   <div class="main">
-    <!-- Teleported out of .main: the route transition animates a transform on
-         .main, and a transformed ancestor becomes the containing block for
-         absolutely positioned descendants. That made the button start at .main's
-         top-right corner and visibly slide across to the viewport corner as the
-         transform resolved. Anchored to body it always resolves against the
-         viewport, so it lands in place immediately. -->
+    <!-- Both are teleported out of .main because they are viewport-anchored: the
+         route transition animates a transform on .main, and a transformed
+         ancestor becomes the containing block for fixed and absolutely
+         positioned descendants alike. Left inside, the button visibly slid from
+         .main's corner to the viewport corner on load, and neither could stay
+         fixed while the listings scroll. -->
     <Teleport to="body">
       <button
         class="main__about-app-btn"
@@ -17,11 +17,11 @@
         <X v-if="openAboutApp" :size="20" :stroke-width="2.4" />
         <span v-else aria-hidden="true">?</span>
       </button>
-    </Teleport>
 
-    <Transition name="slide">
-      <about-app v-if="openAboutApp" />
-    </Transition>
+      <Transition name="slide">
+        <about-app v-if="openAboutApp" />
+      </Transition>
+    </Teleport>
 
     <div class="main__select-show">
       <router-link
@@ -117,7 +117,11 @@ onMounted(() => {
   // Sits above the panel (which is z-index 10000) so the close state stays
   // reachable once the panel covers this corner.
   &__about-app-btn {
-    position: absolute;
+    // Fixed, so it stays reachable while the listings scroll. This only works
+    // because the button is teleported to body — inside .main the route
+    // transition's transform would become its containing block and it would
+    // scroll away with the page.
+    position: fixed;
     right: 30px;
     top: 90px;
     z-index: 10001;
