@@ -19,13 +19,7 @@
   </div>
 
   <div class="table__checkbox">
-    <input
-      type="checkbox"
-      v-model="toggleSoldAutoInTable"
-      id="checkbox"
-      class="table__checkbox--mark"
-    />
-    <label for="checkbox">Показать проданные</label>
+    <BaseSwitch v-model="toggleSoldAutoInTable">Проданные</BaseSwitch>
   </div>
 
   <div class="table-container" :class="{ 'table-container--loading': loader }">
@@ -113,6 +107,7 @@ import IconsTable from '@/components/Table/IconsTable.vue'
 import LoaderWheels from '@/common/LoaderWheels.vue'
 import InputTable from '@/components/Table/InputTable.vue'
 import ContextMenuTable from '@/components/Table/ContextMenuTable.vue'
+import BaseSwitch from '@/components/ui/BaseSwitch.vue'
 import { useContextMenu } from '@/components/Table/composables/useContextMenu.ts'
 import type { Headers } from "@/views/TableView.vue";
 import type { Advertisement } from "@/composables/advertisements.ts";
@@ -553,7 +548,8 @@ const {
   }
 
   &__checkbox {
-    @include checkbox;
+    display: flex;
+    justify-content: center;
     align-self: center;
     margin-top: 30px;
   }

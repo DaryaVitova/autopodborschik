@@ -111,13 +111,7 @@
     <!-- Карточки -->
     <div v-if="!loader" class="cards__grid">
       <div class="cards__checkbox">
-        <input
-          type="checkbox"
-          v-model="toggleSoldAuto"
-          id="checkbox"
-          class="cards__checkbox--mark"
-        />
-        <label for="checkbox">Показать проданные</label>
+        <BaseSwitch v-model="toggleSoldAuto">Проданные</BaseSwitch>
       </div>
 
       <car-card
@@ -161,6 +155,7 @@
 
 <script setup lang="ts">
 import CarCard from '@/components/Cards/CarCard.vue'
+import BaseSwitch from '@/components/ui/BaseSwitch.vue'
 import SearchInput from '@/components/Cards/SearchInput.vue'
 import SearchInputByNumber from '@/components/Cards/SearchInputByNumber.vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -485,7 +480,7 @@ onMounted(() => {
   }
 
   &__checkbox {
-    @include checkbox;
+    align-self: end;
   }
 
   &__search {
@@ -617,15 +612,6 @@ onMounted(() => {
     }
     &__grid {
       width: 500px;
-    }
-
-    &__checkbox label {
-      font-size: 14px;
-    }
-
-    &__checkbox--mark {
-      width: 16px;
-      height: 16px;
     }
   }
 }
