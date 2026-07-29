@@ -1,20 +1,23 @@
 <template>
   <div class="main">
-    <button
-      v-if="!openAboutApp"
-      class="main__about-app-btn"
-      @click="openAboutAppBtn"
-    >
-      <arrow-icon :arrowLeft="true" />О приложении
-    </button>
-
-    <button
-      v-if="openAboutApp"
-      class="main__about-app-btn"
-      @click="closeAboutAppBtn"
-    >
-      Закрыть<arrow-icon />
-    </button>
+    <!-- Teleported out of .main: the route transition animates a transform on
+         .main, and a transformed ancestor becomes the containing block for
+         absolutely positioned descendants. That made the button start at .main's
+         top-right corner and visibly slide across to the viewport corner as the
+         transform resolved. Anchored to body it always resolves against the
+         viewport, so it lands in place immediately. -->
+    <Teleport to="body">
+      <button
+        class="main__about-app-btn"
+        :aria-label="openAboutApp ? 'Закрыть' : 'О приложении'"
+        :title="openAboutApp ? 'Закрыть' : 'О приложении'"
+        :aria-expanded="openAboutApp"
+        @click="toggleAboutApp"
+      >
+        <X v-if="openAboutApp" :size="20" :stroke-width="2.4" />
+        <span v-else aria-hidden="true">?</span>
+      </button>
+    </Teleport>
 
     <Transition name="slide">
       <about-app v-if="openAboutApp" />
@@ -47,7 +50,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
-import ArrowIcon from '@/components/SvgIcons/ArrowIcon.vue'
+import { X } from '@lucide/vue'
 import AboutApp from "@/components/Main/AboutApp.vue"
 
 const route = useRoute()
@@ -55,12 +58,8 @@ const router = useRouter()
 
 const openAboutApp = ref(false)
 
-function openAboutAppBtn() {
-  openAboutApp.value = true
-}
-
-function closeAboutAppBtn() {
-  openAboutApp.value = false
+function toggleAboutApp() {
+  openAboutApp.value = !openAboutApp.value
 }
 
 onMounted(() => {
@@ -71,6 +70,8 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '@/assets/scss/mixins' as *;
+
 .main {
   display: flex;
   flex-direction: column;
@@ -112,25 +113,38 @@ onMounted(() => {
     }
   }
 
+  // Round icon-only toggle: "?" to open the FAQ panel, "×" to close it.
+  // Sits above the panel (which is z-index 10000) so the close state stays
+  // reachable once the panel covers this corner.
   &__about-app-btn {
     position: absolute;
     right: 30px;
     top: 90px;
+    z-index: 10001;
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-4);
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
     color: var(--primary);
-    font-weight: 600;
+    font-size: var(--text-xl);
+    font-weight: 700;
+    line-height: 1;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-pill);
+    border-radius: 50%;
     box-shadow: var(--shadow-sm);
     cursor: pointer;
-    transition: background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+    transition: background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
+      transform var(--dur-fast) var(--ease);
     &:hover {
       background: var(--primary-soft);
       box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+    &:focus-visible {
+      @include focus-ring;
     }
   }
 }
@@ -150,9 +164,12 @@ onMounted(() => {
   transform: translateX(0);
 }
 
-@media (max-width: 768px) {
+// The mobile header wraps onto two rows (~152px tall), so the toggle sits below
+// it. Breakpoint matches the header's own @include mobile (767px) rather than
+// 768px, where the header is still in its single-row tablet layout.
+@media (max-width: 767px) {
   .main__about-app-btn {
-    top: 240px;
+    top: 168px;
     right: 20px;
   }
 }
@@ -166,16 +183,6 @@ onMounted(() => {
         font-size: 15px;
       }
     }
-
-    &__about-app-btn {
-      font-size: 14px;
-    }
-  }
-}
-
-@media (max-width: 400px) {
-  .main__about-app-btn {
-    top: 220px;
   }
 }
 </style>
