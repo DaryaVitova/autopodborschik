@@ -7,8 +7,8 @@
     @click="toggle"
   >
     <Transition name="swap" mode="out-in">
-      <Moon v-if="theme === 'dark'" key="moon" :size="18" />
-      <Sun v-else key="sun" :size="18" />
+      <Moon v-if="theme === 'dark'" key="moon" :size="16" />
+      <Sun v-else key="sun" :size="16" />
     </Transition>
   </button>
 </template>
@@ -27,8 +27,8 @@ const { theme, toggle } = useTheme()
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--border);
   background: var(--surface);

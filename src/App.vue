@@ -37,7 +37,7 @@
       <div class="header__actions">
         <ThemeToggle />
         <router-link :to="{ name: 'createAd' }" class="header__cta">
-          <Plus :size="18" :stroke-width="2.4" />
+          <Plus :size="16" :stroke-width="2.4" />
           <span>Выложить объявление</span>
         </router-link>
       </div>
@@ -246,7 +246,7 @@ const links = computed(() => [
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    height: 42px;
+    height: 36px;
     padding: 0 var(--space-5);
     border-radius: var(--radius-pill);
     background: var(--primary);
@@ -307,7 +307,7 @@ const links = computed(() => [
   }
   .header__cta {
     padding: 0;
-    width: 42px;
+    width: 36px;
     justify-content: center;
   }
 }
